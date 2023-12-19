@@ -2,7 +2,7 @@ spring:
   profiles:
     active: local
   datasource:
-    url: jdbc:h2:mem:heygongc;MODE=PostgreSQL;
+    url: jdbc:h2:mem:heygongc;MODE=PostgreSQL;NON_KEYWORDS=MEMBER
     username: sa
     password:
     driver-class-name: org.h2.Driver
@@ -19,6 +19,6 @@ logging:
 
 google:
   client:
-    id: 753695021159-ef799dfi6q7bpodifg41khuomc1r80km.apps.googleusercontent.com
+    id: 753695021159-ef799dfi6q7bpodifg41khuomc1r80km.apps.googlemembercontent.com
     secret: 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
     redirect-uri: http://localhost:8080/v1/members/login/google/callback

@@ -8,7 +8,7 @@ import com.heygongc.member.domain.MemberRepository;
 import com.heygongc.member.presentation.request.MemberCreateRequest;
 import com.heygongc.member.presentation.request.MemberSnsType;
 import com.heygongc.member.presentation.response.GoogleTokenResponse;
-import com.heygongc.member.presentation.response.GoogleUserResponse;
+import com.heygongc.member.presentation.response.GoogleMemberResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -30,13 +30,13 @@ public class MemberService {
     }
 
     public Member googleLogin(String authCode) throws IOException {
-        GoogleUserResponse googleUser = getGoogleUserInfo(authCode);
+        GoogleMemberResponse googleMember = getGoogleMemberInfo(authCode);
 
-        if(!memberRepository.existsByEmail(googleUser.getEmail())) {
+        if(!memberRepository.existsByEmail(googleMember.getEmail())) {
             memberRepository.save(
                     Member.builder()
-                            .email(googleUser.getEmail())
-                            .id(googleUser.getName())
+                            .email(googleMember.getEmail())
+                            .id(googleMember.getName())
                             .sns_type(MemberSnsType.GOOGLE)
                             .alarm(true)
                             .ads(true)
@@ -44,16 +44,16 @@ public class MemberService {
             );
         }
         return memberRepository.findByEmail(
-                googleUser.getEmail()
+                googleMember.getEmail()
         ).orElseThrow(EmailSigninFailedException::new);
     }
 
-    public GoogleUserResponse getGoogleUserInfo(String authCode) throws JsonProcessingException {
+    public GoogleMemberResponse getGoogleMemberInfo(String authCode) throws JsonProcessingException {
         ResponseEntity<String> accessTokenResponse = googleOAuth.requestAccessToken(authCode);
         GoogleTokenResponse token = googleOAuth.getAccessToken(accessTokenResponse);
-        ResponseEntity<String> userInfoResponse = googleOAuth.requestUserInfo(token);
-        GoogleUserResponse googleUser = googleOAuth.getUserInfo(userInfoResponse);
-        return googleUser;
+        ResponseEntity<String> memberInfoResponse = googleOAuth.requestMemberInfo(token);
+        GoogleMemberResponse googleMember = googleOAuth.getMemberInfo(memberInfoResponse);
+        return googleMember;
     }
 
     @Transactional
