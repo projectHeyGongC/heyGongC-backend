@@ -1,35 +1,51 @@
 package com.heygongc.member.domain;
 
+import com.heygongc.global.config.BaseTimeEntity;
+import com.heygongc.member.presentation.request.MemberSnsType;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
 @Table(name = "member")
-public class Member {
+public class Member extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_id")
-    private Long id;
+    @Column(name = "user_seq")
+    private Long seq;
 
-    @Column(name = "nickname", length = 100)
-    private String nickname;
+    @Column(name = "user_id", length = 200, nullable = false)
+    private String id;
 
-    protected Member() {}
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private MemberSnsType sns_type;
 
-    public Member(Long id, String nickname) {
+    @Column(length = 200, nullable = false)
+    private String email;
+
+    private String deleted_at;
+
+    @Column(nullable = false)
+    private boolean alarm;
+
+    private String fcm_token;
+
+    @Column(nullable = false)
+    private boolean ads;
+
+    public Member(String id, MemberSnsType sns_type, String email, boolean alarm, boolean ads) {
         this.id = id;
-        this.nickname = nickname;
-    }
-
-    public Member(String nickname) {
-        this.nickname = nickname;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getNickname() {
-        return nickname;
+        this.sns_type = sns_type;
+        this.email = email;
+        this.alarm = alarm;
+        this.ads = ads;
     }
 }

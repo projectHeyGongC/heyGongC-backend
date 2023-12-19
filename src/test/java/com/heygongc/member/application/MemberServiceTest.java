@@ -3,6 +3,7 @@ package com.heygongc.member.application;
 import com.heygongc.member.domain.Member;
 import com.heygongc.member.domain.MemberRepository;
 import com.heygongc.member.presentation.request.MemberCreateRequest;
+import com.heygongc.member.presentation.request.MemberSnsType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,14 +26,14 @@ class MemberServiceTest {
     @Test
     public void 회원테스트() {
         // given
-        Member member = new Member(1L, "테스트");
+        Member member = new Member("TEST001", MemberSnsType.GOOGLE, "test001@gmail.com", true, true);
         when(memberRepository.save(any())).thenReturn(member);
 
         // when
-        Member result = memberService.createTestMember(new MemberCreateRequest("테스트"));
+        Member result = memberService.createTestMember(new MemberCreateRequest("TEST001", MemberSnsType.GOOGLE, "test001@gmail.com", true, true));
 
         // then
         assertThat(result).isNotNull();
-        assertThat(result.getNickname()).isEqualTo("테스트");
+        assertThat(result.getId()).isEqualTo("TEST001");
     }
 }
