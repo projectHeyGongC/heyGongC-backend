@@ -41,7 +41,7 @@ public class MemberController {
         return ResponseEntity.ok().body(reUrl);
     }
 
-    @GetMapping("/login/google/Callback")
+    @GetMapping("/login/google/callback")
     public ResponseEntity<Member> googleLoginCallback(@RequestParam(value = "code") String authCode) throws IOException {
         return ResponseEntity.ok().body(memberService.googleLogin(authCode));
     }
