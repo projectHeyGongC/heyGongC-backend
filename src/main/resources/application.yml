@@ -21,4 +21,4 @@ google:
   client:
     id: 753695021159-ef799dfi6q7bpodifg41khuomc1r80km.apps.googleusercontent.com
     secret: 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
-    redirect-uri: http://localhost:8080/v1/members/login/google/Callback
+    redirect-uri: http://localhost:8080/v1/users/login/google/Callback

@@ -1,4 +1,4 @@
-package com.heygongc.member.presentation.response;
+package com.heygongc.user.application.presentation.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;

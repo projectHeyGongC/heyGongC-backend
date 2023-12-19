@@ -1,9 +1,9 @@
-package com.heygongc.member.presentation;
+package com.heygongc.user.application.presentation;
 
-import com.heygongc.member.application.MemberService;
-import com.heygongc.member.domain.Member;
-import com.heygongc.member.presentation.request.MemberCreateRequest;
-import com.heygongc.member.presentation.response.MemberResponse;
+import com.heygongc.user.application.application.UserService;
+import com.heygongc.user.application.domain.User;
+import com.heygongc.user.application.presentation.request.UserCreateRequest;
+import com.heygongc.user.application.presentation.response.UserResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/v1/members")
-public class MemberController {
+@RequestMapping("/v1/users")
+public class UserController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private MemberService memberService;
-    public MemberController(MemberService memberService) {
-        this.memberService = memberService;
+    private UserService userService;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @Value("${google.client.id}")
@@ -42,14 +42,14 @@ public class MemberController {
     }
 
     @GetMapping("/login/google/Callback")
-    public ResponseEntity<Member> googleLoginCallback(@RequestParam(value = "code") String authCode) throws IOException {
-        return ResponseEntity.ok().body(memberService.googleLogin(authCode));
+    public ResponseEntity<User> googleLoginCallback(@RequestParam(value = "code") String authCode) throws IOException {
+        return ResponseEntity.ok().body(userService.googleLogin(authCode));
     }
 
     @PostMapping("/create")
-    public ResponseEntity<MemberResponse> createMember(@RequestBody MemberCreateRequest request) {
-        Member member = memberService.createTestMember(request);
-        MemberResponse memberResponse = new MemberResponse(member.getSeq(), member.getId(), member.getEmail());
-        return ResponseEntity.ok().body(memberResponse);
+    public ResponseEntity<UserResponse> createUser(@RequestBody UserCreateRequest request) {
+        User user = userService.createTestUser(request);
+        UserResponse userResponse = new UserResponse(user.getSeq(), user.getId(), user.getEmail());
+        return ResponseEntity.ok().body(userResponse);
     }
 }

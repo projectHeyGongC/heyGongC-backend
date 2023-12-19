@@ -1,7 +1,7 @@
-package com.heygongc.member.domain;
+package com.heygongc.user.application.domain;
 
 import com.heygongc.global.config.BaseTimeEntity;
-import com.heygongc.member.presentation.request.MemberSnsType;
+import com.heygongc.user.application.presentation.request.UserSnsType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,8 +13,8 @@ import lombok.Setter;
 @Setter
 @Builder
 @AllArgsConstructor
-@Table(name = "member")
-public class Member extends BaseTimeEntity {
+@Table(name = "user")
+public class User extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +26,7 @@ public class Member extends BaseTimeEntity {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private MemberSnsType sns_type;
+    private UserSnsType sns_type;
 
     @Column(length = 200, nullable = false)
     private String email;
@@ -41,7 +41,7 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false)
     private boolean ads;
 
-    public Member(String id, MemberSnsType sns_type, String email, boolean alarm, boolean ads) {
+    public User(String id, UserSnsType sns_type, String email, boolean alarm, boolean ads) {
         this.id = id;
         this.sns_type = sns_type;
         this.email = email;

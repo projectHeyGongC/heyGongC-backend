@@ -1,9 +1,9 @@
-package com.heygongc.member.domain;
+package com.heygongc.user.application.domain;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.heygongc.member.presentation.response.GoogleTokenResponse;
-import com.heygongc.member.presentation.response.GoogleUserResponse;
+import com.heygongc.user.application.presentation.response.GoogleUserResponse;
+import com.heygongc.user.application.presentation.response.GoogleTokenResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;

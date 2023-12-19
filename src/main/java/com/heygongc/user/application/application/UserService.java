@@ -1,14 +1,14 @@
-package com.heygongc.member.application;
+package com.heygongc.user.application.application;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.heygongc.global.config.EmailSigninFailedException;
-import com.heygongc.member.domain.GoogleOAuth;
-import com.heygongc.member.domain.Member;
-import com.heygongc.member.domain.MemberRepository;
-import com.heygongc.member.presentation.request.MemberCreateRequest;
-import com.heygongc.member.presentation.request.MemberSnsType;
-import com.heygongc.member.presentation.response.GoogleTokenResponse;
-import com.heygongc.member.presentation.response.GoogleUserResponse;
+import com.heygongc.user.application.domain.User;
+import com.heygongc.user.application.domain.UserRepository;
+import com.heygongc.user.application.presentation.response.GoogleUserResponse;
+import com.heygongc.user.application.domain.GoogleOAuth;
+import com.heygongc.user.application.presentation.request.UserCreateRequest;
+import com.heygongc.user.application.presentation.request.UserSnsType;
+import com.heygongc.user.application.presentation.response.GoogleTokenResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -18,32 +18,32 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 
 @Service
-public class MemberService {
+public class UserService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final GoogleOAuth googleOAuth;
-    private final MemberRepository memberRepository;
+    private final UserRepository userRepository;
 
-    public MemberService(GoogleOAuth googleOAuth, MemberRepository memberRepository) {
+    public UserService(GoogleOAuth googleOAuth, UserRepository userRepository) {
         this.googleOAuth = googleOAuth;
-        this.memberRepository = memberRepository;
+        this.userRepository = userRepository;
     }
 
-    public Member googleLogin(String authCode) throws IOException {
+    public User googleLogin(String authCode) throws IOException {
         GoogleUserResponse googleUser = getGoogleUserInfo(authCode);
 
-        if(!memberRepository.existsByEmail(googleUser.getEmail())) {
-            memberRepository.save(
-                    Member.builder()
+        if(!userRepository.existsByEmail(googleUser.getEmail())) {
+            userRepository.save(
+                    User.builder()
                             .email(googleUser.getEmail())
                             .id(googleUser.getName())
-                            .sns_type(MemberSnsType.GOOGLE)
+                            .sns_type(UserSnsType.GOOGLE)
                             .alarm(true)
                             .ads(true)
                             .build()
             );
         }
-        return memberRepository.findByEmail(
+        return userRepository.findByEmail(
                 googleUser.getEmail()
         ).orElseThrow(EmailSigninFailedException::new);
     }
@@ -57,14 +57,14 @@ public class MemberService {
     }
 
     @Transactional
-    public Member createTestMember(MemberCreateRequest request) {
-        Member member = new Member(
+    public User createTestUser(UserCreateRequest request) {
+        User user = new User(
                 request.id(),
                 request.sns_type(),
                 request.email(),
                 request.alarm(),
                 request.ads()
         );
-        return memberRepository.save(member);
+        return userRepository.save(user);
     }
 }
