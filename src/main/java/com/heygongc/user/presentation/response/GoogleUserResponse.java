@@ -1,4 +1,4 @@
-package com.heygongc.member.presentation.response;
+package com.heygongc.user.presentation.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class GoogleMemberResponse {
+public class GoogleUserResponse {
     private String iss;
     private String azp;
     private String aud;

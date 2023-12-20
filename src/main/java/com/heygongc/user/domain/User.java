@@ -1,7 +1,7 @@
-package com.heygongc.member.domain;
+package com.heygongc.user.domain;
 
 import com.heygongc.global.config.BaseTimeEntity;
-import com.heygongc.member.presentation.request.MemberSnsType;
+import com.heygongc.user.presentation.request.UserSnsType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,23 +11,23 @@ import lombok.*;
 @Builder
 @AllArgsConstructor // Builder 어노테이션을 위해 필요
 @NoArgsConstructor // No default constructor for entity 오류 해결을 위해 필요
-@Table(name = "member")
-public class Member extends BaseTimeEntity {
+@Table(name = "user")
+public class User extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_seq")
+    @Column(name = "user_seq")
     private Long seq;
 
     @Column(nullable = false)
     private String device_id;
 
-    @Column(name = "member_id", length = 200, nullable = false)
+    @Column(name = "user_id", length = 200, nullable = false)
     private String id;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private MemberSnsType sns_type;
+    private UserSnsType sns_type;
 
     @Column(length = 200, nullable = false)
     private String email;

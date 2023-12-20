@@ -1,4 +1,4 @@
-package com.heygongc.member.presentation.response;
+package com.heygongc.user.presentation.response;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

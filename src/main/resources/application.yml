@@ -3,7 +3,7 @@ spring:
     active: local
 
   datasource:
-    url: jdbc:h2:mem:heygongc;MODE=PostgreSQL;NON_KEYWORDS=MEMBER
+    url: jdbc:h2:mem:heygongc;MODE=PostgreSQL;NON_KEYWORDS=USER
     username: sa
     password:
     driver-class-name: org.h2.Driver

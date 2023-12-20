@@ -1,9 +1,9 @@
-package com.heygongc.member.domain;
+package com.heygongc.user.domain;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.heygongc.member.presentation.response.GoogleMemberResponse;
-import com.heygongc.member.presentation.response.GoogleTokenResponse;
+import com.heygongc.user.presentation.response.GoogleUserResponse;
+import com.heygongc.user.presentation.response.GoogleTokenResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,7 +49,7 @@ public class GoogleOAuth {
         return objectMapper.readValue(response.getBody(), GoogleTokenResponse.class);
     }
 
-    public ResponseEntity<String> requestMemberInfo(GoogleTokenResponse token) {
+    public ResponseEntity<String> requestUserInfo(GoogleTokenResponse token) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + token.getAccess_token());
@@ -57,12 +57,12 @@ public class GoogleOAuth {
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(headers);
         ResponseEntity<String> responseEntity = restTemplate.exchange("https://oauth2.googleapis.com/tokeninfo", HttpMethod.GET, request, String.class);
 
-        logger.debug("googleOAuth requestMemberInfo response.getBody() >> {}", responseEntity.getBody());
+        logger.debug("googleOAuth requestUserInfo response.getBody() >> {}", responseEntity.getBody());
         return responseEntity;
     }
 
-    public GoogleMemberResponse getMemberInfo(ResponseEntity<String> response) throws JsonProcessingException {
+    public GoogleUserResponse getUserInfo(ResponseEntity<String> response) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.readValue(response.getBody(), GoogleMemberResponse.class);
+        return objectMapper.readValue(response.getBody(), GoogleUserResponse.class);
     }
 }

@@ -1,9 +1,9 @@
-package com.heygongc.member.presentation.request;
+package com.heygongc.user.presentation.request;
 
-public record MemberCreateRequest(
+public record UserCreateRequest(
         String device_id,
         String id,
-        MemberSnsType sns_type,
+        UserSnsType sns_type,
         String email,
         boolean ads,
         String access_token,
