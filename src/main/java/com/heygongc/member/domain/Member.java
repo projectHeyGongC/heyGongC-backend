@@ -3,16 +3,14 @@ package com.heygongc.member.domain;
 import com.heygongc.global.config.BaseTimeEntity;
 import com.heygongc.member.presentation.request.MemberSnsType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
+@AllArgsConstructor // Builder 어노테이션을 위해 필요
+@NoArgsConstructor // No default constructor for entity 오류 해결을 위해 필요
 @Table(name = "member")
 public class Member extends BaseTimeEntity {
 
@@ -20,6 +18,9 @@ public class Member extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_seq")
     private Long seq;
+
+    @Column(nullable = false)
+    private String device_id;
 
     @Column(name = "member_id", length = 200, nullable = false)
     private String id;
@@ -41,11 +42,7 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false)
     private boolean ads;
 
-    public Member(String id, MemberSnsType sns_type, String email, boolean alarm, boolean ads) {
-        this.id = id;
-        this.sns_type = sns_type;
-        this.email = email;
-        this.alarm = alarm;
-        this.ads = ads;
-    }
+    private String access_token;
+
+    private String refresh_token;
 }

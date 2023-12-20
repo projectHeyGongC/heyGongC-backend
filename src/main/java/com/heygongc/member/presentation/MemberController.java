@@ -1,8 +1,10 @@
 package com.heygongc.member.presentation;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.heygongc.member.application.MemberService;
 import com.heygongc.member.domain.Member;
 import com.heygongc.member.presentation.request.MemberCreateRequest;
+import com.heygongc.member.presentation.request.MemberLoginRequest;
 import com.heygongc.member.presentation.response.MemberResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,27 +31,42 @@ public class MemberController {
     @Value("${google.client.redirect-uri}")
     private String GOOGLE_LOGIN_REDIRECT_URI;
 
-    @GetMapping("/login/google")
-    public ResponseEntity<String> getGoogleLoginURL() {
+    @GetMapping("/login/getGoogleLoginUrl")
+    public ResponseEntity<String> getGoogleLoginUrl() {
         String reUrl = "https://accounts.google.com/o/oauth2/v2/auth?client_id=" +
                 GOOGLE_CLIENT_ID +
                 "&redirect_uri=" +
                 GOOGLE_LOGIN_REDIRECT_URI +
                 "&response_type=code" +
                 "&scope=email profile";
-        logger.debug("getGoogleLoginURL >> " + reUrl);
+        logger.debug("getGoogleLoginURL >> {}", reUrl);
         return ResponseEntity.ok().body(reUrl);
     }
 
-    @GetMapping("/login/google/callback")
-    public ResponseEntity<Member> googleLoginCallback(@RequestParam(value = "code") String authCode) throws IOException {
-        return ResponseEntity.ok().body(memberService.googleLogin(authCode));
+    @GetMapping("/login/googleLoginCallback")
+    public ResponseEntity<MemberResponse> googleLoginCallback(@RequestParam(value = "code") String authCode) throws IOException {
+        Member member = memberService.getGoogleMemberInfo(authCode);
+        MemberResponse memberResponse = new MemberResponse(member.getSeq(), member.getDevice_id(), member.getId(), member.getEmail(), member.getSns_type(), member.getAccess_token(), member.getRefresh_token());
+        logger.debug("googleLoginCallback >> {}", memberResponse.toString());
+        return ResponseEntity.ok().body(memberResponse);
+    }
+
+    @PostMapping("/isMemberExists")
+    public ResponseEntity<Boolean> isMemberExists(@RequestBody MemberLoginRequest request) throws JsonProcessingException {
+        return ResponseEntity.ok().body(memberService.isMemberExists(request));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<MemberResponse> loginMember(@RequestBody MemberLoginRequest request) throws JsonProcessingException {
+        Member member = memberService.loginMember(request);
+        MemberResponse memberResponse = new MemberResponse(member.getSeq(), member.getDevice_id(), member.getId(), member.getEmail(), member.getSns_type(), member.getAccess_token(), member.getRefresh_token());
+        return ResponseEntity.ok().body(memberResponse);
     }
 
     @PostMapping("/create")
     public ResponseEntity<MemberResponse> createMember(@RequestBody MemberCreateRequest request) {
-        Member member = memberService.createTestMember(request);
-        MemberResponse memberResponse = new MemberResponse(member.getSeq(), member.getId(), member.getEmail());
+        Member member = memberService.createMember(request);
+        MemberResponse memberResponse = new MemberResponse(member.getSeq(), member.getDevice_id(), member.getId(), member.getEmail(), member.getSns_type(), member.getAccess_token(), member.getRefresh_token());
         return ResponseEntity.ok().body(memberResponse);
     }
 }

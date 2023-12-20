@@ -6,16 +6,15 @@ import com.heygongc.member.domain.GoogleOAuth;
 import com.heygongc.member.domain.Member;
 import com.heygongc.member.domain.MemberRepository;
 import com.heygongc.member.presentation.request.MemberCreateRequest;
+import com.heygongc.member.presentation.request.MemberLoginRequest;
 import com.heygongc.member.presentation.request.MemberSnsType;
-import com.heygongc.member.presentation.response.GoogleTokenResponse;
 import com.heygongc.member.presentation.response.GoogleMemberResponse;
+import com.heygongc.member.presentation.response.GoogleTokenResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.io.IOException;
 
 @Service
 public class MemberService {
@@ -29,42 +28,48 @@ public class MemberService {
         this.memberRepository = memberRepository;
     }
 
-    public Member googleLogin(String authCode) throws IOException {
-        GoogleMemberResponse googleMember = getGoogleMemberInfo(authCode);
-
-        if(!memberRepository.existsByEmail(googleMember.getEmail())) {
-            memberRepository.save(
-                    Member.builder()
-                            .email(googleMember.getEmail())
-                            .id(googleMember.getName())
-                            .sns_type(MemberSnsType.GOOGLE)
-                            .alarm(true)
-                            .ads(true)
-                            .build()
-            );
-        }
-        return memberRepository.findByEmail(
-                googleMember.getEmail()
-        ).orElseThrow(EmailSigninFailedException::new);
-    }
-
-    public GoogleMemberResponse getGoogleMemberInfo(String authCode) throws JsonProcessingException {
+    public Member getGoogleMemberInfo(String authCode) throws JsonProcessingException {
         ResponseEntity<String> accessTokenResponse = googleOAuth.requestAccessToken(authCode);
         GoogleTokenResponse token = googleOAuth.getAccessToken(accessTokenResponse);
         ResponseEntity<String> memberInfoResponse = googleOAuth.requestMemberInfo(token);
         GoogleMemberResponse googleMember = googleOAuth.getMemberInfo(memberInfoResponse);
-        return googleMember;
+        return memberRepository.findByEmail(googleMember.getEmail())
+                .orElse(Member.builder()
+                        .email(googleMember.getEmail())
+                        .id(googleMember.getEmail()) //추후 변경 필요(ID값 어떻게 처리할지?)
+                        .sns_type(MemberSnsType.GOOGLE)
+                        .access_token(token.getAccess_token())
+                        .refresh_token(token.getRefresh_token())
+                        .build()
+                );
+    }
+
+    public Boolean isMemberExists(MemberLoginRequest request) throws JsonProcessingException {
+        if(request.seq() == null) return false;
+        return memberRepository.existsById(request.seq());
     }
 
     @Transactional
-    public Member createTestMember(MemberCreateRequest request) {
-        Member member = new Member(
-                request.id(),
-                request.sns_type(),
-                request.email(),
-                request.alarm(),
-                request.ads()
+    public Member loginMember(MemberLoginRequest request) throws JsonProcessingException {
+        if(!isMemberExists(request)) { throw new EmailSigninFailedException(); }
+
+        return memberRepository.findById(request.seq()).orElseThrow(EmailSigninFailedException::new);
+    }
+
+    @Transactional
+    public Member createMember(MemberCreateRequest request) {
+        if(memberRepository.existsByEmail(request.email())) { throw new EmailSigninFailedException(); }
+        return memberRepository.save(
+                Member.builder()
+                        .device_id(request.device_id())
+                        .email(request.email())
+                        .id(request.id())
+                        .sns_type(request.sns_type())
+                        .alarm(true)
+                        .ads(request.ads())
+                        .access_token(request.access_token())
+                        .refresh_token(request.refresh_token())
+                        .build()
         );
-        return memberRepository.save(member);
     }
 }
