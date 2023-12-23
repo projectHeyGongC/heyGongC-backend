@@ -4,6 +4,9 @@ import com.heygongc.global.config.BaseTimeEntity;
 import com.heygongc.user.application.UserSnsType;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -44,7 +47,7 @@ public class User extends BaseTimeEntity {
 
     private String refresh_token;
 
-    private String refresh_create;
+    private LocalDateTime refresh_create;
 
-    private String refresh_expire;
+    private LocalDateTime refresh_expire;
 }

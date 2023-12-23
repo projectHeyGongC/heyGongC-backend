@@ -45,8 +45,8 @@ public class UserService {
                         .id(googleUser.getEmail()) //추후 변경 필요(ID값 어떻게 처리할지?)
                         .sns_type(UserSnsType.GOOGLE)
                         .refresh_token(token.refresh_token())
-                        .refresh_create("")
-                        .refresh_expire("")
+                        .refresh_create(null)
+                        .refresh_expire(null)
                         .build()
                 );
     }
@@ -75,14 +75,14 @@ public class UserService {
         userRepository.save(
                 User.builder()
                         .device_id(request.device_id())
-                        .email(user.getEmail())
                         .id(user.getId())
                         .sns_type(user.getSns_type())
+                        .email(user.getEmail())
                         .alarm(true)
                         .ads(request.ads())
                         .refresh_token(request.token().refresh_token())
-                        .refresh_create("")
-                        .refresh_expire("")
+                        .refresh_create(null)
+                        .refresh_expire(null)
                         .build()
         );
         return true;
