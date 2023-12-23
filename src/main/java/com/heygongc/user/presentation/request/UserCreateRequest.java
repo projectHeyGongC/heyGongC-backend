@@ -1,12 +1,10 @@
 package com.heygongc.user.presentation.request;
 
+import com.heygongc.user.application.Token;
+
 public record UserCreateRequest(
         String device_id,
-        String id,
-        UserSnsType sns_type,
-        String email,
         boolean ads,
-        String access_token,
-        String refresh_token
+        Token token
 ) {
 }

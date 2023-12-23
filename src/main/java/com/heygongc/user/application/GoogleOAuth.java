@@ -1,4 +1,4 @@
-package com.heygongc.user.domain;
+package com.heygongc.user.application;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,6 +25,18 @@ public class GoogleOAuth {
     @Value("${google.client.redirect-uri}")
     private String GOOGLE_LOGIN_REDIRECT_URI;
 
+    public String getGoogleLoginUrl() {
+        String url = "https://accounts.google.com/o/oauth2/v2/auth?"
+                + "client_id=" + GOOGLE_CLIENT_ID
+                + "&redirect_uri=" + GOOGLE_LOGIN_REDIRECT_URI
+                + "&response_type=code"
+                + "&scope=email profile"
+                + "&access_type=offline"
+                + "&prompt=consent" //개발환경에서 DB가 초기화되기 때문에 refresh token을 매번 새롭게 받도록 추가
+                ;
+        return url;
+    }
+
     public ResponseEntity<String> requestAccessToken(String authCode) {
         RestTemplate restTemplate = new RestTemplate();
         Map<String, Object> params = new HashMap<>();
@@ -49,10 +61,10 @@ public class GoogleOAuth {
         return objectMapper.readValue(response.getBody(), GoogleTokenResponse.class);
     }
 
-    public ResponseEntity<String> requestUserInfo(GoogleTokenResponse token) {
+    public ResponseEntity<String> requestUserInfo(String token) {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Bearer " + token.getAccess_token());
+        headers.add("Authorization", "Bearer " + token);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(headers);
         ResponseEntity<String> responseEntity = restTemplate.exchange("https://oauth2.googleapis.com/tokeninfo", HttpMethod.GET, request, String.class);

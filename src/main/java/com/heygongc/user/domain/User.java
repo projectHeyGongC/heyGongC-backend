@@ -1,7 +1,7 @@
 package com.heygongc.user.domain;
 
 import com.heygongc.global.config.BaseTimeEntity;
-import com.heygongc.user.presentation.request.UserSnsType;
+import com.heygongc.user.application.UserSnsType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -42,7 +42,9 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private boolean ads;
 
-    private String access_token;
-
     private String refresh_token;
+
+    private String refresh_create;
+
+    private String refresh_expire;
 }

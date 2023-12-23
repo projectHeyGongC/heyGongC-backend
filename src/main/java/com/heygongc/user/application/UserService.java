@@ -2,12 +2,10 @@ package com.heygongc.user.application;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.heygongc.global.config.EmailSigninFailedException;
-import com.heygongc.user.domain.GoogleOAuth;
 import com.heygongc.user.domain.User;
 import com.heygongc.user.domain.UserRepository;
 import com.heygongc.user.presentation.request.UserCreateRequest;
 import com.heygongc.user.presentation.request.UserLoginRequest;
-import com.heygongc.user.presentation.request.UserSnsType;
 import com.heygongc.user.presentation.response.GoogleTokenResponse;
 import com.heygongc.user.presentation.response.GoogleUserResponse;
 import org.slf4j.Logger;
@@ -28,48 +26,65 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User getGoogleUserInfo(String authCode) throws JsonProcessingException {
+    public String getGoogleLoginUrl() {
+        return googleOAuth.getGoogleLoginUrl();
+    }
+
+    public Token getGoogleToken(String authCode) throws JsonProcessingException {
         ResponseEntity<String> accessTokenResponse = googleOAuth.requestAccessToken(authCode);
         GoogleTokenResponse token = googleOAuth.getAccessToken(accessTokenResponse);
-        ResponseEntity<String> userInfoResponse = googleOAuth.requestUserInfo(token);
+        return new Token(token.getAccess_token(), token.getRefresh_token());
+    }
+
+    public User getGoogleUserInfo(Token token) throws JsonProcessingException {
+        ResponseEntity<String> userInfoResponse = googleOAuth.requestUserInfo(token.access_token());
         GoogleUserResponse googleUser = googleOAuth.getUserInfo(userInfoResponse);
         return userRepository.findByEmail(googleUser.getEmail())
                 .orElse(User.builder()
                         .email(googleUser.getEmail())
                         .id(googleUser.getEmail()) //추후 변경 필요(ID값 어떻게 처리할지?)
                         .sns_type(UserSnsType.GOOGLE)
-                        .access_token(token.getAccess_token())
-                        .refresh_token(token.getRefresh_token())
+                        .refresh_token(token.refresh_token())
+                        .refresh_create("")
+                        .refresh_expire("")
                         .build()
                 );
     }
 
+    public Boolean isUserExists(User user) {
+        return user.getSeq() != null;
+    }
+
     public Boolean isUserExists(UserLoginRequest request) throws JsonProcessingException {
-        if(request.seq() == null) return false;
-        return userRepository.existsById(request.seq());
+        User user = getGoogleUserInfo(request.token());
+        return isUserExists(user);
+    }
+
+    public Boolean loginUser(UserLoginRequest request) throws JsonProcessingException {
+        User user = getGoogleUserInfo(request.token());
+        return isUserExists(user);
     }
 
     @Transactional
-    public User loginUser(UserLoginRequest request) throws JsonProcessingException {
-        if(!isUserExists(request)) { throw new EmailSigninFailedException(); }
+    public Boolean createUser(UserCreateRequest request) throws JsonProcessingException {
+        User user = getGoogleUserInfo(request.token());
+        if(isUserExists(user)) {
+            throw new EmailSigninFailedException("이미 가입한 사용자입니다.");
+        }
 
-        return userRepository.findById(request.seq()).orElseThrow(EmailSigninFailedException::new);
-    }
-
-    @Transactional
-    public User createUser(UserCreateRequest request) {
-        if(userRepository.existsByEmail(request.email())) { throw new EmailSigninFailedException(); }
-        return userRepository.save(
+        userRepository.save(
                 User.builder()
                         .device_id(request.device_id())
-                        .email(request.email())
-                        .id(request.id())
-                        .sns_type(request.sns_type())
+                        .email(user.getEmail())
+                        .id(user.getId())
+                        .sns_type(user.getSns_type())
                         .alarm(true)
                         .ads(request.ads())
-                        .access_token(request.access_token())
-                        .refresh_token(request.refresh_token())
+                        .refresh_token(request.token().refresh_token())
+                        .refresh_create("")
+                        .refresh_expire("")
                         .build()
         );
+        return true;
     }
 }
