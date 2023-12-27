@@ -5,7 +5,10 @@ import com.heygongc.device.domain.DeviceRepository;
 import com.heygongc.device.presentation.request.DeviceNameRequest;
 import com.heygongc.device.presentation.response.DeviceResponse;
 import com.heygongc.global.common.response.ApiResponse;
+import com.heygongc.global.error.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.sound.midi.MidiDeviceReceiver;
@@ -29,8 +32,9 @@ public class DeviceServiceImpl implements DeviceService{
     }
 
     @Override
-    public Device getDevice(Long device_seq) {
-        return null;
+    public ResponseEntity<Device> getDevice(Long device_seq) {
+        Device device = deviceRepository.findById(device_seq).orElseThrow(() -> new ResourceNotFoundException("Device", "device_seq", device_seq));
+        return new ResponseEntity<>(device, HttpStatus.OK);
     }
 
     @Override

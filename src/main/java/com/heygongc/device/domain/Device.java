@@ -17,7 +17,7 @@ public class Device extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "device_seq")
-    private Long seq;
+    private Long device_seq;
 
     @Column(nullable = false)
     private String type;

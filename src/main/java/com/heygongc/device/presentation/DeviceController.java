@@ -16,14 +16,12 @@ public class DeviceController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Device> getDevice(@PathVariable(name = "id") Long id) {
-        Device device = deviceService.getDevice(id);
-
-        return new ResponseEntity<>(device, HttpStatus.OK);
+        return deviceService.getDevice(id);
     }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Device> updateDevice(@PathVariable(name = "id") Long id) {
-        Device device =
-    }
+//
+//    @PutMapping("/{id}")
+//    public ResponseEntity<Device> updateDevice(@PathVariable(name = "id") Long id) {
+//        Device device =
+//    }
 
 }

@@ -4,12 +4,13 @@ import com.heygongc.device.domain.Device;
 import com.heygongc.device.presentation.request.DeviceNameRequest;
 import com.heygongc.device.presentation.response.DeviceResponse;
 import com.heygongc.global.common.response.ApiResponse;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
 public interface DeviceService {
     DeviceResponse addDevice(DeviceNameRequest deviceNameRequest);
-    Device getDevice(Long device_seq);
+    ResponseEntity<Device> getDevice(Long device_seq);
 
     List<Device> getAllDevices();
 
