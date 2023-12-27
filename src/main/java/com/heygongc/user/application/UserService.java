@@ -33,20 +33,20 @@ public class UserService {
     public Token getGoogleToken(String authCode) throws JsonProcessingException {
         ResponseEntity<String> accessTokenResponse = googleOAuth.requestAccessToken(authCode);
         GoogleTokenResponse token = googleOAuth.getAccessToken(accessTokenResponse);
-        return new Token(token.getAccess_token(), token.getRefresh_token());
+        return new Token(token.accessToken(), token.refreshToken());
     }
 
     public User getGoogleUserInfo(Token token) throws JsonProcessingException {
-        ResponseEntity<String> userInfoResponse = googleOAuth.requestUserInfo(token.access_token());
+        ResponseEntity<String> userInfoResponse = googleOAuth.requestUserInfo(token.accessToken());
         GoogleUserResponse googleUser = googleOAuth.getUserInfo(userInfoResponse);
-        return userRepository.findByEmail(googleUser.getEmail())
+        return userRepository.findByEmail(googleUser.email())
                 .orElse(User.builder()
-                        .email(googleUser.getEmail())
-                        .id(googleUser.getEmail()) //추후 변경 필요(ID값 어떻게 처리할지?)
-                        .sns_type(UserSnsType.GOOGLE)
-                        .refresh_token(token.refresh_token())
-                        .refresh_create(null)
-                        .refresh_expire(null)
+                        .email(googleUser.email())
+                        .id(googleUser.email()) //추후 변경 필요(ID값 어떻게 처리할지?)
+                        .snsType(UserSnsType.GOOGLE)
+                        .refreshToken(token.refreshToken())
+                        .refreshCreate(null)
+                        .refreshExpire(null)
                         .build()
                 );
     }
@@ -74,15 +74,15 @@ public class UserService {
 
         userRepository.save(
                 User.builder()
-                        .device_id(request.device_id())
+                        .deviceId(request.deviceId())
                         .id(user.getId())
-                        .sns_type(user.getSns_type())
+                        .snsType(user.getSnsType())
                         .email(user.getEmail())
                         .alarm(true)
                         .ads(request.ads())
-                        .refresh_token(request.token().refresh_token())
-                        .refresh_create(null)
-                        .refresh_expire(null)
+                        .refreshToken(request.token().refreshToken())
+                        .refreshCreate(null)
+                        .refreshExpire(null)
                         .build()
         );
         return true;

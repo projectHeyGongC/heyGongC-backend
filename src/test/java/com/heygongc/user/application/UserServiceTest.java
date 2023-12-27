@@ -1,9 +1,8 @@
 package com.heygongc.user.application;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.heygongc.user.domain.User;
 import com.heygongc.user.domain.UserRepository;
-import com.heygongc.user.presentation.request.UserCreateRequest;
-import com.heygongc.user.presentation.request.UserSnsType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,29 +23,25 @@ class UserServiceTest {
     private UserService userService;
 
     @Test
-    public void 회원테스트() {
+    public void 회원테스트() throws JsonProcessingException {
         // given
         User user = User.builder()
-                        .device_id("testDeviceId001")
+                        .deviceId("testDeviceId001")
                         .id("testId001")
                         .email("testEmail001")
-                        .sns_type(UserSnsType.GOOGLE)
+                        .snsType(UserSnsType.GOOGLE)
                         .ads(true)
-                        .access_token("testAccessToken001")
-                        .refresh_token("testRefreshToken001")
+                        .refreshToken("testRefreshToken001")
                         .build();
         when(userRepository.save(any())).thenReturn(user);
 
         // when
-        User result = userService.createUser(new UserCreateRequest(
-                "testDeviceId001",
-                "testEmail001",
-                UserSnsType.GOOGLE,
-                "testEmail001",
-                true,
-                "testAccessToken001",
-                "testRefreshToken001"
-        ));
+        User result = null;
+//        User result = userService.createUser(new UserCreateRequest(
+//                "testDeviceId001",
+//                true,
+//                new Token("testAccessToken001", "testRefreshToken001")
+//        ));
 
         // then
         assertThat(result).isNotNull();

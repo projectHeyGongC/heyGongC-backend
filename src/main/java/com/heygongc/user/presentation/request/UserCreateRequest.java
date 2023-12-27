@@ -3,7 +3,7 @@ package com.heygongc.user.presentation.request;
 import com.heygongc.user.application.Token;
 
 public record UserCreateRequest(
-        String device_id,
+        String deviceId,
         boolean ads,
         Token token
 ) {
