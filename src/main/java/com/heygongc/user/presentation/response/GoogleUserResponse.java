@@ -1,6 +1,7 @@
 package com.heygongc.user.presentation.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record GoogleUserResponse (
@@ -9,12 +10,16 @@ public record GoogleUserResponse (
     String aud,
     String sub,
     String email,
-    String email_verified,
-    String at_hash,
+    @JsonProperty("email_verified")
+    String emailVerified,
+    @JsonProperty("at_hash")
+    String atHash,
     String name,
     String picture,
-    String given_name,
-    String family_name,
+    @JsonProperty("given_name")
+    String givenName,
+    @JsonProperty("family_name")
+    String familyName,
     String locale,
     String iat,
     String exp,
