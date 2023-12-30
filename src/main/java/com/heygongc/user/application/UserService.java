@@ -46,7 +46,6 @@ public class UserService {
                 .orElse(User.builder()
                         .snsId(googleUser.sub())
                         .email(googleUser.email())
-                        .snsType(UserSnsType.GOOGLE)
                         .build());
     }
 
@@ -90,8 +89,8 @@ public class UserService {
                         .deviceId(request.deviceId())
                         .deviceOs(request.deviceOs())
                         .id("USER" + ((int) (Math.random() * 9999) + 1)) // USER + 랜덤4자리
+                        .snsType(UserSnsType.GOOGLE)
                         .snsId(googleUser.getSnsId())
-                        .snsType(googleUser.getSnsType())
                         .email(googleUser.getEmail())
                         .alarm(true)
                         .ads(request.ads())
