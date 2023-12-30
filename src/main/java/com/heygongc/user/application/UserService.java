@@ -4,7 +4,8 @@ import com.heygongc.user.domain.User;
 import com.heygongc.user.domain.UserRepository;
 import com.heygongc.user.domain.UserToken;
 import com.heygongc.user.domain.UserTokenRepository;
-import com.heygongc.user.exception.EmailSigninFailedException;
+import com.heygongc.user.exception.EmailSigninException;
+import com.heygongc.user.exception.UserNotFoundException;
 import com.heygongc.user.presentation.request.UserLoginRequest;
 import com.heygongc.user.presentation.request.UserRegisterRequest;
 import com.heygongc.user.presentation.response.GoogleTokenResponse;
@@ -14,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Service
 public class UserService {
@@ -29,6 +32,10 @@ public class UserService {
         this.userRepository = userRepository;
         this.userTokenRepository = userTokenRepository;
         this.jwtUtil = jwtUtil;
+    }
+
+    public Boolean isUserExists(User user) {
+        return user != null && user.getSeq() != null;
     }
 
     public String getGoogleLoginUrl() {
@@ -55,6 +62,9 @@ public class UserService {
         // 신규 가입인 경우
         if (!isUserExists(user)) {
             return null;
+        }
+        if (user.getDeletedAt() != null) {
+            throw new UserNotFoundException("이미 탈퇴한 사용자입니다.");
         }
         
         // device 정보 저장
@@ -85,7 +95,7 @@ public class UserService {
         User googleUser = getGoogleUserInfo(request.token().accessToken());
         // 이미 가입된 경우
         if (isUserExists(googleUser)) {
-            throw new EmailSigninFailedException("이미 가입한 사용자입니다.");
+            throw new EmailSigninException("이미 가입한 사용자입니다.");
         }
 
         // 회원가입
@@ -115,7 +125,17 @@ public class UserService {
         return tokenResponse;
     }
 
-    public Boolean isUserExists(User user) {
-        return user != null && user.getSeq() != null;
+    @Transactional
+    public Boolean unRegister(Long userSeq) {
+        User user = userRepository.findById(userSeq).orElseThrow(() -> new UserNotFoundException("미가입 사용자입니다."));
+        if (user.getDeletedAt() != null) {
+            throw new UserNotFoundException("이미 탈퇴한 사용자입니다.");
+        }
+
+        user.setDeletedAt(LocalDateTime.now());
+        userRepository.save(user);
+        // userRepository.deleteById(userSeq);
+
+        return true;
     }
 }

@@ -4,6 +4,7 @@ import com.heygongc.user.application.UserService;
 import com.heygongc.user.presentation.request.UserLoginRequest;
 import com.heygongc.user.presentation.request.UserRegisterRequest;
 import com.heygongc.user.presentation.response.TokenResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -50,7 +51,7 @@ public class UserController {
                 break;
         }
         if (token != null) {
-            logger.debug("loginCallback >> {}", token.toString());
+            logger.debug("loginCallback >> {}", token);
         }
         return ResponseEntity.ok().body(token);
     }
@@ -69,7 +70,7 @@ public class UserController {
                 break;
         }
         if (tokenResponse != null) {
-            logger.debug("login >> {}", tokenResponse.toString());
+            logger.debug("login >> {}", tokenResponse);
         }
         return ResponseEntity.ok().body(tokenResponse);
     }
@@ -88,8 +89,18 @@ public class UserController {
                 break;
         }
         if (tokenResponse != null) {
-            logger.debug("register >> {}", tokenResponse.toString());
+            logger.debug("register >> {}", tokenResponse);
         }
         return ResponseEntity.ok().body(tokenResponse);
+    }
+
+    @PostMapping("/unRegister")
+    public ResponseEntity<Boolean> unRegister(HttpServletRequest request) {
+        Long userSeq = Long.valueOf((String) request.getAttribute("userSeq"));
+        Boolean result;
+        if ((result = userService.unRegister(userSeq))) {
+            logger.debug("unregister >> Success");
+        }
+        return ResponseEntity.ok().body(result);
     }
 }
