@@ -41,7 +41,7 @@ public class User extends BaseTimeEntity {
     @Column(name = "sns_id", length = 200, nullable = false)
     private String snsId; //고유식별자
 
-    @Column(name = "email", length = 200, nullable = false)
+    @Column(name = "email", length = 200)
     private String email;
 
     @Column(name = "deleted_at")
