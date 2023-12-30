@@ -52,26 +52,30 @@ public class UserService {
     @Transactional
     public TokenResponse googleLogin(UserLoginRequest request) {
         User user = getGoogleUserInfo(request.token().accessToken());
-        // 신규가입이 필요한 경우
+        // 신규 가입인 경우
         if (!isUserExists(user)) {
             return null;
         }
+        
+        // device 정보 저장
+        user.setDeviceId(request.deviceId());
+        user.setDeviceOs(request.deviceOs());
+        userRepository.save(user);
 
-        // 로그인 처리
+        // jwt 토큰 발급
         TokenResponse tokenResponse = new TokenResponse(
                 jwtUtil.generateAccessToken(String.valueOf(user.getSeq()), request.deviceId()),
                 jwtUtil.generateRefreshToken(String.valueOf(user.getSeq()), request.deviceId())
         );
-        user.setDeviceId(request.deviceId());
-        user.setDeviceOs(request.deviceOs());
-        userRepository.save(user); // device 정보 저장
 
-        // 이미 등록된 토큰이 있으면 삭제
+        // 이미 등록된 jwt 토큰이 있으면 삭제
         if (userTokenRepository.findByUserSeq(user.getSeq()).isPresent()) {
             userTokenRepository.deleteByUserSeq(user.getSeq());
         }
+
+        // jwt 토큰 저장
         UserToken userToken = new UserToken(tokenResponse.refreshToken(), user);
-        userTokenRepository.save(userToken); // 토큰 저장
+        userTokenRepository.save(userToken);
 
         return tokenResponse;
     }
@@ -79,11 +83,12 @@ public class UserService {
     @Transactional
     public TokenResponse googleRegister(UserRegisterRequest request) {
         User googleUser = getGoogleUserInfo(request.token().accessToken());
-
+        // 이미 가입된 경우
         if (isUserExists(googleUser)) {
             throw new EmailSigninFailedException("이미 가입한 사용자입니다.");
         }
 
+        // 회원가입
         User user = userRepository.save(
                 User.builder()
                         .deviceId(request.deviceId())
@@ -96,14 +101,16 @@ public class UserService {
                         .ads(request.ads())
                         .build()
         );
-        // 로그인 처리
+
+        // jwt 토큰 발급
         TokenResponse tokenResponse = new TokenResponse(
                 jwtUtil.generateAccessToken(String.valueOf(user.getSeq()), request.deviceId()),
                 jwtUtil.generateRefreshToken(String.valueOf(user.getSeq()), request.deviceId())
         );
 
+        // jwt 토큰 저장
         UserToken userToken = new UserToken(tokenResponse.refreshToken(), user);
-        userTokenRepository.save(userToken); // 토큰 저장
+        userTokenRepository.save(userToken);
 
         return tokenResponse;
     }
