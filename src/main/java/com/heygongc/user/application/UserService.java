@@ -1,20 +1,17 @@
 package com.heygongc.user.application;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.heygongc.user.domain.User;
 import com.heygongc.user.domain.UserRepository;
 import com.heygongc.user.domain.UserToken;
 import com.heygongc.user.domain.UserTokenRepository;
 import com.heygongc.user.exception.EmailSigninFailedException;
-import com.heygongc.user.presentation.request.TokenRequest;
-import com.heygongc.user.presentation.request.UserRegisterRequest;
 import com.heygongc.user.presentation.request.UserLoginRequest;
+import com.heygongc.user.presentation.request.UserRegisterRequest;
 import com.heygongc.user.presentation.response.GoogleTokenResponse;
 import com.heygongc.user.presentation.response.GoogleUserResponse;
 import com.heygongc.user.presentation.response.TokenResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,18 +32,16 @@ public class UserService {
     }
 
     public String getGoogleLoginUrl() {
-        return googleOAuth.getGoogleLoginUrl();
+        return googleOAuth.getLoginUrl();
     }
 
-    public TokenResponse getGoogleToken(String authCode) throws JsonProcessingException {
-        ResponseEntity<String> accessTokenResponse = googleOAuth.requestAccessToken(authCode);
-        GoogleTokenResponse token = googleOAuth.getAccessToken(accessTokenResponse);
+    public TokenResponse getGoogleToken(String code) {
+        GoogleTokenResponse token = googleOAuth.getToken(code);
         return new TokenResponse(token.accessToken(), token.refreshToken());
     }
 
-    public User getGoogleUserInfo(TokenRequest token) throws JsonProcessingException {
-        ResponseEntity<String> userInfoResponse = googleOAuth.requestUserInfo(token.accessToken());
-        GoogleUserResponse googleUser = googleOAuth.getUserInfo(userInfoResponse);
+    public User getGoogleUserInfo(String token) {
+        GoogleUserResponse googleUser = googleOAuth.getUser(token);
         return userRepository.findBySnsId(googleUser.sub())
                 .orElse(User.builder()
                         .snsId(googleUser.sub())
@@ -55,13 +50,9 @@ public class UserService {
                         .build());
     }
 
-    public Boolean isUserExists(User user) {
-        return user != null && user.getSeq() != null;
-    }
-
     @Transactional
-    public TokenResponse googleLogin(UserLoginRequest request) throws JsonProcessingException {
-        User user = getGoogleUserInfo(request.token());
+    public TokenResponse googleLogin(UserLoginRequest request) {
+        User user = getGoogleUserInfo(request.token().accessToken());
         // 신규가입이 필요한 경우
         if (!isUserExists(user)) {
             return null;
@@ -87,8 +78,8 @@ public class UserService {
     }
 
     @Transactional
-    public TokenResponse googleRegister(UserRegisterRequest request) throws JsonProcessingException {
-        User googleUser = getGoogleUserInfo(request.token());
+    public TokenResponse googleRegister(UserRegisterRequest request) {
+        User googleUser = getGoogleUserInfo(request.token().accessToken());
 
         if (isUserExists(googleUser)) {
             throw new EmailSigninFailedException("이미 가입한 사용자입니다.");
@@ -116,5 +107,9 @@ public class UserService {
         userTokenRepository.save(userToken); // 토큰 저장
 
         return tokenResponse;
+    }
+
+    public Boolean isUserExists(User user) {
+        return user != null && user.getSeq() != null;
     }
 }

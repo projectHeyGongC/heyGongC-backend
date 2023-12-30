@@ -1,16 +1,13 @@
 package com.heygongc.user.presentation;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.heygongc.user.presentation.response.TokenResponse;
 import com.heygongc.user.application.UserService;
-import com.heygongc.user.presentation.request.UserRegisterRequest;
 import com.heygongc.user.presentation.request.UserLoginRequest;
+import com.heygongc.user.presentation.request.UserRegisterRequest;
+import com.heygongc.user.presentation.response.TokenResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.IOException;
 
 @RestController
 @RequestMapping("/v1/user")
@@ -40,14 +37,14 @@ public class UserController {
     }
 
     @GetMapping("/{snsType}/loginCallback")
-    public ResponseEntity<TokenResponse> loginCallback(@PathVariable(name="snsType") String snsType, @RequestParam(value = "code") String authCode) throws IOException {
+    public ResponseEntity<TokenResponse> loginCallback(@PathVariable(name="snsType") String snsType, @RequestParam(value = "code") String code) {
         TokenResponse token = null;
         switch (snsType) {
             case "google":
-                token = userService.getGoogleToken(authCode);
+                token = userService.getGoogleToken(code);
                 break;
             case "apple":
-//                token = userService.getGoogleToken(authCode);
+//                token = userService.getGoogleToken(code);
                 break;
             default:
                 break;
@@ -59,7 +56,7 @@ public class UserController {
     }
 
     @PostMapping("/{snsType}/login")
-    public ResponseEntity<TokenResponse> login(@PathVariable(name="snsType") String snsType, @RequestBody UserLoginRequest request) throws JsonProcessingException {
+    public ResponseEntity<TokenResponse> login(@PathVariable(name="snsType") String snsType, @RequestBody UserLoginRequest request) {
         TokenResponse tokenResponse = null;
         switch (snsType) {
             case "google":
@@ -78,7 +75,7 @@ public class UserController {
     }
 
     @PostMapping("/{snsType}/register")
-    public ResponseEntity<TokenResponse> register(@PathVariable(name="snsType") String snsType, @RequestBody UserRegisterRequest request) throws JsonProcessingException {
+    public ResponseEntity<TokenResponse> register(@PathVariable(name="snsType") String snsType, @RequestBody UserRegisterRequest request) {
         TokenResponse tokenResponse = null;
         switch (snsType) {
             case "google":
