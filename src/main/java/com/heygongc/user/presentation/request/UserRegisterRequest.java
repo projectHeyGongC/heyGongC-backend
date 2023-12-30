@@ -1,10 +1,9 @@
 package com.heygongc.user.presentation.request;
 
-import com.heygongc.user.application.Token;
-
-public record UserCreateRequest(
+public record UserRegisterRequest(
         String deviceId,
+        String deviceOs,
         boolean ads,
-        Token token
+        TokenRequest token
 ) {
 }

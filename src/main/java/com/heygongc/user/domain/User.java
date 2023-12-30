@@ -4,6 +4,7 @@ import com.heygongc.global.config.BaseTimeEntity;
 import com.heygongc.user.application.UserSnsType;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDateTime;
 
@@ -15,6 +16,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Builder
 @AllArgsConstructor // Builder 어노테이션을 위해 필요
 @NoArgsConstructor(access=PROTECTED) // No default constructor for entity 오류 해결을 위해 필요
+@DynamicUpdate //변경된 필드만 Update
 @Table(name = "user")
 public class User extends BaseTimeEntity {
 
@@ -26,6 +28,9 @@ public class User extends BaseTimeEntity {
     @Column(name = "device_id", nullable = false)
     private String deviceId;
 
+    @Column(name = "device_os", nullable = false)
+    private String deviceOs;
+
     @Column(name = "user_id", length = 200, nullable = false)
     private String id;
 
@@ -33,11 +38,14 @@ public class User extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private UserSnsType snsType;
 
+    @Column(name = "sns_id", length = 200, nullable = false)
+    private String snsId; //고유식별자
+
     @Column(name = "email", length = 200, nullable = false)
     private String email;
 
     @Column(name = "deleted_at")
-    private String deletedAt;
+    private LocalDateTime deletedAt;
 
     @Column(name = "alarm", nullable = false)
     private boolean alarm;
@@ -47,13 +55,4 @@ public class User extends BaseTimeEntity {
 
     @Column(name = "ads", nullable = false)
     private boolean ads;
-
-    @Column(name = "refresh_token")
-    private String refreshToken;
-
-    @Column(name = "refresh_create")
-    private LocalDateTime refreshCreate;
-
-    @Column(name = "refresh_expire")
-    private LocalDateTime refreshExpire;
 }

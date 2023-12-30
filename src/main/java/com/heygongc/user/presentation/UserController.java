@@ -1,9 +1,9 @@
 package com.heygongc.user.presentation;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.heygongc.user.application.Token;
+import com.heygongc.user.presentation.response.TokenResponse;
 import com.heygongc.user.application.UserService;
-import com.heygongc.user.presentation.request.UserCreateRequest;
+import com.heygongc.user.presentation.request.UserRegisterRequest;
 import com.heygongc.user.presentation.request.UserLoginRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,37 +17,82 @@ import java.io.IOException;
 public class UserController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private UserService userService;
+    private final UserService userService;
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
-    @GetMapping("/login/getGoogleLoginUrl")
-    public ResponseEntity<String> getGoogleLoginUrl() {
-        String reUrl = userService.getGoogleLoginUrl();
-        logger.debug("getGoogleLoginURL >> {}", reUrl);
-        return ResponseEntity.ok().body(reUrl);
+    @GetMapping("/{snsType}/getLoginUrl")
+    public ResponseEntity<String> getLoginUrl(@PathVariable(name="snsType") String snsType) {
+        String loginUrl = null;
+        switch (snsType) {
+            case "google":
+                loginUrl = userService.getGoogleLoginUrl();
+                break;
+            case "apple":
+//                loginUrl = userService.getGoogleLoginUrl();
+                break;
+            default:
+                break;
+        }
+        logger.debug("getLoginUrl >> {}", loginUrl);
+        return ResponseEntity.ok().body(loginUrl);
     }
 
-    @GetMapping("/login/googleLoginCallback")
-    public ResponseEntity<Token> googleLoginCallback(@RequestParam(value = "code") String authCode) throws IOException {
-        Token token = userService.getGoogleToken(authCode);
-        logger.debug("googleLoginCallback >> {}", token.toString());
+    @GetMapping("/{snsType}/loginCallback")
+    public ResponseEntity<TokenResponse> loginCallback(@PathVariable(name="snsType") String snsType, @RequestParam(value = "code") String authCode) throws IOException {
+        TokenResponse token = null;
+        switch (snsType) {
+            case "google":
+                token = userService.getGoogleToken(authCode);
+                break;
+            case "apple":
+//                token = userService.getGoogleToken(authCode);
+                break;
+            default:
+                break;
+        }
+        if (token != null) {
+            logger.debug("loginCallback >> {}", token.toString());
+        }
         return ResponseEntity.ok().body(token);
     }
 
-    @PostMapping("/isUserExists")
-    public ResponseEntity<Boolean> isUserExists(@RequestBody UserLoginRequest request) throws JsonProcessingException {
-        return ResponseEntity.ok().body(userService.isUserExists(request));
+    @PostMapping("/{snsType}/login")
+    public ResponseEntity<TokenResponse> login(@PathVariable(name="snsType") String snsType, @RequestBody UserLoginRequest request) throws JsonProcessingException {
+        TokenResponse tokenResponse = null;
+        switch (snsType) {
+            case "google":
+                tokenResponse = userService.googleLogin(request);
+                break;
+            case "apple":
+//                tokenResponse = userService.loginUser(request);
+                break;
+            default:
+                break;
+        }
+        if (tokenResponse != null) {
+            logger.debug("login >> {}", tokenResponse.toString());
+        }
+        return ResponseEntity.ok().body(tokenResponse);
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<Boolean> loginUser(@RequestBody UserLoginRequest request) throws JsonProcessingException {
-        return ResponseEntity.ok().body(userService.loginUser(request));
-    }
-
-    @PostMapping("/create")
-    public ResponseEntity<Boolean> createUser(@RequestBody UserCreateRequest request) throws JsonProcessingException {
-        return ResponseEntity.ok().body(userService.createUser(request));
+    @PostMapping("/{snsType}/register")
+    public ResponseEntity<TokenResponse> register(@PathVariable(name="snsType") String snsType, @RequestBody UserRegisterRequest request) throws JsonProcessingException {
+        TokenResponse tokenResponse = null;
+        switch (snsType) {
+            case "google":
+                tokenResponse = userService.googleRegister(request);
+                break;
+            case "apple":
+//                tokenResponse = userService.register(request);
+                break;
+            default:
+                break;
+        }
+        if (tokenResponse != null) {
+            logger.debug("register >> {}", tokenResponse.toString());
+        }
+        return ResponseEntity.ok().body(tokenResponse);
     }
 }

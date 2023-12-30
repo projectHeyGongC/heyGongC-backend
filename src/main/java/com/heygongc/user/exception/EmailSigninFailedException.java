@@ -1,4 +1,4 @@
-package com.heygongc.global.config;
+package com.heygongc.user.exception;
 
 public class EmailSigninFailedException extends RuntimeException{
 

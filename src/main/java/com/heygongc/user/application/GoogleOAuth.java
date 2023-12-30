@@ -26,15 +26,13 @@ public class GoogleOAuth {
     private String GOOGLE_LOGIN_REDIRECT_URI;
 
     public String getGoogleLoginUrl() {
-        String url = "https://accounts.google.com/o/oauth2/v2/auth?"
+        return "https://accounts.google.com/o/oauth2/v2/auth?"
                 + "client_id=" + GOOGLE_CLIENT_ID
                 + "&redirect_uri=" + GOOGLE_LOGIN_REDIRECT_URI
                 + "&response_type=code"
                 + "&scope=email profile"
                 + "&access_type=offline"
-                + "&prompt=consent" //개발환경에서 DB가 초기화되기 때문에 refresh token을 매번 새롭게 받도록 추가
-                ;
-        return url;
+                + "&prompt=consent";
     }
 
     public ResponseEntity<String> requestAccessToken(String authCode) {
@@ -49,7 +47,7 @@ public class GoogleOAuth {
         ResponseEntity<String> responseEntity = restTemplate.postForEntity("https://oauth2.googleapis.com/token",
                 params, String.class);
 
-        if(responseEntity.getStatusCode() == HttpStatus.OK) {
+        if (responseEntity.getStatusCode() == HttpStatus.OK) {
             logger.debug("googleOAuth requestAccessToken response.getBody() >> {}", responseEntity.getBody());
             return responseEntity;
         }
