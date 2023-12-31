@@ -1,5 +1,6 @@
 package com.heygongc.global.error;
 
+import com.heygongc.global.error.exception.ApiBusinessException;
 import com.heygongc.global.error.exception.ForbiddenException;
 import com.heygongc.global.error.exception.UnauthenticatedException;
 import org.slf4j.Logger;
@@ -14,6 +15,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
     private final static Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+    /**
+     * 잘못된 요청 경우 예외 처리
+     */
+    @ExceptionHandler(ApiBusinessException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public HttpEntity<ErrorResponse> handler(ApiBusinessException e) {
+        return new HttpEntity<>(ErrorResponse.from(e.getCode(), e.getMessage()));
+    }
 
     /**
      * 인증을 실패 했을 경우 예외 처리

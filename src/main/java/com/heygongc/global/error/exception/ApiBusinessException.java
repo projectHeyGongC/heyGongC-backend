@@ -7,12 +7,17 @@ public class ApiBusinessException extends RuntimeException {
     private final String code;
 
     public ApiBusinessException() {
-        super(ErrorType.UNAUTHENTICATED.getMessage());
-        this.code = ErrorType.UNAUTHENTICATED.name();
+        super(ErrorType.BAD_REQUEST.getMessage());
+        this.code = ErrorType.BAD_REQUEST.name();
     }
     public ApiBusinessException(String message) {
         super(message);
-        this.code = ErrorType.UNAUTHENTICATED.name();
+        this.code = ErrorType.BAD_REQUEST.name();
+    }
+
+    public ApiBusinessException(String code, String message) {
+        super(message);
+        this.code = code;
     }
 
     public String getCode() {
