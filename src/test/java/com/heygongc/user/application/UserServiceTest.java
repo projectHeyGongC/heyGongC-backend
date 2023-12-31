@@ -109,7 +109,7 @@ class UserServiceTest {
         when(jwtUtil.generateRefreshToken(anyString(), anyString())).thenReturn("mockJwtRefreshTokenResponse");
 
         // when
-        TokenResponse result = userService.googleLogin(userLoginRequest);
+        TokenResponse result = userService.login("google", userLoginRequest);
 
         // then
         assertNotNull(result);
@@ -131,7 +131,7 @@ class UserServiceTest {
         when(googleOAuth.getUser(anyString())).thenReturn(googleUserResponse);
 
         // when
-        TokenResponse result = userService.googleLogin(userLoginRequest);
+        TokenResponse result = userService.login("google", userLoginRequest);
 
         // then
         assertNull(result);
@@ -156,7 +156,7 @@ class UserServiceTest {
         when(jwtUtil.generateRefreshToken(anyString(), anyString())).thenReturn("mockJwtRefreshTokenResponse");
 
         // when
-        TokenResponse result = userService.googleRegister(userRegisterRequest);
+        TokenResponse result = userService.register("google", userRegisterRequest);
 
         // then
         assertNotNull(result);
@@ -182,7 +182,7 @@ class UserServiceTest {
         when(googleOAuth.getUser(anyString())).thenReturn(googleUserResponse);
 
         // when
-        assertThrows(EmailSigninException.class, () -> userService.googleRegister(userRegisterRequest));
+        assertThrows(EmailSigninException.class, () -> userService.register("google", userRegisterRequest));
     }
 
     @Test

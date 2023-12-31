@@ -22,85 +22,37 @@ public class UserController {
 
     @GetMapping("/{snsType}/getLoginUrl")
     public ResponseEntity<String> getLoginUrl(@PathVariable(name="snsType") String snsType) {
-        String loginUrl = null;
-        switch (snsType) {
-            case "google":
-                loginUrl = userService.getGoogleLoginUrl();
-                break;
-            case "apple":
-//                loginUrl = userService.getGoogleLoginUrl();
-                break;
-            default:
-                break;
-        }
+        String loginUrl = userService.getLoginUrl(snsType);
         logger.debug("getLoginUrl >> {}", loginUrl);
         return ResponseEntity.ok().body(loginUrl);
     }
 
     @GetMapping("/{snsType}/loginCallback")
     public ResponseEntity<TokenResponse> loginCallback(@PathVariable(name="snsType") String snsType, @RequestParam(value = "code") String code) {
-        TokenResponse token = null;
-        switch (snsType) {
-            case "google":
-                token = userService.getGoogleToken(code);
-                break;
-            case "apple":
-//                token = userService.getGoogleToken(code);
-                break;
-            default:
-                break;
-        }
-        if (token != null) {
-            logger.debug("loginCallback >> {}", token);
-        }
+        TokenResponse token = userService.getToken(snsType, code);
+        logger.debug("loginCallback >> {}", token);
         return ResponseEntity.ok().body(token);
     }
 
     @PostMapping("/{snsType}/login")
     public ResponseEntity<TokenResponse> login(@PathVariable(name="snsType") String snsType, @RequestBody UserLoginRequest request) {
-        TokenResponse tokenResponse = null;
-        switch (snsType) {
-            case "google":
-                tokenResponse = userService.googleLogin(request);
-                break;
-            case "apple":
-//                tokenResponse = userService.loginUser(request);
-                break;
-            default:
-                break;
-        }
-        if (tokenResponse != null) {
-            logger.debug("login >> {}", tokenResponse);
-        }
+        TokenResponse tokenResponse = userService.login(snsType, request);
+        logger.debug("login >> {}", tokenResponse);
         return ResponseEntity.ok().body(tokenResponse);
     }
 
     @PostMapping("/{snsType}/register")
     public ResponseEntity<TokenResponse> register(@PathVariable(name="snsType") String snsType, @RequestBody UserRegisterRequest request) {
-        TokenResponse tokenResponse = null;
-        switch (snsType) {
-            case "google":
-                tokenResponse = userService.googleRegister(request);
-                break;
-            case "apple":
-//                tokenResponse = userService.register(request);
-                break;
-            default:
-                break;
-        }
-        if (tokenResponse != null) {
-            logger.debug("register >> {}", tokenResponse);
-        }
+        TokenResponse tokenResponse = userService.register(snsType, request);
+        logger.debug("register >> {}", tokenResponse);
         return ResponseEntity.ok().body(tokenResponse);
     }
 
     @PostMapping("/unRegister")
     public ResponseEntity<Boolean> unRegister(HttpServletRequest request) {
         Long userSeq = Long.valueOf((String) request.getAttribute("userSeq"));
-        Boolean result;
-        if ((result = userService.unRegister(userSeq))) {
-            logger.debug("unregister >> Success");
-        }
+        Boolean result = userService.unRegister(userSeq);
+        logger.debug("unregister >> {}", result);
         return ResponseEntity.ok().body(result);
     }
 }

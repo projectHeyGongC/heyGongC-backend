@@ -38,12 +38,30 @@ public class UserService {
         return user != null && user.getSeq() != null;
     }
 
-    public String getGoogleLoginUrl() {
-        return googleOAuth.getLoginUrl();
+    public Boolean isUserUnRegistered(User user) {
+        return user != null && user.getDeletedAt() != null;
     }
 
-    public TokenResponse getGoogleToken(String code) {
-        GoogleTokenResponse token = googleOAuth.getToken(code);
+    public String getLoginUrl(String snsType) {
+        return switch (snsType) {
+            case "google" -> googleOAuth.getLoginUrl();
+//            case "apple" -> appleOAuth.getLoginUrl();
+            default -> null;
+        };
+    }
+
+    public TokenResponse getToken(String snsType, String code) {
+        GoogleTokenResponse token = null;
+        switch (snsType) {
+            case "google":
+                token = googleOAuth.getToken(code);
+                break;
+            case "apple":
+//                token = appleOAuth.getToken(code);
+                break;
+            default:
+                break;
+        }
         return new TokenResponse(token.accessToken(), token.refreshToken());
     }
 
@@ -56,15 +74,43 @@ public class UserService {
                         .build());
     }
 
-    @Transactional
-    public TokenResponse googleLogin(UserLoginRequest request) {
-        User user = getGoogleUserInfo(request.token().accessToken());
-        // 신규 가입인 경우
-        if (!isUserExists(user)) {
-            return null;
+    public TokenResponse makeJwtToken(Long seq, String deviceId) {
+        return new TokenResponse(
+                jwtUtil.generateAccessToken(String.valueOf(seq), deviceId),
+                jwtUtil.generateRefreshToken(String.valueOf(seq), deviceId)
+        );
+    }
+
+    private UserToken saveJwtToken(Long seq, String refreshToken) {
+        // 이미 등록된 jwt 토큰이 있으면 삭제
+        if (userTokenRepository.findByUserSeq(seq).isPresent()) {
+            userTokenRepository.deleteByUserSeq(seq);
         }
-        if (user.getDeletedAt() != null) {
-            throw new UserNotFoundException("이미 탈퇴한 사용자입니다.");
+
+        // jwt 토큰 저장
+        UserToken userToken = new UserToken(refreshToken, User.builder().seq(seq).build());
+        userTokenRepository.save(userToken);
+
+        return userToken;
+    }
+
+    @Transactional
+    public TokenResponse login(String snsType, UserLoginRequest request) {
+        User user = null;
+        switch (snsType) {
+            case "google":
+                user = getGoogleUserInfo(request.token().accessToken());
+                break;
+            case "apple":
+//                user = getAppleUserInfo(request.token().accessToken());
+                break;
+            default:
+                break;
+        }
+
+        // 신규 가입인 경우 or 이미 탈퇴한 경우(재가입)
+        if (!isUserExists(user) || isUserUnRegistered(user)) {
+            return null;
         }
         
         // device 정보 저장
@@ -73,54 +119,61 @@ public class UserService {
         userRepository.save(user);
 
         // jwt 토큰 발급
-        TokenResponse tokenResponse = new TokenResponse(
-                jwtUtil.generateAccessToken(String.valueOf(user.getSeq()), request.deviceId()),
-                jwtUtil.generateRefreshToken(String.valueOf(user.getSeq()), request.deviceId())
-        );
+        TokenResponse tokenResponse = makeJwtToken(user.getSeq(), request.deviceId());
 
-        // 이미 등록된 jwt 토큰이 있으면 삭제
-        if (userTokenRepository.findByUserSeq(user.getSeq()).isPresent()) {
-            userTokenRepository.deleteByUserSeq(user.getSeq());
-        }
-
-        // jwt 토큰 저장
-        UserToken userToken = new UserToken(tokenResponse.refreshToken(), user);
-        userTokenRepository.save(userToken);
+        // 토큰 저장
+        saveJwtToken(user.getSeq(), tokenResponse.refreshToken());
 
         return tokenResponse;
     }
 
     @Transactional
-    public TokenResponse googleRegister(UserRegisterRequest request) {
-        User googleUser = getGoogleUserInfo(request.token().accessToken());
-        // 이미 가입된 경우
-        if (isUserExists(googleUser)) {
+    public TokenResponse register(String snsType, UserRegisterRequest request) {
+        User user = null;
+        switch (snsType) {
+            case "google":
+                user = getGoogleUserInfo(request.token().accessToken());
+                break;
+            case "apple":
+//                user = getAppleUserInfo(request.token().accessToken());
+                break;
+            default:
+                break;
+        }
+        // 탈퇴하지 않고 가입되어 있는 경우
+        if (!isUserUnRegistered(user) && isUserExists(user)) {
             throw new EmailSigninException("이미 가입한 사용자입니다.");
         }
 
-        // 회원가입
-        User user = userRepository.save(
-                User.builder()
-                        .deviceId(request.deviceId())
-                        .deviceOs(request.deviceOs())
-                        .id("USER" + ((int) (Math.random() * 9999) + 1)) // USER + 랜덤4자리
-                        .snsType(UserSnsType.GOOGLE)
-                        .snsId(googleUser.getSnsId())
-                        .email(googleUser.getEmail())
-                        .alarm(true)
-                        .ads(request.ads())
-                        .build()
-        );
+        User saveUser;
+        if (isUserUnRegistered(user)) {
+            // 탈퇴 후 재가입
+            user.setDeviceId(request.deviceId());
+            user.setDeviceOs(request.deviceOs());
+            user.setAds(request.ads());
+            user.setDeletedAt(null);
+            saveUser = userRepository.save(user);
+        } else {
+            // 최초 회원가입
+            saveUser = userRepository.save(
+                    User.builder()
+                            .deviceId(request.deviceId())
+                            .deviceOs(request.deviceOs())
+                            .id("USER" + ((int) (Math.random() * 9999) + 1)) // USER + 랜덤4자리
+                            .snsType(UserSnsType.GOOGLE)
+                            .snsId(user.getSnsId())
+                            .email(user.getEmail())
+                            .alarm(true)
+                            .ads(request.ads())
+                            .build()
+            );
+        }
 
         // jwt 토큰 발급
-        TokenResponse tokenResponse = new TokenResponse(
-                jwtUtil.generateAccessToken(String.valueOf(user.getSeq()), request.deviceId()),
-                jwtUtil.generateRefreshToken(String.valueOf(user.getSeq()), request.deviceId())
-        );
+        TokenResponse tokenResponse = makeJwtToken(saveUser.getSeq(), request.deviceId());
 
-        // jwt 토큰 저장
-        UserToken userToken = new UserToken(tokenResponse.refreshToken(), user);
-        userTokenRepository.save(userToken);
+        // 토큰 저장
+        saveJwtToken(saveUser.getSeq(), tokenResponse.refreshToken());
 
         return tokenResponse;
     }
@@ -134,7 +187,6 @@ public class UserService {
 
         user.setDeletedAt(LocalDateTime.now());
         userRepository.save(user);
-        // userRepository.deleteById(userSeq);
 
         return true;
     }
