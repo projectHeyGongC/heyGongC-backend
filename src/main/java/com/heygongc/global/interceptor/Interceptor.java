@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Optional;
 
@@ -35,12 +34,6 @@ public class Interceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         // Controller 실행 전
-
-        Long startTime = System.currentTimeMillis();
-        request.setAttribute("startTime", startTime);
-        logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-        logger.info(">>>>>>>>>>>>>>>>>>>> BEGIN >>>>>>>>>>>>>>>>>>>>");
-        logger.info("{} >>>>> {}", request.getRequestURI(), "");
 
         // 비로그인 컨트롤러는 정상처리
         if (!isAuthController(handler)) {
@@ -100,12 +93,5 @@ public class Interceptor implements HandlerInterceptor {
             return header.replace("Bearer ", "");
         }
         return null;
-    }
-
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) {
-        Long startTime = (Long) request.getAttribute("startTime");
-        logger.info("{} ({}ms) >>>>> {}", request.getRequestURI(), (System.currentTimeMillis() - startTime), response.getStatus());
-        logger.info("<<<<<<<<<<<<<<<<<<<<< END <<<<<<<<<<<<<<<<<<<<<");
-        logger.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
     }
 }
