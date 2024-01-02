@@ -4,10 +4,14 @@ import com.heygongc.user.application.JwtUtil;
 import com.heygongc.user.domain.User;
 import com.heygongc.user.domain.UserRepository;
 import com.heygongc.user.exception.UserNotFoundException;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -31,28 +35,39 @@ public class Interceptor implements HandlerInterceptor {
 
         Long startTime = System.currentTimeMillis();
         request.setAttribute("startTime", startTime);
-        logger.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-        logger.debug(">>>>>>>>>>>>>>>>>>>> BEGIN >>>>>>>>>>>>>>>>>>>>");
-        logger.debug("{} >>>>> {}", request.getRequestURI(), "");
+        logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        logger.info(">>>>>>>>>>>>>>>>>>>> BEGIN >>>>>>>>>>>>>>>>>>>>");
+        logger.info("{} >>>>> {}", request.getRequestURI(), "");
 
-        // 로그인 관련 페이지는 무시. 회원탈퇴는 예외로 request.setAttribute가 필요해서 제외
-        if (request.getRequestURI().startsWith("/v1/user/")
-            && !request.getRequestURI().equals("/v1/user/unRegister")) {
+        // 비로그인 컨트롤러는 정상처리
+        if (!isAuthController(handler)) {
             return true;
         }
 
+        // 로그인 컨트롤러는 jwt 토큰 검증
         String accessToken = extractTokenFromHeader(request.getHeader("access-token"));
         String refreshToken = extractTokenFromHeader(request.getHeader("refresh-token"));
 
         // 유효하지 않은 토큰이면 로그인 페이지로 리디렉션
-        if (!isValidToken(accessToken) || !isValidToken(refreshToken)) {
+        try {
+            if (!isValidToken(accessToken) || !isValidToken(refreshToken)) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
+                return false;
+            }
+        } catch (SignatureException | MalformedJwtException e) { //서명 오류 or JWT 구조 문제
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
+            return false;
+        } catch (ExpiredJwtException e) { //유효 기간 만료
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
+            return false;
+        } catch(Exception e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
             return false;
         }
 
         String userSeq = jwtUtil.extractUsername(accessToken);
         String deviceId = jwtUtil.extractAudience(accessToken);
-        logger.debug("userSeq({}), deviceId({})",userSeq, deviceId);
+        logger.info("userSeq({}), deviceId({})",userSeq, deviceId);
 
         // DB의 deviceId와 토큰값이 다를 경우
         User user = userRepository.findById(Long.valueOf(userSeq)).orElseThrow(UserNotFoundException::new);
@@ -64,6 +79,15 @@ public class Interceptor implements HandlerInterceptor {
         request.setAttribute("userSeq", userSeq);
         request.setAttribute("deviceId", deviceId);
         return true;
+    }
+
+    private boolean isAuthController(Object handler) {
+        if (!(handler instanceof HandlerMethod handlerMethod)) {
+            return false;
+        }
+
+        Auth auth = handlerMethod.getMethodAnnotation(Auth.class);
+        return auth != null;
     }
 
     private String extractTokenFromHeader(String header) {
@@ -80,8 +104,8 @@ public class Interceptor implements HandlerInterceptor {
 
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) {
         Long startTime = (Long) request.getAttribute("startTime");
-        logger.debug("{} ({}ms) >>>>> {}", request.getRequestURI(), (System.currentTimeMillis() - startTime), response.getStatus());
-        logger.debug("<<<<<<<<<<<<<<<<<<<<< END <<<<<<<<<<<<<<<<<<<<<");
-        logger.debug("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        logger.info("{} ({}ms) >>>>> {}", request.getRequestURI(), (System.currentTimeMillis() - startTime), response.getStatus());
+        logger.info("<<<<<<<<<<<<<<<<<<<<< END <<<<<<<<<<<<<<<<<<<<<");
+        logger.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
     }
 }
