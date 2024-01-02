@@ -4,11 +4,9 @@ import com.heygongc.device.domain.Device;
 import com.heygongc.device.domain.DeviceRepository;
 import com.heygongc.device.presentation.request.DeviceNameRequest;
 import com.heygongc.device.presentation.response.DeviceResponse;
-import com.heygongc.global.common.response.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.sound.midi.MidiDeviceReceiver;
 import java.util.List;
 
 @Service
@@ -17,10 +15,10 @@ public class DeviceServiceImpl implements DeviceService{
     @Autowired
     private DeviceRepository deviceRepository;
     @Override
-    public ApiResponse deleteAllDevices() {
+    public Boolean deleteAllDevices() {
         Long userSeq = extractUserSeqFromSecurityContext();
         // Your logic to delete all devices for the user
-        return new ApiResponse(Boolean.TRUE,"All devices deleted successfully.");
+        return true;
     }
 
     @Override
@@ -46,8 +44,8 @@ public class DeviceServiceImpl implements DeviceService{
     }
 
     @Override
-    public ApiResponse deleteDevice(Long device_seq) {
-        return null;
+    public Boolean deleteDevice(Long device_seq) {
+        return true;
     }
 
     private Long extractUserSeqFromSecurityContext() {

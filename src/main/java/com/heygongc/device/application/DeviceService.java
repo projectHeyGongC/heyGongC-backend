@@ -3,7 +3,6 @@ package com.heygongc.device.application;
 import com.heygongc.device.domain.Device;
 import com.heygongc.device.presentation.request.DeviceNameRequest;
 import com.heygongc.device.presentation.response.DeviceResponse;
-import com.heygongc.global.common.response.ApiResponse;
 
 import java.util.List;
 
@@ -15,7 +14,7 @@ public interface DeviceService {
 
     Device updateDevice(DeviceNameRequest deviceNameRequest);
 
-    ApiResponse deleteDevice(Long device_seq);
+    Boolean deleteDevice(Long device_seq);
 
-    ApiResponse deleteAllDevices();
+    Boolean deleteAllDevices();
 }

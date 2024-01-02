@@ -21,9 +21,10 @@ public class DeviceController {
         return new ResponseEntity<>(device, HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Device> updateDevice(@PathVariable(name = "id") Long id) {
-        Device device =
-    }
+//    @PutMapping("/{id}")
+//    public ResponseEntity<Device> updateDevice(@PathVariable(name = "id") Long id) {
+//
+//        Device device =
+//    }
 
 }
