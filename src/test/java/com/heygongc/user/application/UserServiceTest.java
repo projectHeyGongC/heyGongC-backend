@@ -1,11 +1,11 @@
 package com.heygongc.user.application;
 
+import com.heygongc.global.error.exception.ApiBusinessException;
+import com.heygongc.global.error.exception.ForbiddenException;
 import com.heygongc.user.domain.User;
 import com.heygongc.user.domain.UserRepository;
 import com.heygongc.user.domain.UserToken;
 import com.heygongc.user.domain.UserTokenRepository;
-import com.heygongc.user.exception.EmailSigninException;
-import com.heygongc.user.exception.UserNotFoundException;
 import com.heygongc.user.presentation.request.TokenRequest;
 import com.heygongc.user.presentation.request.UserLoginRequest;
 import com.heygongc.user.presentation.request.UserRegisterRequest;
@@ -182,7 +182,7 @@ class UserServiceTest {
         when(googleOAuth.getUser(anyString())).thenReturn(googleUserResponse);
 
         // when
-        assertThrows(EmailSigninException.class, () -> userService.register("google", userRegisterRequest));
+        assertThrows(ApiBusinessException.class, () -> userService.register("google", userRegisterRequest));
     }
 
     @Test
@@ -205,7 +205,7 @@ class UserServiceTest {
         when(userRepository.findById(any())).thenReturn(Optional.empty());
 
         // when
-        assertThrows(UserNotFoundException.class, () -> userService.unRegister(2L));
+        assertThrows(ApiBusinessException.class, () -> userService.unRegister(2L));
     }
 
     @Test
@@ -216,6 +216,38 @@ class UserServiceTest {
         when(userRepository.findById(any())).thenReturn(Optional.ofNullable(user));
 
         // when
-        assertThrows(UserNotFoundException.class, () -> userService.unRegister(1L));
+        assertThrows(ApiBusinessException.class, () -> userService.unRegister(1L));
+    }
+
+    @Test
+    public void 토큰_재발급_성공_테스트() {
+        // given
+        when(jwtUtil.isValidToken(any())).thenReturn(true);
+        when(jwtUtil.extractUserSeq(any())).thenReturn(user.getSeq());
+        when(jwtUtil.extractDeviceId(any())).thenReturn(user.getDeviceId());
+        when(userRepository.findById(any())).thenReturn(Optional.ofNullable(user));
+        when(userTokenRepository.findByUserSeq(any())).thenReturn(Optional.ofNullable(userToken));
+        when(jwtUtil.generateAccessToken(any(),any())).thenReturn("newAccessToken");
+
+        // when
+        String token = userService.refreshAccessToken(userToken.getToken());
+
+        // then
+        assertNotNull(token);
+        assertEquals("newAccessToken", token);
+    }
+
+    @Test
+    // 신규 사용자 로그인으로 인한 실패 테스트
+    public void 토큰_재발급_신규로그인_실패_테스트() {
+        // given
+        when(jwtUtil.isValidToken(any())).thenReturn(true);
+        when(jwtUtil.extractUserSeq(any())).thenReturn(user.getSeq());
+        when(jwtUtil.extractDeviceId(any())).thenReturn(user.getDeviceId());
+        when(userRepository.findById(any())).thenReturn(Optional.ofNullable(user));
+        when(userTokenRepository.findByUserSeq(any())).thenReturn(Optional.ofNullable(userToken));
+
+        // when
+        assertThrows(ForbiddenException.class, () -> userService.refreshAccessToken("newAccessToken"));
     }
 }

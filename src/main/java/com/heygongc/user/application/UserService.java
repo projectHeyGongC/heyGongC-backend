@@ -1,11 +1,12 @@
 package com.heygongc.user.application;
 
+import com.heygongc.global.error.exception.ApiBusinessException;
+import com.heygongc.global.error.exception.ForbiddenException;
+import com.heygongc.global.error.exception.UnauthenticatedException;
 import com.heygongc.user.domain.User;
 import com.heygongc.user.domain.UserRepository;
 import com.heygongc.user.domain.UserToken;
 import com.heygongc.user.domain.UserTokenRepository;
-import com.heygongc.user.exception.EmailSigninException;
-import com.heygongc.user.exception.UserNotFoundException;
 import com.heygongc.user.presentation.request.UserLoginRequest;
 import com.heygongc.user.presentation.request.UserRegisterRequest;
 import com.heygongc.user.presentation.response.GoogleTokenResponse;
@@ -74,13 +75,6 @@ public class UserService {
                         .build());
     }
 
-    public TokenResponse makeJwtToken(Long seq, String deviceId) {
-        return new TokenResponse(
-                jwtUtil.generateAccessToken(String.valueOf(seq), deviceId),
-                jwtUtil.generateRefreshToken(String.valueOf(seq), deviceId)
-        );
-    }
-
     private UserToken saveJwtToken(Long seq, String refreshToken) {
         // 이미 등록된 jwt 토큰이 있으면 삭제
         if (userTokenRepository.findByUserSeq(seq).isPresent()) {
@@ -112,17 +106,19 @@ public class UserService {
         if (!isUserExists(user) || isUserUnRegistered(user)) {
             return null;
         }
-        
+
         // device 정보 저장
         user.setDeviceId(request.deviceId());
         user.setDeviceOs(request.deviceOs());
         userRepository.save(user);
 
         // jwt 토큰 발급
-        TokenResponse tokenResponse = makeJwtToken(user.getSeq(), request.deviceId());
+        String accessToken = jwtUtil.generateAccessToken(String.valueOf(user.getSeq()), user.getDeviceId());
+        String refreshToken = jwtUtil.generateRefreshToken(String.valueOf(user.getSeq()), user.getDeviceId());
+        TokenResponse tokenResponse = new TokenResponse(accessToken, refreshToken);
 
         // 토큰 저장
-        saveJwtToken(user.getSeq(), tokenResponse.refreshToken());
+        saveJwtToken(user.getSeq(), refreshToken);
 
         return tokenResponse;
     }
@@ -142,7 +138,7 @@ public class UserService {
         }
         // 탈퇴하지 않고 가입되어 있는 경우
         if (!isUserUnRegistered(user) && isUserExists(user)) {
-            throw new EmailSigninException("이미 가입한 사용자입니다.");
+            throw new ApiBusinessException("이미 가입한 사용자입니다.");
         }
 
         User saveUser;
@@ -170,24 +166,49 @@ public class UserService {
         }
 
         // jwt 토큰 발급
-        TokenResponse tokenResponse = makeJwtToken(saveUser.getSeq(), request.deviceId());
+        String accessToken = jwtUtil.generateAccessToken(String.valueOf(saveUser.getSeq()), saveUser.getDeviceId());
+        String refreshToken = jwtUtil.generateRefreshToken(String.valueOf(saveUser.getSeq()), saveUser.getDeviceId());
+        TokenResponse tokenResponse = new TokenResponse(accessToken, refreshToken);
 
         // 토큰 저장
-        saveJwtToken(saveUser.getSeq(), tokenResponse.refreshToken());
+        saveJwtToken(saveUser.getSeq(), refreshToken);
 
         return tokenResponse;
     }
 
     @Transactional
     public Boolean unRegister(Long userSeq) {
-        User user = userRepository.findById(userSeq).orElseThrow(() -> new UserNotFoundException("미가입 사용자입니다."));
+        User user = userRepository.findById(userSeq).orElseThrow(() -> new ApiBusinessException("미가입 사용자입니다."));
         if (user.getDeletedAt() != null) {
-            throw new UserNotFoundException("이미 탈퇴한 사용자입니다.");
+            throw new ApiBusinessException("이미 탈퇴한 사용자입니다.");
         }
 
         user.setDeletedAt(LocalDateTime.now());
         userRepository.save(user);
 
         return true;
+    }
+
+    @Transactional
+    public String refreshAccessToken(String refreshToken) {
+        if (!jwtUtil.isValidToken(refreshToken)) {
+            throw new UnauthenticatedException("유효하지 않은 토큰입니다.");
+        }
+
+        Long userSeq = jwtUtil.extractUserSeq(refreshToken);
+        String deviceId = jwtUtil.extractDeviceId(refreshToken);
+
+        User user = userRepository.findById(userSeq).orElseThrow(() -> new ApiBusinessException("미가입 사용자입니다."));
+        UserToken userToken = userTokenRepository.findByUserSeq(userSeq).orElseThrow(()-> new ApiBusinessException("미가입 사용자입니다."));
+
+        // 저장된 Device나 Token이 일치하지 않을 경우
+        if (!deviceId.equals(user.getDeviceId())
+                || !refreshToken.equals(userToken.getToken())) {
+            throw new ForbiddenException("새로운 로그인이 감지되었습니다.");
+        }
+
+        String accessToken = jwtUtil.generateAccessToken(String.valueOf(userSeq), deviceId);
+
+        return accessToken;
     }
 }

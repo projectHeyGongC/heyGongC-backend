@@ -2,6 +2,7 @@ package com.heygongc.user.presentation;
 
 import com.heygongc.global.interceptor.Auth;
 import com.heygongc.user.application.UserService;
+import com.heygongc.user.presentation.request.RefreshAccessTokenRequest;
 import com.heygongc.user.presentation.request.UserLoginRequest;
 import com.heygongc.user.presentation.request.UserRegisterRequest;
 import com.heygongc.user.presentation.response.TokenResponse;
@@ -52,9 +53,16 @@ public class UserController {
     @Auth
     @PostMapping("/unRegister")
     public ResponseEntity<Boolean> unRegister(HttpServletRequest request) {
-        Long userSeq = Long.valueOf((String) request.getAttribute("userSeq"));
+        Long userSeq = (Long) request.getAttribute("userSeq");
         Boolean result = userService.unRegister(userSeq);
         logger.debug("unregister >> {}", result);
         return ResponseEntity.ok().body(result);
+    }
+
+    @PostMapping("/refreshAccessToken")
+    public ResponseEntity<String> refreshAccessToken(@RequestBody RefreshAccessTokenRequest request) {
+        String accessToken = userService.refreshAccessToken(request.refreshToken());
+        logger.debug("refreshAccessToken >> {}", accessToken);
+        return ResponseEntity.ok().body(accessToken);
     }
 }

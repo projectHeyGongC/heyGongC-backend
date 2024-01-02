@@ -17,7 +17,7 @@ public class testController {
     @Auth
     @PostMapping("/getUserAndDevice")
     public ResponseEntity<String> sendUser(HttpServletRequest request) {
-        String userSeq = (String) request.getAttribute("userSeq");
+        Long userSeq = (Long) request.getAttribute("userSeq");
         String deviceId = (String) request.getAttribute("deviceId");
         logger.debug("userSeq({}), deviceId({})", userSeq, deviceId);
         return ResponseEntity.ok().body(userSeq + ", " + deviceId);
