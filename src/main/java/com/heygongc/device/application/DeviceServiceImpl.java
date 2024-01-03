@@ -2,55 +2,80 @@ package com.heygongc.device.application;
 
 import com.heygongc.device.domain.Device;
 import com.heygongc.device.domain.DeviceRepository;
-import com.heygongc.device.presentation.request.DeviceNameRequest;
-import com.heygongc.device.presentation.response.DeviceResponse;
+import com.heygongc.user.domain.User;
+import com.heygongc.user.domain.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DeviceServiceImpl implements DeviceService{
 
     @Autowired
     private DeviceRepository deviceRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
     @Override
-    public Boolean deleteAllDevices() {
-        Long userSeq = extractUserSeqFromSecurityContext();
-        // Your logic to delete all devices for the user
-        return true;
+    public Optional<Device> getDevice(Long deviceSeq) {
+
+        return deviceRepository.findById(deviceSeq);
     }
 
     @Override
-    public DeviceResponse addDevice(DeviceNameRequest deviceNameRequest) {
-        return null;
-    }
-
-    @Override
-    public Device getDevice(Long device_seq) {
-        return null;
-    }
-
-    @Override
-    public List<Device> getAllDevices() {
-        Long userSeq = extractUserSeqFromSecurityContext();
-        // Your logic to get all devices for the user
+    public List<Device> getAllDevices(Long userSeq) {
         return deviceRepository.findAllByUserSeq(userSeq);
     }
 
-    @Override
-    public Device updateDevice(DeviceNameRequest deviceNameRequest) {
-        return null;
+
+    public Device addDevice(Long userSeq, String qrCode, String deviceName) {
+        String[] parts = qrCode.split("_");
+        Long parsedDeviceSeq = Long.parseLong(parts[0]);
+        String type = parts[1];
+
+        User user = userRepository.findById(userSeq).orElseThrow(() -> new RuntimeException("해당 유저 없음"));
+
+        Device device = Device.builder()
+                .deviceSeq(parsedDeviceSeq)
+                .type(type)
+                .name(deviceName)
+                .soundMode(false)
+                .sensitivity(DeviceSensitivityEnum.MEDIUM)
+                .soundActive(false)
+                .streamActive(false)
+                .frontCamera(false)
+                .user(user)
+                .build();
+
+        return deviceRepository.save(device);
     }
 
     @Override
-    public Boolean deleteDevice(Long device_seq) {
+    public Device updateDevice(Long deviceSeq, Long userSeq, String deviceName) {
+        Device device = deviceRepository.findById(deviceSeq)
+                .orElseThrow(() -> new RuntimeException("Device not found"));
+
+        if (deviceName != null) {
+            device.setName(deviceName);
+        }
+
+        return device;
+    }
+
+    @Override
+    public Boolean deleteDevice(Long deviceSeq, Long userSeq) {
+        deviceRepository.deleteById(deviceSeq);
         return true;
     }
 
-    private Long extractUserSeqFromSecurityContext() {
-        Long userSeq = 12345L;
-        return userSeq;
+    @Override
+    public Boolean deleteAllDevices(Long userSeq) {
+        deviceRepository.deleteAllByUserSeq(userSeq);
+        return true;
     }
+
 
 }

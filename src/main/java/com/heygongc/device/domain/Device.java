@@ -2,8 +2,13 @@ package com.heygongc.device.domain;
 
 import com.heygongc.device.application.DeviceSensitivityEnum;
 import com.heygongc.global.config.BaseTimeEntity;
+import com.heygongc.notification.domain.Notification;
+import com.heygongc.user.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -15,7 +20,6 @@ import lombok.*;
 public class Device extends BaseTimeEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "device_seq")
     private Long deviceSeq;
 
@@ -40,6 +44,13 @@ public class Device extends BaseTimeEntity {
 
     @Column(nullable = false)
     private boolean frontCamera;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_seq")
+    private User user;
+
+    @OneToMany(mappedBy = "notification", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Notification> notifications = new ArrayList<>();
 
 
 }

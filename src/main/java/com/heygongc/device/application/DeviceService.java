@@ -1,20 +1,23 @@
 package com.heygongc.device.application;
 
 import com.heygongc.device.domain.Device;
-import com.heygongc.device.presentation.request.DeviceNameRequest;
-import com.heygongc.device.presentation.response.DeviceResponse;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface DeviceService {
-    DeviceResponse addDevice(DeviceNameRequest deviceNameRequest);
-    Device getDevice(Long device_seq);
 
-    List<Device> getAllDevices();
+    Optional<Device> getDevice(Long deviceSeq);
 
-    Device updateDevice(DeviceNameRequest deviceNameRequest);
+    List<Device> getAllDevices(Long userSeq);
 
-    Boolean deleteDevice(Long device_seq);
+    Device addDevice(Long userSeq, String qrCode, String deviceName);
 
-    Boolean deleteAllDevices();
+    Device updateDevice(Long deviceSeq, Long userSeq, String deviceName);
+
+    Boolean deleteDevice(Long deviceSeq, Long userSeq);
+
+    Boolean deleteAllDevices(Long userSeq);
+
+
 }
