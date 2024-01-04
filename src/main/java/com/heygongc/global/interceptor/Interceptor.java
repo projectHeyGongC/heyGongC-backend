@@ -41,12 +41,11 @@ public class Interceptor implements HandlerInterceptor {
         }
 
         // 로그인 컨트롤러는 jwt 토큰 검증
-        String accessToken = extractTokenFromHeader(request.getHeader("access-token"));
-        String refreshToken = extractTokenFromHeader(request.getHeader("refresh-token"));
+        String accessToken = jwtUtil.extractTokenFromHeader(request.getHeader("Authorization"));
 
         // 유효하지 않은 토큰이면 로그인 페이지로 리디렉션
         try {
-            if (!jwtUtil.isValidToken(accessToken) || !jwtUtil.isValidToken(refreshToken)) {
+            if (!jwtUtil.isValidToken(accessToken)) {
                 throw new UnauthenticatedException("유효하지 않은 토큰입니다.");
             }
         } catch (SignatureException | MalformedJwtException e) { //서명 오류 or JWT 구조 문제
@@ -73,8 +72,6 @@ public class Interceptor implements HandlerInterceptor {
             throw new ForbiddenException("새로운 로그인이 감지되었습니다.");
         }
 
-        request.setAttribute("userSeq", userSeq);
-        request.setAttribute("deviceId", deviceId);
         return true;
     }
 
@@ -85,13 +82,5 @@ public class Interceptor implements HandlerInterceptor {
 
         Auth auth = handlerMethod.getMethodAnnotation(Auth.class);
         return auth != null;
-    }
-
-    private String extractTokenFromHeader(String header) {
-        // 헤더에서 토큰 추출
-        if (header != null && header.startsWith("Bearer ")) {
-            return header.replace("Bearer ", "");
-        }
-        return null;
     }
 }

@@ -1,7 +1,9 @@
 package com.heygongc.user.presentation;
 
+import com.heygongc.global.argumentresolver.LoginUser;
 import com.heygongc.global.interceptor.Auth;
 import com.heygongc.user.application.UserService;
+import com.heygongc.user.domain.User;
 import com.heygongc.user.presentation.request.RefreshAccessTokenRequest;
 import com.heygongc.user.presentation.request.UserLoginRequest;
 import com.heygongc.user.presentation.request.UserRegisterRequest;
@@ -52,8 +54,8 @@ public class UserController {
 
     @Auth
     @PostMapping("/unRegister")
-    public ResponseEntity<Boolean> unRegister(HttpServletRequest request) {
-        Long userSeq = (Long) request.getAttribute("userSeq");
+    public ResponseEntity<Boolean> unRegister(@LoginUser User user) {
+        Long userSeq = user.getSeq();
         Boolean result = userService.unRegister(userSeq);
         logger.debug("unregister >> {}", result);
         return ResponseEntity.ok().body(result);
