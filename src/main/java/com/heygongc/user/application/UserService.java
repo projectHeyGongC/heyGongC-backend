@@ -1,17 +1,14 @@
 package com.heygongc.user.application;
 
-import com.heygongc.global.error.exception.ApiBusinessException;
-import com.heygongc.global.error.exception.ForbiddenException;
-import com.heygongc.global.error.exception.UnauthenticatedException;
 import com.heygongc.user.domain.User;
 import com.heygongc.user.domain.UserRepository;
 import com.heygongc.user.domain.UserToken;
 import com.heygongc.user.domain.UserTokenRepository;
+import com.heygongc.user.exception.*;
 import com.heygongc.user.presentation.request.UserLoginRequest;
 import com.heygongc.user.presentation.request.UserRegisterRequest;
 import com.heygongc.user.presentation.response.GoogleTokenResponse;
 import com.heygongc.user.presentation.response.GoogleUserResponse;
-import com.heygongc.user.presentation.response.TokenResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -51,7 +48,7 @@ public class UserService {
         };
     }
 
-    public TokenResponse getToken(String snsType, String code) {
+    public AuthToken getToken(String snsType, String code) {
         GoogleTokenResponse token = null;
         switch (snsType) {
             case "google":
@@ -63,7 +60,7 @@ public class UserService {
             default:
                 break;
         }
-        return new TokenResponse(token.accessToken(), token.refreshToken());
+        return new AuthToken(token.accessToken(), token.refreshToken());
     }
 
     public User getGoogleUserInfo(String token) {
@@ -89,7 +86,7 @@ public class UserService {
     }
 
     @Transactional
-    public TokenResponse login(String snsType, UserLoginRequest request) {
+    public AuthToken login(String snsType, UserLoginRequest request) {
         User user = null;
         switch (snsType) {
             case "google":
@@ -115,16 +112,16 @@ public class UserService {
         // jwt 토큰 발급
         String accessToken = jwtUtil.generateAccessToken(String.valueOf(user.getSeq()), user.getDeviceId());
         String refreshToken = jwtUtil.generateRefreshToken(String.valueOf(user.getSeq()), user.getDeviceId());
-        TokenResponse tokenResponse = new TokenResponse(accessToken, refreshToken);
+        AuthToken authToken = new AuthToken(accessToken, refreshToken);
 
         // 토큰 저장
         saveJwtToken(user.getSeq(), refreshToken);
 
-        return tokenResponse;
+        return authToken;
     }
 
     @Transactional
-    public TokenResponse register(String snsType, UserRegisterRequest request) {
+    public AuthToken register(String snsType, UserRegisterRequest request) {
         User user = null;
         switch (snsType) {
             case "google":
@@ -138,7 +135,7 @@ public class UserService {
         }
         // 탈퇴하지 않고 가입되어 있는 경우
         if (!isUserUnRegistered(user) && isUserExists(user)) {
-            throw new ApiBusinessException("이미 가입한 사용자입니다.");
+            throw new AlreadySignUpException("이미 가입한 사용자입니다.");
         }
 
         User saveUser;
@@ -168,19 +165,19 @@ public class UserService {
         // jwt 토큰 발급
         String accessToken = jwtUtil.generateAccessToken(String.valueOf(saveUser.getSeq()), saveUser.getDeviceId());
         String refreshToken = jwtUtil.generateRefreshToken(String.valueOf(saveUser.getSeq()), saveUser.getDeviceId());
-        TokenResponse tokenResponse = new TokenResponse(accessToken, refreshToken);
+        AuthToken authToken = new AuthToken(accessToken, refreshToken);
 
         // 토큰 저장
         saveJwtToken(saveUser.getSeq(), refreshToken);
 
-        return tokenResponse;
+        return authToken;
     }
 
     @Transactional
     public Boolean unRegister(Long userSeq) {
-        User user = userRepository.findById(userSeq).orElseThrow(() -> new ApiBusinessException("미가입 사용자입니다."));
+        User user = userRepository.findById(userSeq).orElseThrow(() -> new UserNotFoundException("미가입 사용자입니다."));
         if (user.getDeletedAt() != null) {
-            throw new ApiBusinessException("이미 탈퇴한 사용자입니다.");
+            throw new AlreadyLeftException("이미 탈퇴한 사용자입니다.");
         }
 
         user.setDeletedAt(LocalDateTime.now());
@@ -192,19 +189,19 @@ public class UserService {
     @Transactional
     public String refreshAccessToken(String refreshToken) {
         if (!jwtUtil.isValidToken(refreshToken)) {
-            throw new UnauthenticatedException("유효하지 않은 토큰입니다.");
+            throw new InvalidTokenException("유효하지 않은 토큰입니다.");
         }
 
         Long userSeq = jwtUtil.extractUserSeq(refreshToken);
         String deviceId = jwtUtil.extractDeviceId(refreshToken);
 
-        User user = userRepository.findById(userSeq).orElseThrow(() -> new ApiBusinessException("미가입 사용자입니다."));
-        UserToken userToken = userTokenRepository.findByUserSeq(userSeq).orElseThrow(()-> new ApiBusinessException("미가입 사용자입니다."));
+        User user = userRepository.findById(userSeq).orElseThrow(() -> new UserNotFoundException("미가입 사용자입니다."));
+        UserToken userToken = userTokenRepository.findByUserSeq(userSeq).orElseThrow(()-> new UserNotFoundException("미가입 사용자입니다."));
 
         // 저장된 Device나 Token이 일치하지 않을 경우
         if (!deviceId.equals(user.getDeviceId())
                 || !refreshToken.equals(userToken.getToken())) {
-            throw new ForbiddenException("새로운 로그인이 감지되었습니다.");
+            throw new NewLoginDetectedException("새로운 로그인이 감지되었습니다.");
         }
 
         String accessToken = jwtUtil.generateAccessToken(String.valueOf(userSeq), deviceId);

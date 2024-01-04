@@ -2,6 +2,7 @@ package com.heygongc.user.presentation;
 
 import com.heygongc.global.argumentresolver.LoginUser;
 import com.heygongc.global.interceptor.Auth;
+import com.heygongc.user.application.AuthToken;
 import com.heygongc.user.application.UserService;
 import com.heygongc.user.domain.User;
 import com.heygongc.user.presentation.request.RefreshAccessTokenRequest;
@@ -27,28 +28,27 @@ public class UserController {
     @GetMapping("/{snsType}/getLoginUrl")
     public ResponseEntity<String> getLoginUrl(@PathVariable(name="snsType") String snsType) {
         String loginUrl = userService.getLoginUrl(snsType);
-        logger.debug("getLoginUrl >> {}", loginUrl);
         return ResponseEntity.ok().body(loginUrl);
     }
 
     @GetMapping("/{snsType}/loginCallback")
     public ResponseEntity<TokenResponse> loginCallback(@PathVariable(name="snsType") String snsType, @RequestParam(value = "code") String code) {
-        TokenResponse token = userService.getToken(snsType, code);
-        logger.debug("loginCallback >> {}", token);
-        return ResponseEntity.ok().body(token);
+        AuthToken authToken = userService.getToken(snsType, code);
+        TokenResponse tokenResponse = new TokenResponse(authToken.getAccessToken(), authToken.getRefreshToken());
+        return ResponseEntity.ok().body(tokenResponse);
     }
 
     @PostMapping("/{snsType}/login")
     public ResponseEntity<TokenResponse> login(@PathVariable(name="snsType") String snsType, @RequestBody UserLoginRequest request) {
-        TokenResponse tokenResponse = userService.login(snsType, request);
-        logger.debug("login >> {}", tokenResponse);
+        AuthToken authToken = userService.login(snsType, request);
+        TokenResponse tokenResponse = new TokenResponse(authToken.getAccessToken(), authToken.getRefreshToken());
         return ResponseEntity.ok().body(tokenResponse);
     }
 
     @PostMapping("/{snsType}/register")
     public ResponseEntity<TokenResponse> register(@PathVariable(name="snsType") String snsType, @RequestBody UserRegisterRequest request) {
-        TokenResponse tokenResponse = userService.register(snsType, request);
-        logger.debug("register >> {}", tokenResponse);
+        AuthToken authToken = userService.register(snsType, request);
+        TokenResponse tokenResponse = new TokenResponse(authToken.getAccessToken(), authToken.getRefreshToken());
         return ResponseEntity.ok().body(tokenResponse);
     }
 
@@ -57,14 +57,12 @@ public class UserController {
     public ResponseEntity<Boolean> unRegister(@LoginUser User user) {
         Long userSeq = user.getSeq();
         Boolean result = userService.unRegister(userSeq);
-        logger.debug("unregister >> {}", result);
         return ResponseEntity.ok().body(result);
     }
 
     @PostMapping("/refreshAccessToken")
     public ResponseEntity<String> refreshAccessToken(@RequestBody RefreshAccessTokenRequest request) {
         String accessToken = userService.refreshAccessToken(request.refreshToken());
-        logger.debug("refreshAccessToken >> {}", accessToken);
         return ResponseEntity.ok().body(accessToken);
     }
 }

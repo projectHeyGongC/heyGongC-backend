@@ -1,16 +1,17 @@
 package com.heygongc.user.application;
 
-import com.heygongc.global.error.exception.ApiBusinessException;
-import com.heygongc.global.error.exception.ForbiddenException;
 import com.heygongc.user.domain.User;
 import com.heygongc.user.domain.UserRepository;
 import com.heygongc.user.domain.UserToken;
 import com.heygongc.user.domain.UserTokenRepository;
+import com.heygongc.user.exception.AlreadyLeftException;
+import com.heygongc.user.exception.AlreadySignUpException;
+import com.heygongc.user.exception.NewLoginDetectedException;
+import com.heygongc.user.exception.UserNotFoundException;
 import com.heygongc.user.presentation.request.TokenRequest;
 import com.heygongc.user.presentation.request.UserLoginRequest;
 import com.heygongc.user.presentation.request.UserRegisterRequest;
 import com.heygongc.user.presentation.response.GoogleUserResponse;
-import com.heygongc.user.presentation.response.TokenResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -109,12 +110,12 @@ class UserServiceTest {
         when(jwtUtil.generateRefreshToken(anyString(), anyString())).thenReturn("mockJwtRefreshTokenResponse");
 
         // when
-        TokenResponse result = userService.login("google", userLoginRequest);
+        AuthToken result = userService.login("google", userLoginRequest);
 
         // then
         assertNotNull(result);
-        assertEquals("mockJwtAccessTokenResponse", result.accessToken());
-        assertEquals("mockJwtRefreshTokenResponse", result.refreshToken());
+        assertEquals("mockJwtAccessTokenResponse", result.getAccessToken());
+        assertEquals("mockJwtRefreshTokenResponse", result.getRefreshToken());
     }
 
     @Test
@@ -131,7 +132,7 @@ class UserServiceTest {
         when(googleOAuth.getUser(anyString())).thenReturn(googleUserResponse);
 
         // when
-        TokenResponse result = userService.login("google", userLoginRequest);
+        AuthToken result = userService.login("google", userLoginRequest);
 
         // then
         assertNull(result);
@@ -156,12 +157,12 @@ class UserServiceTest {
         when(jwtUtil.generateRefreshToken(anyString(), anyString())).thenReturn("mockJwtRefreshTokenResponse");
 
         // when
-        TokenResponse result = userService.register("google", userRegisterRequest);
+        AuthToken result = userService.register("google", userRegisterRequest);
 
         // then
         assertNotNull(result);
-        assertEquals("mockJwtAccessTokenResponse", result.accessToken());
-        assertEquals("mockJwtRefreshTokenResponse", result.refreshToken());
+        assertEquals("mockJwtAccessTokenResponse", result.getAccessToken());
+        assertEquals("mockJwtRefreshTokenResponse", result.getRefreshToken());
     }
 
     @Test
@@ -182,7 +183,7 @@ class UserServiceTest {
         when(googleOAuth.getUser(anyString())).thenReturn(googleUserResponse);
 
         // when
-        assertThrows(ApiBusinessException.class, () -> userService.register("google", userRegisterRequest));
+        assertThrows(AlreadySignUpException.class, () -> userService.register("google", userRegisterRequest));
     }
 
     @Test
@@ -205,7 +206,7 @@ class UserServiceTest {
         when(userRepository.findById(any())).thenReturn(Optional.empty());
 
         // when
-        assertThrows(ApiBusinessException.class, () -> userService.unRegister(2L));
+        assertThrows(UserNotFoundException.class, () -> userService.unRegister(2L));
     }
 
     @Test
@@ -216,7 +217,7 @@ class UserServiceTest {
         when(userRepository.findById(any())).thenReturn(Optional.ofNullable(user));
 
         // when
-        assertThrows(ApiBusinessException.class, () -> userService.unRegister(1L));
+        assertThrows(AlreadyLeftException.class, () -> userService.unRegister(1L));
     }
 
     @Test
@@ -248,6 +249,6 @@ class UserServiceTest {
         when(userTokenRepository.findByUserSeq(any())).thenReturn(Optional.ofNullable(userToken));
 
         // when
-        assertThrows(ForbiddenException.class, () -> userService.refreshAccessToken("newAccessToken"));
+        assertThrows(NewLoginDetectedException.class, () -> userService.refreshAccessToken("newAccessToken"));
     }
 }
