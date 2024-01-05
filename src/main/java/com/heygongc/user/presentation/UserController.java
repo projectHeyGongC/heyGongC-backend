@@ -54,10 +54,10 @@ public class UserController {
 
     @Auth
     @PostMapping("/unRegister")
-    public ResponseEntity<Boolean> unRegister(@LoginUser User user) {
+    public ResponseEntity<Void> unRegister(@LoginUser User user) {
         Long userSeq = user.getSeq();
-        Boolean result = userService.unRegister(userSeq);
-        return ResponseEntity.ok().body(result);
+        userService.unRegister(userSeq);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/refreshAccessToken")

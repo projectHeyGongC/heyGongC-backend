@@ -27,7 +27,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -193,10 +193,10 @@ class UserServiceTest {
         when(userRepository.save(any(User.class))).thenReturn(user);
 
         // when
-        Boolean result = userService.unRegister(1L);
+        userService.unRegister(1L);
 
         // then
-        assertTrue(result);
+        verify(userRepository, times(1)).save(user);
     }
 
     @Test

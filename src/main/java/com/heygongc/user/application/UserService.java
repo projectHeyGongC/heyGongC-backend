@@ -174,7 +174,7 @@ public class UserService {
     }
 
     @Transactional
-    public Boolean unRegister(Long userSeq) {
+    public void unRegister(Long userSeq) {
         User user = userRepository.findById(userSeq).orElseThrow(() -> new UserNotFoundException("미가입 사용자입니다."));
         if (user.getDeletedAt() != null) {
             throw new AlreadyLeftException("이미 탈퇴한 사용자입니다.");
@@ -182,8 +182,6 @@ public class UserService {
 
         user.setDeletedAt(LocalDateTime.now());
         userRepository.save(user);
-
-        return true;
     }
 
     @Transactional
