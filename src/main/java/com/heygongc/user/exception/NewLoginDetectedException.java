@@ -1,8 +1,8 @@
 package com.heygongc.user.exception;
 
-import com.heygongc.global.error.exception.ApiBusinessException;
+import com.heygongc.global.error.exception.ForbiddenException;
 
-public class NewLoginDetectedException extends ApiBusinessException {
+public class NewLoginDetectedException extends ForbiddenException {
 
     private final String code;
 

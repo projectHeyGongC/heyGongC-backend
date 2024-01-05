@@ -1,8 +1,8 @@
 package com.heygongc.user.exception;
 
-import com.heygongc.global.error.exception.ApiBusinessException;
+import com.heygongc.global.error.exception.UnauthenticatedException;
 
-public class InvalidTokenException extends ApiBusinessException {
+public class InvalidTokenException extends UnauthenticatedException {
 
     private final String code;
 
