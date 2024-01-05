@@ -2,6 +2,7 @@ package com.heygongc.global.argumentresolver;
 
 import com.heygongc.user.application.JwtUtil;
 import com.heygongc.user.domain.User;
+import com.heygongc.user.domain.UserRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
@@ -17,9 +18,11 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final JwtUtil jwtUtil;
+    private final UserRepository userRepository;
 
-    public LoginUserArgumentResolver(JwtUtil jwtUtil) {
+    public LoginUserArgumentResolver(JwtUtil jwtUtil, UserRepository userRepository) {
         this.jwtUtil = jwtUtil;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -30,7 +33,7 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
     }
 
     @Override
-    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         String accessToken = jwtUtil.extractTokenFromHeader(request.getHeader("Authorization"));
         try {
@@ -48,9 +51,9 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
         Long userSeq = jwtUtil.extractUserSeq(accessToken);
         String deviceId = jwtUtil.extractDeviceId(accessToken);
 
-        return User.builder()
-                .seq(userSeq)
-                .deviceId(deviceId)
-                .build();
+        User user = userRepository.findById(userSeq).orElse(null);
+
+        return user;
+
     }
 }
