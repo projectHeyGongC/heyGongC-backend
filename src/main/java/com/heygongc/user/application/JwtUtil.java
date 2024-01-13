@@ -47,12 +47,12 @@ public class JwtUtil {
     }
 
     // JWT 토큰에서 사용자 정보 추출
-    public String extractUsername(String token) {
-        return extractClaims(token).getSubject();
+    public Long extractUserSeq(String token) {
+        return Long.valueOf(extractClaims(token).getSubject());
     }
 
     // JWT 토큰에서 디바이스 ID 정보 추출
-    public String extractAudience(String token) {
+    public String extractDeviceId(String token) {
         return extractClaims(token).getAudience();
     }
 
@@ -62,11 +62,19 @@ public class JwtUtil {
     }
 
     // JWT 토큰 검증
-    public boolean validateToken(String token) {
-        return !isTokenExpired(token);
+    public boolean isValidToken(String token) {
+        return token != null && !isTokenExpired(token);
     }
 
     private Claims extractClaims(String token) {
         return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
+    }
+
+    // 헤더에서 토큰 추출
+    public String extractTokenFromHeader(String header) {
+        if (header != null && header.startsWith("Bearer ")) {
+            return header.replace("Bearer ", "");
+        }
+        return null;
     }
 }
