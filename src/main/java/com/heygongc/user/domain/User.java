@@ -48,11 +48,11 @@ public class User extends BaseTimeEntity {
     private LocalDateTime deletedAt;
 
     @Column(name = "alarm", nullable = false)
-    private boolean alarm;
+    private Boolean alarm;
 
     @Column(name = "fcm_token")
     private String fcmToken;
 
     @Column(name = "ads", nullable = false)
-    private boolean ads;
+    private Boolean ads;
 }

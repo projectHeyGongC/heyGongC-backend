@@ -9,7 +9,7 @@ public record UserRegisterRequest(
         @Schema(description = "디바이스 OS")
         String deviceOs,
         @Schema(description = "마케팅 정보 수신 여부", allowableValues = {"true", "false"})
-        boolean ads,
+        Boolean ads,
         @Schema(description = "SNS 토큰")
         TokenRequest token
 ) {
