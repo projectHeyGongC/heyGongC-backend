@@ -33,36 +33,6 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/{snsType}/getLoginUrl")
-    @Operation(
-            summary = "SNS 로그인 URL 조회",
-            description = "구글/애플 로그인 URL을 조회합니다.",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)))
-            }
-    )
-    public ResponseEntity<String> getLoginUrl(
-            @Parameter(name = "snsType", description = "SNS타입(google/apple)", required = true, in = ParameterIn.PATH) @PathVariable(name="snsType") String snsType) {
-        String loginUrl = userService.getLoginUrl(snsType);
-        return ResponseEntity.ok().body(loginUrl);
-    }
-
-    @GetMapping("/{snsType}/loginCallback")
-    @Operation(
-            summary = "SNS 사용자 정보 조회",
-            description = "구글/애플 로그인 Callback 함수로, 리턴받은 code를 이용해 사용자를 조회합니다.",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TokenResponse.class)))
-            }
-    )
-    public ResponseEntity<TokenResponse> loginCallback(
-            @Parameter(description = "SNS타입(google/apple)", required = true, in = ParameterIn.PATH) @PathVariable(name="snsType") String snsType,
-            @Parameter(description = "code (토큰값)", required = true, in = ParameterIn.QUERY) @RequestParam(value = "code") String code) {
-        AuthToken authToken = userService.getToken(snsType, code);
-        TokenResponse tokenResponse = new TokenResponse(authToken.getAccessToken(), authToken.getRefreshToken());
-        return ResponseEntity.ok().body(tokenResponse);
-    }
-
     @PostMapping("/{snsType}/login")
     @Operation(
             summary = "사용자 로그인",
@@ -123,7 +93,7 @@ public class UserController {
             summary = "액세스 토큰 재발급",
             description = "갱신 토큰을 이용해 액세스 토큰을 재발급합니다.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "OK(액세스 토큰 반환)", content = @Content(mediaType = "application/json", schema = @Schema(description = "accessToken", implementation = String.class))),
+                    @ApiResponse(responseCode = "200", description = "OK(액세스 토큰 반환)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))),
                     @ApiResponse(responseCode = "401", description = "유효하지 않은 토큰", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
                     @ApiResponse(responseCode = "403", description = "새로운 로그인이 존재하는 경우", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
             }

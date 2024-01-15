@@ -7,7 +7,6 @@ import com.heygongc.user.domain.UserTokenRepository;
 import com.heygongc.user.exception.*;
 import com.heygongc.user.presentation.request.UserLoginRequest;
 import com.heygongc.user.presentation.request.UserRegisterRequest;
-import com.heygongc.user.presentation.response.GoogleTokenResponse;
 import com.heygongc.user.presentation.response.GoogleUserResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,29 +37,6 @@ public class UserService {
 
     public Boolean isUserUnRegistered(User user) {
         return user != null && user.getDeletedAt() != null;
-    }
-
-    public String getLoginUrl(String snsType) {
-        return switch (snsType) {
-            case "google" -> googleOAuth.getLoginUrl();
-//            case "apple" -> appleOAuth.getLoginUrl();
-            default -> null;
-        };
-    }
-
-    public AuthToken getToken(String snsType, String code) {
-        GoogleTokenResponse token = null;
-        switch (snsType) {
-            case "google":
-                token = googleOAuth.getToken(code);
-                break;
-            case "apple":
-//                token = appleOAuth.getToken(code);
-                break;
-            default:
-                break;
-        }
-        return new AuthToken(token.accessToken(), token.refreshToken());
     }
 
     public User getGoogleUserInfo(String token) {
