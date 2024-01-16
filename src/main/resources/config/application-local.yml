@@ -19,7 +19,6 @@ google:
   client:
     id: ${google.client.id}
     secret: ${google.client.secret}
-    redirect-uri: ${google.client.redirect-uri}
 
 jwt:
   secret: ${jwt.secret}
