@@ -2,7 +2,6 @@ package com.heygongc.user.presentation;
 
 import com.heygongc.global.argumentresolver.LoginUser;
 import com.heygongc.global.error.ErrorResponse;
-import com.heygongc.global.interceptor.Auth;
 import com.heygongc.user.application.AuthToken;
 import com.heygongc.user.application.UserService;
 import com.heygongc.user.domain.User;
@@ -70,7 +69,6 @@ public class UserController {
         return ResponseEntity.ok().body(tokenResponse);
     }
 
-    @Auth
     @PostMapping("/unRegister")
     @Operation(
             summary = "사용자 탈퇴",
