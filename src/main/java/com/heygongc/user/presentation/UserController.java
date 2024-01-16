@@ -9,6 +9,7 @@ import com.heygongc.user.presentation.request.RefreshAccessTokenRequest;
 import com.heygongc.user.presentation.request.UserLoginRequest;
 import com.heygongc.user.presentation.request.UserRegisterRequest;
 import com.heygongc.user.presentation.response.TokenResponse;
+import com.heygongc.user.presentation.response.UserResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -100,5 +101,28 @@ public class UserController {
             @Parameter(name = "RefreshAccessTokenRequest", description = "토큰 갱신 요청 정보", required = true, in = ParameterIn.HEADER) @RequestBody RefreshAccessTokenRequest request) {
         String accessToken = userService.refreshAccessToken(request.refreshToken());
         return ResponseEntity.ok().body(accessToken);
+    }
+
+    @GetMapping("/getUserInfo")
+    @Operation(
+            summary = "사용자 정보 조회",
+            description = "액세스 토큰을 이용해 사용자 정보를 조회합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class))),
+                    @ApiResponse(responseCode = "401", description = "유효하지 않은 토큰", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
+                    @ApiResponse(responseCode = "403", description = "새로운 로그인이 존재하는 경우", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+            }
+    )
+    public ResponseEntity<UserResponse> getUserInfo(
+        @Parameter(hidden = true) @LoginUser User user) {
+        UserResponse userResponse = new UserResponse(
+                user.getDeviceId(),
+                user.getDeviceOs(),
+                user.getSnsType(),
+                user.getEmail(),
+                user.getAlarm(),
+                user.getAds()
+        );
+        return ResponseEntity.ok().body(userResponse);
     }
 }
