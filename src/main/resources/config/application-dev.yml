@@ -9,6 +9,7 @@ spring:
     driver-class-name: ${dev.spring.datasource.driver-class-name}
 
   jpa:
+    properties.hibernate.default_schema: ${dev.spring.jpa.properties.hibernate.default_schema}
     show-sql: true
     properties:
       hibernate:
