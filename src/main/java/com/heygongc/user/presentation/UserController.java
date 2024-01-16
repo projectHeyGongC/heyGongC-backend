@@ -118,7 +118,7 @@ public class UserController {
         UserResponse userResponse = new UserResponse(
                 user.getDeviceId(),
                 user.getDeviceOs(),
-                user.getSnsType(),
+                user.getSnsType().name(),
                 user.getEmail(),
                 user.getAlarm(),
                 user.getAds()
