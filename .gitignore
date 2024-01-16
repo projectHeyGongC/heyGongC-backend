@@ -37,4 +37,4 @@ out/
 .vscode/
 
 generated
-application-*.yml
+secret.yml

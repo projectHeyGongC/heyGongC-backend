@@ -1,0 +1,27 @@
+spring:
+  config:
+    import: classpath:/config/secret.yml
+
+  datasource:
+    url: ${local.spring.datasource.url}
+    username: ${local.spring.datasource.username}
+    password: ${local.spring.datasource.password}
+    driver-class-name: ${local.spring.datasource.driver-class-name}
+
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        ddl-auto: create # 로컬 메모리 DB 생성
+
+google:
+  client:
+    id: ${google.client.id}
+    secret: ${google.client.secret}
+    redirect-uri: ${google.client.redirect-uri}
+
+jwt:
+  secret: ${jwt.secret}
+  access.expiration: ${jwt.access.expiration}
+  refresh.expiration: ${jwt.refresh.expiration}

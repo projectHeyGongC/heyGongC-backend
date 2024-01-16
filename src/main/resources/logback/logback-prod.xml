@@ -12,9 +12,9 @@
         </encoder>
     </appender>
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>/home/ubuntu/heyGongC-backend/logs/application.log</file>
+        <file>/home/ubuntu/heygongc-backend/logs/application.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>/home/ubuntu/heyGongC-backend/logs/application-%d{yyyyMMdd}.log</fileNamePattern>
+            <fileNamePattern>/home/ubuntu/heygongc-backend/logs/application-%d{yyyyMMdd}.log</fileNamePattern>
             <maxHistory>-1</maxHistory> <!-- 최대 보관일수 미지정, 삭제 x -->
         </rollingPolicy>
         <encoder>
@@ -23,7 +23,7 @@
         </encoder>
     </appender>
 
-    <logger name="com.heygongc" level="DEBUG"/>
+    <logger name="com.heygongc" level="INFO"/>
 
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
