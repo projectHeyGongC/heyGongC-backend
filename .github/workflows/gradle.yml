@@ -59,6 +59,7 @@ jobs:
           PROD_DB_USERNAME: ${{ secrets.PROD_DB_USERNAME }}
           PROD_DB_PASSWORD: ${{ secrets.PROD_DB_PASSWORD }}
           PROD_DB_DRIVER_NAME: ${{ secrets.PROD_DB_DRIVER_NAME }}
+          PROD_DB_DEFAULT_SCHEMA: ${{ secrets.PROD_DB_DEFAULT_SCHEMA }}
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
