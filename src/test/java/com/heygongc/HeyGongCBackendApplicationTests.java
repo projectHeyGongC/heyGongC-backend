@@ -8,7 +8,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@SpringBootTest
+@SpringBootTest(properties = "classpath:application-test.yml")
 @ActiveProfiles("test")
 class HeyGongCBackendApplicationTests {
 
