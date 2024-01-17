@@ -53,7 +53,7 @@ jobs:
 
       # Spring boot application 빌드
       - name: Build with gradle
-        run: ./gradlew clean build --scan --warning-mode all
+        run: ./gradlew clean build
         env:
           spring.datasource.url: ${{ secrets.PROD_DB_URL }}
           spring.datasource.username: ${{ secrets.PROD_DB_USERNAME }}
