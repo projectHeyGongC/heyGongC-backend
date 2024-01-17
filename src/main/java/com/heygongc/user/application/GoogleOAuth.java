@@ -21,13 +21,11 @@ public class GoogleOAuth {
     private String GOOGLE_CLIENT_ID;
     @Value("${google.client.secret}")
     private String GOOGLE_CLIENT_SECRET;
-    @Value("${google.client.redirect-uri}")
-    private String GOOGLE_LOGIN_REDIRECT_URI;
 
     public String getLoginUrl() {
         return "https://accounts.google.com/o/oauth2/v2/auth?"
                 + "client_id=" + GOOGLE_CLIENT_ID
-                + "&redirect_uri=" + GOOGLE_LOGIN_REDIRECT_URI
+                + "&redirect_uri=http://localhost:8080/v1/user/google/loginCallback"
                 + "&response_type=code"
                 + "&scope=email profile"
                 + "&access_type=offline"
@@ -38,7 +36,7 @@ public class GoogleOAuth {
         return googleOAuthFeignClient.getToken(code,
                                                 GOOGLE_CLIENT_ID,
                                                 GOOGLE_CLIENT_SECRET,
-                                                GOOGLE_LOGIN_REDIRECT_URI,
+                                                "http://localhost:8080/v1/user/google/loginCallback",
                                                 "authorization_code");
     }
 
