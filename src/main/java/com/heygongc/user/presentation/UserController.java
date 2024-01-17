@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "User API", description = "유저 API")
 @RestController
-@RequestMapping("/v1/user")
+@RequestMapping("/v1/users")
 public class UserController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -70,7 +70,7 @@ public class UserController {
         return ResponseEntity.ok().body(tokenResponse);
     }
 
-    @PostMapping("/unRegister")
+    @PostMapping("/unregister")
     @Operation(
             summary = "사용자 탈퇴",
             description = "액세스 토큰을 이용해 회원탈퇴 처리합니다.",
@@ -80,14 +80,14 @@ public class UserController {
                     @ApiResponse(responseCode = "403", description = "새로운 로그인이 존재하는 경우", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
             }
     )
-    public ResponseEntity<Void> unRegister(
+    public ResponseEntity<Void> unregister(
             @Parameter(hidden = true) @LoginUser User user) {
         Long userSeq = user.getSeq();
         userService.unRegister(userSeq);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/refreshAccessToken")
+    @PostMapping("/token/refresh")
     @Operation(
             summary = "액세스 토큰 재발급",
             description = "갱신 토큰을 이용해 액세스 토큰을 재발급합니다.",
@@ -103,7 +103,7 @@ public class UserController {
         return ResponseEntity.ok().body(accessToken);
     }
 
-    @GetMapping("/getUserInfo")
+    @GetMapping("/info")
     @Operation(
             summary = "사용자 정보 조회",
             description = "액세스 토큰을 이용해 사용자 정보를 조회합니다.",
