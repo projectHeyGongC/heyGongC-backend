@@ -90,7 +90,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.WAS_SSH_PORT }}
           script: |
-            docker stop $(docker ps -a -q) 
-            docker rm $(docker ps -a -q) 
-            docker pull hey0c/heygongc-backend:0.0.1
-            docker run -d -p 8080:8080 --name heygongc-backend hey0c/heygongc-backend:0.0.1
+            sudo docker stop $(docker ps -a -q) 
+            sudo docker rm $(docker ps -a -q) 
+            sudo docker pull hey0c/heygongc-backend:0.0.1
+            sudo docker run -d -p 8080:8080 --name heygongc-backend hey0c/heygongc-backend:0.0.1
