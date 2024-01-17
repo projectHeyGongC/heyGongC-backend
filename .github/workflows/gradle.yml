@@ -24,10 +24,10 @@ jobs:
       - name: Set Yaml
         uses: microsoft/variable-substitution@v1
         with:
-          files: ./src/main/resources/config/application-prod.yml 
+          files: ./src/main/resources/config/application-prod.yml
         env:
-          spring.datasource.url: ${{ secrets.PROD_DB_URL }} 
-          spring.datasource.username: ${{ secrets.PROD_DB_USERNAME }} 
+          spring.datasource.url: ${{ secrets.PROD_DB_URL }}
+          spring.datasource.username: ${{ secrets.PROD_DB_USERNAME }}
           spring.datasource.password: ${{ secrets.PROD_DB_PASSWORD }}
           spring.datasource.driver-class-name: ${{ secrets.PROD_DB_DRIVER_NAME }}
           google.client.id: ${{ secrets.GOOGLE_CLIENT_ID }}
@@ -35,6 +35,9 @@ jobs:
           jwt.secret: ${{ secrets.JWT_SECRET }}
           jwt.access.expiration: ${{ secrets.JWT_ACCESS_EXPIRATION }}
           jwt.refresh.expiration: ${{ secrets.JWT_REFRESH_EXPIRATION }}
+          
+      - name: Copy Main Config to Test
+        run: cp ./src/main/resources/config/application-prod.yml ./src/test/resources/config/application-prod.yml
       
       # Gradle 실행권한 부여
       - name: Grant execute permission to gradlew
