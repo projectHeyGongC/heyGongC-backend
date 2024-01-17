@@ -21,13 +21,28 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
           
-      - name: Set Yaml
+      - name: Set Main Yaml
         uses: microsoft/variable-substitution@v1
         with:
-          files: ./src/main/resources/application-prod.yml 
+          files: ./src/main/resources/config/application-prod.yml
         env:
-          spring.datasource.url: ${{ secrets.PROD_DB_URL }} 
-          spring.datasource.username: ${{ secrets.PROD_DB_USERNAME }} 
+          spring.datasource.url: ${{ secrets.PROD_DB_URL }}
+          spring.datasource.username: ${{ secrets.PROD_DB_USERNAME }}
+          spring.datasource.password: ${{ secrets.PROD_DB_PASSWORD }}
+          spring.datasource.driver-class-name: ${{ secrets.PROD_DB_DRIVER_NAME }}
+          google.client.id: ${{ secrets.GOOGLE_CLIENT_ID }}
+          google.client.secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          jwt.secret: ${{ secrets.JWT_SECRET }}
+          jwt.access.expiration: ${{ secrets.JWT_ACCESS_EXPIRATION }}
+          jwt.refresh.expiration: ${{ secrets.JWT_REFRESH_EXPIRATION }}
+          
+      - name: Set Test Yaml
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: ./src/test/resources/config/application-prod.yml
+        env:
+          spring.datasource.url: ${{ secrets.PROD_DB_URL }}
+          spring.datasource.username: ${{ secrets.PROD_DB_USERNAME }}
           spring.datasource.password: ${{ secrets.PROD_DB_PASSWORD }}
           spring.datasource.driver-class-name: ${{ secrets.PROD_DB_DRIVER_NAME }}
           google.client.id: ${{ secrets.GOOGLE_CLIENT_ID }}
