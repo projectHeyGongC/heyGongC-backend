@@ -39,7 +39,7 @@ public class UserController {
             description = "구글/애플 액세스 토큰을 이용해 사용자를 조회하여 로그인합니다.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK(로그인 성공)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TokenResponse.class))),
-                    @ApiResponse(responseCode = "204", description = "OK(회원가입 필요)")
+                    @ApiResponse(responseCode = "204", description = "OK(회원가입 필요)", content = @Content)
             }
     )
     public ResponseEntity<TokenResponse> login(
@@ -75,7 +75,7 @@ public class UserController {
             summary = "사용자 탈퇴",
             description = "액세스 토큰을 이용해 회원탈퇴 처리합니다.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "OK"),
+                    @ApiResponse(responseCode = "200", description = "OK", content = @Content),
                     @ApiResponse(responseCode = "401", description = "유효하지 않은 토큰", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
                     @ApiResponse(responseCode = "403", description = "새로운 로그인이 존재하는 경우", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
             }
