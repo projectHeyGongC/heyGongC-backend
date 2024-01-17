@@ -53,7 +53,7 @@ jobs:
 
       # Spring boot application 빌드
       - name: Build with gradle
-        run: ./gradlew clean build
+        run: ./gradlew clean build --debug
         env:
           PROD_DB_URL: ${{ secrets.PROD_DB_URL }}
           PROD_DB_USERNAME: ${{ secrets.PROD_DB_USERNAME }}
