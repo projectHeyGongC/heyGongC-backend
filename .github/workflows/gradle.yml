@@ -55,15 +55,15 @@ jobs:
       - name: Build with gradle
         run: ./gradlew clean build
         env:
-          spring.datasource.url: ${{ secrets.PROD_DB_URL }}
-          spring.datasource.username: ${{ secrets.PROD_DB_USERNAME }}
-          spring.datasource.password: ${{ secrets.PROD_DB_PASSWORD }}
-          spring.datasource.driver-class-name: ${{ secrets.PROD_DB_DRIVER_NAME }}
-          google.client.id: ${{ secrets.GOOGLE_CLIENT_ID }}
-          google.client.secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-          jwt.secret: ${{ secrets.JWT_SECRET }}
-          jwt.access.expiration: ${{ secrets.JWT_ACCESS_EXPIRATION }}
-          jwt.refresh.expiration: ${{ secrets.JWT_REFRESH_EXPIRATION }}
+          PROD_DB_URL: ${{ secrets.PROD_DB_URL }}
+          PROD_DB_USERNAME: ${{ secrets.PROD_DB_USERNAME }}
+          PROD_DB_PASSWORD: ${{ secrets.PROD_DB_PASSWORD }}
+          PROD_DB_DRIVER_NAME: ${{ secrets.PROD_DB_DRIVER_NAME }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          JWT_ACCESS_EXPIRATION: ${{ secrets.JWT_ACCESS_EXPIRATION }}
+          JWT_REFRESH_EXPIRATION: ${{ secrets.JWT_REFRESH_EXPIRATION }}
 
       # docker image 빌드
       - name: Build docker image
