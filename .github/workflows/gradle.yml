@@ -30,6 +30,7 @@ jobs:
           spring.datasource.username: ${{ secrets.PROD_DB_USERNAME }}
           spring.datasource.password: ${{ secrets.PROD_DB_PASSWORD }}
           spring.datasource.driver-class-name: ${{ secrets.PROD_DB_DRIVER_NAME }}
+          spring.jpa.properties.hibernate.default_schema: ${{ secrets.PROD_DB_DEFAULT_SCHEMA }}
           google.client.id: ${{ secrets.GOOGLE_CLIENT_ID }}
           google.client.secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           jwt.secret: ${{ secrets.JWT_SECRET }}
