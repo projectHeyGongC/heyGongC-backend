@@ -17,4 +17,5 @@ public interface GoogleOAuth {
 
     @PostMapping(value = "/tokeninfo")
     GoogleUserResponse getUser(@RequestParam("access_token") String accessToken);
+
 }
