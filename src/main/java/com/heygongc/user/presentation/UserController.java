@@ -2,7 +2,6 @@ package com.heygongc.user.presentation;
 
 import com.heygongc.global.argumentresolver.LoginUser;
 import com.heygongc.global.error.ErrorResponse;
-import com.heygongc.global.interceptor.Auth;
 import com.heygongc.user.application.AuthToken;
 import com.heygongc.user.application.UserService;
 import com.heygongc.user.domain.User;
@@ -10,6 +9,7 @@ import com.heygongc.user.presentation.request.RefreshAccessTokenRequest;
 import com.heygongc.user.presentation.request.UserLoginRequest;
 import com.heygongc.user.presentation.request.UserRegisterRequest;
 import com.heygongc.user.presentation.response.TokenResponse;
+import com.heygongc.user.presentation.response.UserResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "User API", description = "유저 API")
 @RestController
-@RequestMapping("/v1/user")
+@RequestMapping("/v1/users")
 public class UserController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -33,43 +33,13 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/{snsType}/getLoginUrl")
-    @Operation(
-            summary = "SNS 로그인 URL 조회",
-            description = "구글/애플 로그인 URL을 조회합니다.",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)))
-            }
-    )
-    public ResponseEntity<String> getLoginUrl(
-            @Parameter(name = "snsType", description = "SNS타입(google/apple)", required = true, in = ParameterIn.PATH) @PathVariable(name="snsType") String snsType) {
-        String loginUrl = userService.getLoginUrl(snsType);
-        return ResponseEntity.ok().body(loginUrl);
-    }
-
-    @GetMapping("/{snsType}/loginCallback")
-    @Operation(
-            summary = "SNS 사용자 정보 조회",
-            description = "구글/애플 로그인 Callback 함수로, 리턴받은 code를 이용해 사용자를 조회합니다.",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TokenResponse.class)))
-            }
-    )
-    public ResponseEntity<TokenResponse> loginCallback(
-            @Parameter(description = "SNS타입(google/apple)", required = true, in = ParameterIn.PATH) @PathVariable(name="snsType") String snsType,
-            @Parameter(description = "code (토큰값)", required = true, in = ParameterIn.QUERY) @RequestParam(value = "code") String code) {
-        AuthToken authToken = userService.getToken(snsType, code);
-        TokenResponse tokenResponse = new TokenResponse(authToken.getAccessToken(), authToken.getRefreshToken());
-        return ResponseEntity.ok().body(tokenResponse);
-    }
-
     @PostMapping("/{snsType}/login")
     @Operation(
             summary = "사용자 로그인",
             description = "구글/애플 액세스 토큰을 이용해 사용자를 조회하여 로그인합니다.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK(로그인 성공)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TokenResponse.class))),
-                    @ApiResponse(responseCode = "204", description = "OK(회원가입 필요)")
+                    @ApiResponse(responseCode = "204", description = "OK(회원가입 필요)", content = @Content)
             }
     )
     public ResponseEntity<TokenResponse> login(
@@ -100,30 +70,29 @@ public class UserController {
         return ResponseEntity.ok().body(tokenResponse);
     }
 
-    @Auth
-    @PostMapping("/unRegister")
+    @PostMapping("/unregister")
     @Operation(
             summary = "사용자 탈퇴",
             description = "액세스 토큰을 이용해 회원탈퇴 처리합니다.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "OK"),
+                    @ApiResponse(responseCode = "200", description = "OK", content = @Content),
                     @ApiResponse(responseCode = "401", description = "유효하지 않은 토큰", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
                     @ApiResponse(responseCode = "403", description = "새로운 로그인이 존재하는 경우", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
             }
     )
-    public ResponseEntity<Void> unRegister(
+    public ResponseEntity<Void> unregister(
             @Parameter(hidden = true) @LoginUser User user) {
         Long userSeq = user.getSeq();
         userService.unRegister(userSeq);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/refreshAccessToken")
+    @PostMapping("/token/refresh")
     @Operation(
             summary = "액세스 토큰 재발급",
             description = "갱신 토큰을 이용해 액세스 토큰을 재발급합니다.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "OK(액세스 토큰 반환)", content = @Content(mediaType = "application/json", schema = @Schema(description = "accessToken", implementation = String.class))),
+                    @ApiResponse(responseCode = "200", description = "OK(액세스 토큰 반환)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))),
                     @ApiResponse(responseCode = "401", description = "유효하지 않은 토큰", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
                     @ApiResponse(responseCode = "403", description = "새로운 로그인이 존재하는 경우", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
             }
@@ -132,5 +101,28 @@ public class UserController {
             @Parameter(name = "RefreshAccessTokenRequest", description = "토큰 갱신 요청 정보", required = true, in = ParameterIn.HEADER) @RequestBody RefreshAccessTokenRequest request) {
         String accessToken = userService.refreshAccessToken(request.refreshToken());
         return ResponseEntity.ok().body(accessToken);
+    }
+
+    @GetMapping("/info")
+    @Operation(
+            summary = "사용자 정보 조회",
+            description = "액세스 토큰을 이용해 사용자 정보를 조회합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class))),
+                    @ApiResponse(responseCode = "401", description = "유효하지 않은 토큰", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
+                    @ApiResponse(responseCode = "403", description = "새로운 로그인이 존재하는 경우", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+            }
+    )
+    public ResponseEntity<UserResponse> getUserInfo(
+        @Parameter(hidden = true) @LoginUser User user) {
+        UserResponse userResponse = new UserResponse(
+                user.getDeviceId(),
+                user.getDeviceOs(),
+                user.getSnsType().name(),
+                user.getEmail(),
+                user.getAlarm(),
+                user.getAds()
+        );
+        return ResponseEntity.ok().body(userResponse);
     }
 }

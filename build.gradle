@@ -38,6 +38,9 @@ dependencies {
     // openfeign
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.1.0'
 
+    // postgresql
+    implementation 'org.postgresql:postgresql:42.6.0'
+
     // jjwt
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
     implementation 'com.sun.xml.bind:jaxb-impl:4.0.1'
@@ -59,4 +62,9 @@ dependencyManagement {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+// plain.jar 파일 생기지 않도록
+jar {
+    enabled = false
 }

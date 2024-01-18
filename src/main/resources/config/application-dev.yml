@@ -1,0 +1,27 @@
+spring:
+  config:
+    import: classpath:/config/secret.yml
+
+  datasource:
+    url: ${dev.spring.datasource.url}
+    username: ${dev.spring.datasource.username}
+    password: ${dev.spring.datasource.password}
+    driver-class-name: ${dev.spring.datasource.driver-class-name}
+
+  jpa:
+    properties.hibernate.default_schema: ${dev.spring.jpa.properties.hibernate.default_schema}
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        ddl-auto: validate # DB - Spring Entity 유효성 체크
+
+google:
+  client:
+    id: ${google.client.id}
+    secret: ${google.client.secret}
+
+jwt:
+  secret: ${jwt.secret}
+  access.expiration: ${jwt.access.expiration}
+  refresh.expiration: ${jwt.refresh.expiration}
