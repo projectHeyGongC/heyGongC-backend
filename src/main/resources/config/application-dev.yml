@@ -1,15 +1,12 @@
 spring:
-  config:
-    import: classpath:/config/secret.yml
-
   datasource:
-    url: ${dev.spring.datasource.url}
-    username: ${dev.spring.datasource.username}
-    password: ${dev.spring.datasource.password}
-    driver-class-name: ${dev.spring.datasource.driver-class-name}
+    url: ${DEV_DB_URL}
+    username: ${DEV_DB_USERNAME}
+    password: ${DEV_DB_PASSWORD}
+    driver-class-name: ${DEV_DB_DRIVER_NAME}
 
   jpa:
-    properties.hibernate.default_schema: ${dev.spring.jpa.properties.hibernate.default_schema}
+    properties.hibernate.default_schema: ${DEV_DB_DEFAULT_SCHEMA}
     show-sql: true
     properties:
       hibernate:
@@ -18,10 +15,10 @@ spring:
 
 google:
   client:
-    id: ${google.client.id}
-    secret: ${google.client.secret}
+    id: ${GOOGLE_CLIENT_ID}
+    secret: ${GOOGLE_CLIENT_SECRET}
 
 jwt:
-  secret: ${jwt.secret}
-  access.expiration: ${jwt.access.expiration}
-  refresh.expiration: ${jwt.refresh.expiration}
+  secret: ${JWT_SECRET}
+  access.expiration: ${JWT_ACCESS_EXPIRATION}
+  refresh.expiration: ${JWT_REFRESH_EXPIRATION}
