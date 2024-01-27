@@ -1,6 +1,5 @@
 package com.heygongc.user.domain;
 
-import com.heygongc.device.domain.Device;
 import com.heygongc.global.config.BaseTimeEntity;
 import com.heygongc.user.application.UserSnsType;
 import jakarta.persistence.*;
@@ -8,8 +7,6 @@ import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 import static lombok.AccessLevel.PROTECTED;
 
@@ -51,14 +48,11 @@ public class User extends BaseTimeEntity {
     private LocalDateTime deletedAt;
 
     @Column(name = "alarm", nullable = false)
-    private boolean alarm;
+    private Boolean alarm;
 
     @Column(name = "fcm_token")
     private String fcmToken;
 
     @Column(name = "ads", nullable = false)
-    private boolean ads;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Device> devices = new ArrayList<>();
+    private Boolean ads;
 }

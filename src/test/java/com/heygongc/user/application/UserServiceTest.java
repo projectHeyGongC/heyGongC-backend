@@ -4,13 +4,14 @@ import com.heygongc.user.domain.User;
 import com.heygongc.user.domain.UserRepository;
 import com.heygongc.user.domain.UserToken;
 import com.heygongc.user.domain.UserTokenRepository;
-import com.heygongc.user.exception.EmailSigninException;
+import com.heygongc.user.exception.AlreadyLeftException;
+import com.heygongc.user.exception.AlreadySignUpException;
+import com.heygongc.user.exception.NewLoginDetectedException;
 import com.heygongc.user.exception.UserNotFoundException;
 import com.heygongc.user.presentation.request.TokenRequest;
 import com.heygongc.user.presentation.request.UserLoginRequest;
 import com.heygongc.user.presentation.request.UserRegisterRequest;
 import com.heygongc.user.presentation.response.GoogleUserResponse;
-import com.heygongc.user.presentation.response.TokenResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,7 +27,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -109,12 +110,12 @@ class UserServiceTest {
         when(jwtUtil.generateRefreshToken(anyString(), anyString())).thenReturn("mockJwtRefreshTokenResponse");
 
         // when
-        TokenResponse result = userService.login("google", userLoginRequest);
+        AuthToken result = userService.login("google", userLoginRequest);
 
         // then
         assertNotNull(result);
-        assertEquals("mockJwtAccessTokenResponse", result.accessToken());
-        assertEquals("mockJwtRefreshTokenResponse", result.refreshToken());
+        assertEquals("mockJwtAccessTokenResponse", result.getAccessToken());
+        assertEquals("mockJwtRefreshTokenResponse", result.getRefreshToken());
     }
 
     @Test
@@ -131,7 +132,7 @@ class UserServiceTest {
         when(googleOAuth.getUser(anyString())).thenReturn(googleUserResponse);
 
         // when
-        TokenResponse result = userService.login("google", userLoginRequest);
+        AuthToken result = userService.login("google", userLoginRequest);
 
         // then
         assertNull(result);
@@ -156,12 +157,12 @@ class UserServiceTest {
         when(jwtUtil.generateRefreshToken(anyString(), anyString())).thenReturn("mockJwtRefreshTokenResponse");
 
         // when
-        TokenResponse result = userService.register("google", userRegisterRequest);
+        AuthToken result = userService.register("google", userRegisterRequest);
 
         // then
         assertNotNull(result);
-        assertEquals("mockJwtAccessTokenResponse", result.accessToken());
-        assertEquals("mockJwtRefreshTokenResponse", result.refreshToken());
+        assertEquals("mockJwtAccessTokenResponse", result.getAccessToken());
+        assertEquals("mockJwtRefreshTokenResponse", result.getRefreshToken());
     }
 
     @Test
@@ -182,7 +183,7 @@ class UserServiceTest {
         when(googleOAuth.getUser(anyString())).thenReturn(googleUserResponse);
 
         // when
-        assertThrows(EmailSigninException.class, () -> userService.register("google", userRegisterRequest));
+        assertThrows(AlreadySignUpException.class, () -> userService.register("google", userRegisterRequest));
     }
 
     @Test
@@ -192,10 +193,10 @@ class UserServiceTest {
         when(userRepository.save(any(User.class))).thenReturn(user);
 
         // when
-        Boolean result = userService.unRegister(1L);
+        userService.unRegister(1L);
 
         // then
-        assertTrue(result);
+        verify(userRepository, times(1)).save(user);
     }
 
     @Test
@@ -216,6 +217,38 @@ class UserServiceTest {
         when(userRepository.findById(any())).thenReturn(Optional.ofNullable(user));
 
         // when
-        assertThrows(UserNotFoundException.class, () -> userService.unRegister(1L));
+        assertThrows(AlreadyLeftException.class, () -> userService.unRegister(1L));
+    }
+
+    @Test
+    public void 토큰_재발급_성공_테스트() {
+        // given
+        when(jwtUtil.isValidToken(any())).thenReturn(true);
+        when(jwtUtil.extractUserSeq(any())).thenReturn(user.getSeq());
+        when(jwtUtil.extractDeviceId(any())).thenReturn(user.getDeviceId());
+        when(userRepository.findById(any())).thenReturn(Optional.ofNullable(user));
+        when(userTokenRepository.findByUserSeq(any())).thenReturn(Optional.ofNullable(userToken));
+        when(jwtUtil.generateAccessToken(any(),any())).thenReturn("newAccessToken");
+
+        // when
+        String token = userService.refreshAccessToken(userToken.getToken());
+
+        // then
+        assertNotNull(token);
+        assertEquals("newAccessToken", token);
+    }
+
+    @Test
+    // 신규 사용자 로그인으로 인한 실패 테스트
+    public void 토큰_재발급_신규로그인_실패_테스트() {
+        // given
+        when(jwtUtil.isValidToken(any())).thenReturn(true);
+        when(jwtUtil.extractUserSeq(any())).thenReturn(user.getSeq());
+        when(jwtUtil.extractDeviceId(any())).thenReturn(user.getDeviceId());
+        when(userRepository.findById(any())).thenReturn(Optional.ofNullable(user));
+        when(userTokenRepository.findByUserSeq(any())).thenReturn(Optional.ofNullable(userToken));
+
+        // when
+        assertThrows(NewLoginDetectedException.class, () -> userService.refreshAccessToken("newAccessToken"));
     }
 }

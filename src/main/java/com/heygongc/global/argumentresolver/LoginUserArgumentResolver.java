@@ -1,4 +1,4 @@
-package com.heygongc.global.interceptor;
+package com.heygongc.global.argumentresolver;
 
 import com.heygongc.global.error.exception.ForbiddenException;
 import com.heygongc.global.error.exception.UnauthenticatedException;
@@ -9,35 +9,39 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.method.HandlerMethod;
-import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.core.MethodParameter;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.support.WebDataBinderFactory;
+import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.method.support.ModelAndViewContainer;
 
 import java.util.Optional;
 
-public class Interceptor implements HandlerInterceptor {
+@Component
+public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
 
-    public Interceptor(JwtUtil jwtUtil, UserRepository userRepository) {
+    public LoginUserArgumentResolver(JwtUtil jwtUtil, UserRepository userRepository) {
         this.jwtUtil = jwtUtil;
         this.userRepository = userRepository;
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        // Controller 실행 전
+    public boolean supportsParameter(MethodParameter parameter) {
+        boolean hasLoginUserAnnotation = parameter.hasParameterAnnotation(LoginUser.class);
+        boolean isUserType = User.class.isAssignableFrom(parameter.getParameterType());
+        return hasLoginUserAnnotation && isUserType;
+    }
 
-        // 비로그인 컨트롤러는 정상처리
-        if (!isLoginController(handler)) {
-            return true;
-        }
-
-        // 로그인 컨트롤러는 jwt 토큰 검증
+    @Override
+    public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
+        HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         String accessToken = jwtUtil.extractTokenFromHeader(request.getHeader("Authorization"));
 
         // 유효하지 않은 토큰이면 로그인 페이지로 리디렉션
@@ -59,20 +63,7 @@ public class Interceptor implements HandlerInterceptor {
             throw new ForbiddenException("사용자를 찾을 수 없습니다.");
         }
 
-        // DB의 deviceId와 토큰값이 다를 경우
-        if (!deviceId.equals(user.get().getDeviceId())) {
-            throw new ForbiddenException("새로운 로그인이 감지되었습니다.");
-        }
+        return user.get();
 
-        return true;
-    }
-
-    private boolean isLoginController(Object handler) {
-        if (!(handler instanceof HandlerMethod handlerMethod)) {
-            return false;
-        }
-
-        IsLogin isLogin = handlerMethod.getMethodAnnotation(IsLogin.class);
-        return isLogin != null;
     }
 }
