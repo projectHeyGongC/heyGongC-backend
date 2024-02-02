@@ -60,7 +60,8 @@ public class RequestResponseFilter extends OncePerRequestFilter {
     }
 
     private static void logResponse(ContentCachingResponseWrapper response) throws IOException {
-        logPayload("Response", response.getContentType(), response.getContentInputStream());
+        String prefix = "Response Status Code: " + response.getStatus();
+        logPayload(prefix, response.getContentType(), response.getContentInputStream());
     }
 
     private static void logPayload(String prefix, String contentType, InputStream inputStream) throws IOException {
