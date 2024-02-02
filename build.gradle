@@ -50,6 +50,8 @@ dependencies {
     // Swagger
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
 
+    // junit test (h2는 local, test 환경에서만)
+    runtimeOnly 'com.h2database:h2'
     testRuntimeOnly 'com.h2database:h2'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
