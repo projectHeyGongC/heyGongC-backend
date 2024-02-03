@@ -2,6 +2,20 @@ package com.heygongc.device.presentation;
 
 import com.heygongc.device.application.DeviceService;
 import com.heygongc.device.domain.Device;
+import com.heygongc.device.presentation.request.DeviceInfoRequest;
+import com.heygongc.device.presentation.response.DeviceResponse;
+import com.heygongc.global.argumentresolver.LoginUser;
+import com.heygongc.global.common.response.ListResponse;
+import com.heygongc.user.domain.User;
+import com.heygongc.user.presentation.response.TokenResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,59 +24,119 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+@Tag(name = "Device API", description = "기기 API")
 @RestController
 @RequestMapping("/v1/device")
 public class DeviceController {
 
-    @Autowired
-    private DeviceService deviceService;
+    private final DeviceService deviceService;
+
+    public DeviceController(DeviceService deviceService) {
+        this.deviceService = deviceService;
+    }
 
     @GetMapping
-    public ResponseEntity<List<Device>> getAllDevice(HttpServletRequest request){
-        Long userSeq = Long.valueOf((String) request.getAttribute("userSeq"));
+    @Operation(
+            summary = "기기 목록",
+            description = "해당 유저의 모든 기기 목록을 나열합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ListResponse.class))),
+            }
+    )
+    public ResponseEntity<ListResponse<Device>> getAllDevice(@Parameter(hidden = true) @LoginUser User user){
+        Long userSeq = user.getSeq();
         List<Device> devices = deviceService.getAllDevices(userSeq);
+        ListResponse<Device> deviceList = new ListResponse<Device>(
+                devices
+        );
 
-        return ResponseEntity.ok().body(devices);
+        return ResponseEntity.ok().body(deviceList);
     }
 
     @PostMapping
-    public ResponseEntity<Device> addDevice(HttpServletRequest request, String qrCode, String deviceName){
-        Long userSeq = Long.valueOf((String) request.getAttribute("userSeq"));
-        Device device = deviceService.addDevice(userSeq, qrCode, deviceName);
+    @Operation(
+            summary = "기기 추가",
+            description = "QR코드를 스캔하여 기기를 추가합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DeviceResponse.class))),
 
-        return ResponseEntity.ok().body(device);
+            }
+    )
+    public ResponseEntity<DeviceResponse> addDevice(
+            @Parameter(hidden = true) @LoginUser User user,
+            @RequestBody(description = "기기 정보") DeviceInfoRequest request){
+        DeviceResponse deviceResponse = deviceService.addDevice(user, request);
+
+        return ResponseEntity.ok().body(deviceResponse);
     }
 
     @DeleteMapping
-    public ResponseEntity<Boolean> deleteAllDevice(HttpServletRequest request) {
-        Long userSeq = Long.valueOf((String) request.getAttribute("userSeq"));
-        Boolean result = deviceService.deleteAllDevices(userSeq);
+    @Operation(
+            summary = "모든 기기 삭제",
+            description = "해당 유저의 모든 기기를 삭제합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK", content = @Content)
+            }
+    )
+    public ResponseEntity<Void> deleteAllDevice(@Parameter(hidden = true) @LoginUser User user) {
+        Long userSeq = user.getSeq();
+        deviceService.deleteAllDevices(userSeq);
 
-        return ResponseEntity.ok().body(result);
+        return ResponseEntity.ok().build();
     }
 
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<Device>> getDevice(@PathVariable(name = "id") Long deviceSeq) {
-        Optional<Device> device = deviceService.getDevice(deviceSeq);
+    @Operation(
+            summary = "기기 선택",
+            description = "해당 기기의 정보를 가져옵니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DeviceResponse.class)))
 
-        return ResponseEntity.ok().body(device);
+            }
+    )
+    public ResponseEntity<DeviceResponse> getDevice(
+            @Parameter(description = "기기 아이디", required = true, in = ParameterIn.PATH) @PathVariable(name = "id") Long deviceSeq) {
+        DeviceResponse deviceResponse = deviceService.getDevice(deviceSeq);
+
+
+        return ResponseEntity.ok().body(deviceResponse);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Device> updateDevice(@PathVariable(name = "id") Long deviceSeq, String deviceName, HttpServletRequest request) {
-        Long userSeq = Long.valueOf((String) request.getAttribute("userSeq"));
-        Device device = deviceService.updateDevice(deviceSeq, userSeq, deviceName);
+    @Operation(
+            summary = "기기 정보 수정",
+            description = "해당 기기의 이름을 수정합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DeviceResponse.class)))
+            }
+    )
+    public ResponseEntity<DeviceResponse> updateDevice(
+            @Parameter(description = "기기 아이디", required = true, in = ParameterIn.PATH) @PathVariable(name = "id") Long deviceSeq,
+            @Parameter(description = "수정된 기기 이름", required = true) @RequestParam(name = "deviceName") String deviceName) {
+        Device device = deviceService.updateDevice(deviceSeq, deviceName);
+        DeviceResponse deviceResponse = new DeviceResponse(
+                device.getUser().getSeq(),
+                device.getType(),
+                device.getName()
+        );
 
-        return ResponseEntity.ok().body(device);
+        return ResponseEntity.ok().body(deviceResponse);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> deleteDevice(@PathVariable(name = "id") Long deviceSeq, HttpServletRequest request ) {
-        Long userSeq = Long.valueOf((String) request.getAttribute("userSeq"));
-        Boolean result = deviceService.deleteDevice(deviceSeq, userSeq);
+    @Operation(
+            summary = "기기 삭제",
+            description = "해당 기기를 삭제합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK", content = @Content)
+            }
+    )
+    public ResponseEntity<Void> deleteDevice(
+            @Parameter(description = "기기 아이디", required = true, in = ParameterIn.PATH) @PathVariable(name = "id") Long deviceSeq) {
+        deviceService.deleteDevice(deviceSeq);
 
-        return ResponseEntity.ok().body(result);
+        return ResponseEntity.ok().build();
     }
 }

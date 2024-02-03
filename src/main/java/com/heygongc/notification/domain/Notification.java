@@ -18,6 +18,7 @@ import jakarta.persistence.*;
 @AllArgsConstructor
 @Table(name = "notification")
 public class Notification extends BaseTimeEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "event_seq")
@@ -27,7 +28,7 @@ public class Notification extends BaseTimeEntity {
     private String content;
 
     @Column(nullable = false)
-    private boolean read_status;
+    private boolean readStatus;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
