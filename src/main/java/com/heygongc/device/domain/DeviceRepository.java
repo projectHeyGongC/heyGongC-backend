@@ -10,6 +10,5 @@ import java.util.List;
 public interface DeviceRepository extends JpaRepository<Device, Long> {
 
     List<Device> findAllByUserSeq(Long userSeq);
-    @Transactional
     void deleteAllByUserSeq(Long userSeq);
 }

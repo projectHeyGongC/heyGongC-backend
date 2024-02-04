@@ -6,6 +6,7 @@ import com.heygongc.notification.domain.Notification;
 import com.heygongc.user.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,33 +17,35 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@DynamicUpdate
 @Table(name = "device")
 public class Device extends BaseTimeEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "device_seq")
     private Long deviceSeq;
 
-    @Column(nullable = false)
+    @Column(name = "type", nullable = false)
     private String type;
 
-    @Column(nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(name = "sound_mode", nullable = false)
     private boolean soundMode;
 
-    @Column(nullable = false)
+    @Column(name = "sensitivity", nullable = false)
     @Enumerated(EnumType.STRING)
     private DeviceSensitivityEnum sensitivity;
 
-    @Column(nullable = false)
+    @Column(name = "sound_active", nullable = false)
     private boolean soundActive;
 
-    @Column(nullable = false)
+    @Column(name = "stream_active", nullable = false)
     private boolean streamActive;
 
-    @Column(nullable = false)
+    @Column(name = "front_camera", nullable = false)
     private boolean frontCamera;
 
     @ManyToOne(fetch = FetchType.LAZY)

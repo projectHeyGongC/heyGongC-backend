@@ -18,8 +18,6 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
     List<Notification> findTop101ByTypeEnumOrderByCreatedAtDesc(NotificationTypeEnum typeEnum);
 
-    @Transactional
-    @Modifying
     @Query("DELETE FROM Notification n WHERE n.created_at < :dateTime")
     void deleteOldNotifications(@Param("dateTime") LocalDateTime dateTime);
 

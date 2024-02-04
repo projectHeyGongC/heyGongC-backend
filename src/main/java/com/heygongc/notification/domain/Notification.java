@@ -9,6 +9,7 @@ import lombok.*;
 import com.heygongc.global.config.BaseTimeEntity;
 import com.heygongc.user.domain.User;
 import jakarta.persistence.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
 @Getter
@@ -16,6 +17,7 @@ import jakarta.persistence.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@DynamicUpdate
 @Table(name = "notification")
 public class Notification extends BaseTimeEntity {
 
@@ -24,13 +26,13 @@ public class Notification extends BaseTimeEntity {
     @Column(name = "event_seq")
     private Long eventSeq;
 
-    @Column(nullable = false)
+    @Column(name = "content", nullable = false)
     private String content;
 
-    @Column(nullable = false)
+    @Column(name = "read_status", nullable = false)
     private boolean readStatus;
 
-    @Column(nullable = false)
+    @Column(name = "type_enum", nullable = false)
     @Enumerated(EnumType.STRING)
     private NotificationTypeEnum typeEnum;
 

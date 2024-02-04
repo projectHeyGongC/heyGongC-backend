@@ -6,6 +6,7 @@ import com.heygongc.notification.domain.Notification;
 import com.heygongc.notification.domain.NotificationRepository;
 import com.heygongc.user.domain.User;
 import com.heygongc.user.domain.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -53,6 +54,7 @@ public class NotificationService  {
         return true;
     }
 
+    @Transactional
     public Boolean deleteOldNotifications(Long userSeq) {
 
         // Step 1: Delete notifications older than 30 days
