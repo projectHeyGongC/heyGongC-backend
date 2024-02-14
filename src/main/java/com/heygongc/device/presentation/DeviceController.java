@@ -66,8 +66,12 @@ public class DeviceController {
     public ResponseEntity<DeviceResponse> addDevice(
             @Parameter(hidden = true) @LoginUser User user,
             @RequestBody(description = "기기 정보") DeviceInfoRequest request){
-        DeviceResponse deviceResponse = deviceService.addDevice(user, request);
-
+        Device device = deviceService.addDevice(user, request);
+        DeviceResponse deviceResponse = new DeviceResponse(
+                user.getSeq(), // Assuming user has a getUserSeq() method
+                device.getType(),
+                device.getName()
+        );
         return ResponseEntity.ok().body(deviceResponse);
     }
 
@@ -100,10 +104,14 @@ public class DeviceController {
             }
     )
     public ResponseEntity<DeviceResponse> getDevice(
-            @Parameter(description = "기기 아이디", required = true, in = ParameterIn.PATH) @PathVariable(name = "id") Long deviceSeq,
+            @Parameter(description = "기기 시퀀스", required = true, in = ParameterIn.PATH) @PathVariable(name = "id") Long deviceSeq,
             @Parameter(hidden = true) @LoginUser User user) {
-        DeviceResponse deviceResponse = deviceService.getDevice(deviceSeq, user);
-
+        Device device = deviceService.getDevice(deviceSeq, user);
+        DeviceResponse deviceResponse = new DeviceResponse(
+                device.getUser().getSeq(),
+                device.getType(),
+                device.getName()
+        );
 
         return ResponseEntity.ok().body(deviceResponse);
     }
@@ -122,7 +130,13 @@ public class DeviceController {
             @Parameter(description = "기기 아이디", required = true, in = ParameterIn.PATH) @PathVariable(name = "id") Long deviceSeq,
             @Parameter(description = "수정된 기기 이름", required = true) @RequestParam(name = "deviceName") String deviceName,
             @Parameter(hidden = true) @LoginUser User user) {
-        DeviceResponse deviceResponse = deviceService.updateDevice(deviceSeq, deviceName, user);
+        Device device = deviceService.updateDevice(deviceSeq, deviceName, user);
+
+        DeviceResponse deviceResponse = new DeviceResponse(
+                device.getUser().getSeq(), // Assuming user has a getUserSeq() method
+                device.getType(),
+                device.getName()
+        );
 
         return ResponseEntity.ok().body(deviceResponse);
     }

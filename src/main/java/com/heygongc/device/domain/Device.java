@@ -53,6 +53,7 @@ public class Device extends BaseTimeEntity {
     private User user;
 
     @OneToMany(mappedBy = "notification", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<Notification> notifications = new ArrayList<>();
 
 

@@ -26,19 +26,12 @@ public class DeviceService{
 
 
 
-    public DeviceResponse getDevice(Long deviceSeq, User user) {
-        Device device = deviceRepository.findById(deviceSeq).orElseThrow(() -> new DeviceNotFoundException());
-
-        if(device.getUser().getSeq().equals(user.getSeq())) {
-            DeviceResponse deviceResponse = new DeviceResponse(
-                    device.getUser().getSeq(),
-                    device.getType(),
-                    device.getName()
-            );
-            return deviceResponse;
+    public Device getDevice(Long deviceSeq, User user) {
+        Device device = deviceRepository.findDeviceBySeqAndUser(deviceSeq, user);
+        if (device == null) {
+            throw new DeviceNotFoundException();
         }
-        throw new ForbiddenException();
-
+        return device;
     }
 
     public List<Device> getAllDevices(Long userSeq) {
@@ -46,7 +39,8 @@ public class DeviceService{
     }
 
 
-    public DeviceResponse addDevice(User user, DeviceInfoRequest request) {
+    public Device addDevice(User user, DeviceInfoRequest request) {
+
         String[] parts = request.deviceQR().split("_");
         Long parsedDeviceSeq = Long.parseLong(parts[0]);
         String type = parts[1];
@@ -64,47 +58,39 @@ public class DeviceService{
                 .build();
         deviceRepository.save(device);
 
-        DeviceResponse deviceResponse = new DeviceResponse(
-                user.getSeq(), // Assuming user has a getUserSeq() method
-                device.getType(),
-                device.getName()
-        );
 
 
 
-        return deviceResponse;
+
+        return device;
     }
 
-    public DeviceResponse updateDevice(Long deviceSeq, String deviceName, User user) {
-        Device device = deviceRepository.findById(deviceSeq)
-                .orElseThrow(() -> new DeviceNotFoundException());
+    @Transactional
+    public Device updateDevice(Long deviceSeq, String deviceName, User user) {
+        Device device = deviceRepository.findDeviceBySeqAndUser(deviceSeq, user);
+        if (device == null) {
+            throw new DeviceNotFoundException();
+        }
 
-        if (deviceName != null && device.getUser().getSeq().equals(user.getSeq()) ) {
+        if (deviceName != null) {
             device.setName(deviceName);
-
-
-            DeviceResponse deviceResponse = new DeviceResponse(
-                    device.getUser().getSeq(), // Assuming user has a getUserSeq() method
-                    device.getType(),
-                    device.getName()
-            );
-
-            return deviceResponse;
+            // Changes to 'device' are automatically tracked and persisted by JPA at transaction completion
+            return device;
+        } else {
+            throw new ForbiddenException();
         }
-
-        throw new ForbiddenException();
     }
 
+
+    @Transactional
     public void deleteDevice(Long deviceSeq, User user) {
-        Device device = deviceRepository.findById(deviceSeq)
-                .orElseThrow(() -> new DeviceNotFoundException());
+        Device device = deviceRepository.findDeviceBySeqAndUser(deviceSeq, user);
 
-        if(device.getUser().getSeq().equals(user.getSeq())) {
+        if (device != null) {
             deviceRepository.deleteById(deviceSeq);
+        } else {
+            throw new ForbiddenException();
         }
-
-        throw new ForbiddenException();
-
     }
 
     @Transactional

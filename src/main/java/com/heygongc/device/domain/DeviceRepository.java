@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface DeviceRepository extends JpaRepository<Device, Long> {
+public interface DeviceRepository extends JpaRepository<Device, Long>, CustomDeviceRepository {
 
     List<Device> findAllByUserSeq(Long userSeq);
     void deleteAllByUserSeq(Long userSeq);

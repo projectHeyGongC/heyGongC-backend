@@ -11,11 +11,13 @@ import com.heygongc.user.domain.User;
 import jakarta.persistence.*;
 import org.hibernate.annotations.DynamicUpdate;
 
+import static lombok.AccessLevel.PROTECTED;
+
 @Entity
 @Getter
 @Setter
 @Builder
-@NoArgsConstructor
+@NoArgsConstructor(access=PROTECTED) // No default constructor for entity 오류 해결을 위해 필요
 @AllArgsConstructor
 @DynamicUpdate
 @Table(name = "notification")

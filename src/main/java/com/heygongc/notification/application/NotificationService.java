@@ -2,8 +2,12 @@ package com.heygongc.notification.application;
 
 import com.heygongc.device.domain.Device;
 import com.heygongc.device.domain.DeviceRepository;
+import com.heygongc.device.exception.DeviceNotFoundException;
+import com.heygongc.global.error.exception.ForbiddenException;
 import com.heygongc.notification.domain.Notification;
 import com.heygongc.notification.domain.NotificationRepository;
+import com.heygongc.notification.exception.NotificationNotFoundException;
+import com.heygongc.notification.presentation.request.NotificationInfoRequest;
 import com.heygongc.user.domain.User;
 import com.heygongc.user.domain.UserRepository;
 import jakarta.transaction.Transactional;
@@ -24,34 +28,49 @@ public class NotificationService  {
         this.deviceRepository = deviceRepository;
     }
 
-    public List<Notification> getAllNotifications(Long userSeq, String type) {
+    public Notification getNotification(Long eventSeq, User user) {
 
-        return notificationRepository.findAllByType(type);
+        Notification notification = notificationRepository.findNotificationBySeqAndUser(eventSeq, user);
+        if (notification == null) {
+            throw new NotificationNotFoundException();
+        }
+        return notification;
     }
 
-    public Notification addNotification(Long userSeq, Long deviceSeq, NotificationTypeEnum type, String content) {
+    public List<Notification> getAllNotifications(Long userSeq, NotificationTypeEnum type) {
 
-        User user = userRepository.findById(userSeq).orElseThrow(() -> new RuntimeException("해당 유저 없음"));
-        Device device = deviceRepository.findById(deviceSeq).orElseThrow(() -> new RuntimeException("해당 기기 없음"));
+        return notificationRepository.findByUserSeqAndType(userSeq,type);
+    }
+
+    public Notification addNotification(User user, Long deviceSeq, NotificationInfoRequest request) {
+
+        Device device = deviceRepository.findDeviceBySeqAndUser(deviceSeq, user);
+        if (device == null) {
+            throw new DeviceNotFoundException();
+        }
 
         Notification notification = Notification.builder()
-                .typeEnum(type)
-                .content(content)
+                .typeEnum(request.type())
+                .content(request.content())
                 .readStatus(false)
+                .device(device)
+                .user(user)
                 .build();
 
         return notificationRepository.save(notification);
     }
 
-    public Boolean updateReadStatus(Long eventSeq, Long userSeq) {
-        Notification notification = notificationRepository.findById(eventSeq)
-                .orElseThrow(() -> new RuntimeException("해당 알림 없음"));
+    @Transactional
+    public Notification updateReadStatus(Long eventSeq, User user) {
+        Notification notification = notificationRepository.findNotificationBySeqAndUser(eventSeq, user);
 
         if (notification != null) {
             notification.setReadStatus(true);
+            return notification;
+        } else {
+            throw new ForbiddenException();
         }
 
-        return true;
     }
 
     @Transactional

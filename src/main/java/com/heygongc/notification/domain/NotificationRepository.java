@@ -12,14 +12,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public interface NotificationRepository extends JpaRepository<Notification, Long> {
+public interface NotificationRepository extends JpaRepository<Notification, Long>, CustomNotificationRepository {
 
     List<Notification> findAllByType(String type);
 
     List<Notification> findTop101ByTypeEnumOrderByCreatedAtDesc(NotificationTypeEnum typeEnum);
 
-    @Query("DELETE FROM Notification n WHERE n.created_at < :dateTime")
-    void deleteOldNotifications(@Param("dateTime") LocalDateTime dateTime);
+//    @Query("DELETE FROM Notification n WHERE n.created_at < :dateTime")
+//    void deleteOldNotifications(@Param("dateTime") LocalDateTime dateTime);
 
 
 }
