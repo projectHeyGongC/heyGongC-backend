@@ -8,7 +8,6 @@ import com.heygongc.global.argumentresolver.LoginUser;
 import com.heygongc.global.common.response.ListResponse;
 import com.heygongc.global.error.ErrorResponse;
 import com.heygongc.user.domain.User;
-import com.heygongc.user.presentation.response.TokenResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -17,13 +16,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
-import java.util.Optional;
 
 @Tag(name = "Device API", description = "기기 API")
 @RestController
@@ -65,10 +61,10 @@ public class DeviceController {
     )
     public ResponseEntity<DeviceResponse> addDevice(
             @Parameter(hidden = true) @LoginUser User user,
-            @RequestBody(description = "기기 정보") DeviceInfoRequest request){
+            @Valid @RequestBody(description = "기기 정보") DeviceInfoRequest request){
         Device device = deviceService.addDevice(user, request);
         DeviceResponse deviceResponse = new DeviceResponse(
-                user.getSeq(), // Assuming user has a getUserSeq() method
+                user.getSeq(),
                 device.getType(),
                 device.getName()
         );
@@ -133,7 +129,7 @@ public class DeviceController {
         Device device = deviceService.updateDevice(deviceSeq, deviceName, user);
 
         DeviceResponse deviceResponse = new DeviceResponse(
-                device.getUser().getSeq(), // Assuming user has a getUserSeq() method
+                device.getUser().getSeq(),
                 device.getType(),
                 device.getName()
         );

@@ -4,6 +4,8 @@ import com.heygongc.user.domain.User;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 
+import java.util.Optional;
+
 public class CustomDeviceRepositoryImpl implements CustomDeviceRepository {
 
     private final JPAQueryFactory queryFactory;
@@ -13,7 +15,7 @@ public class CustomDeviceRepositoryImpl implements CustomDeviceRepository {
     }
 
     @Override
-    public Device findDeviceBySeqAndUser(Long deviceSeq, User user) {
+    public Optional<Device> findMyDevice(Long deviceSeq, User user) {
         QDevice qDevice = QDevice.device;
 
         Device device = queryFactory.selectFrom(qDevice)
@@ -21,6 +23,6 @@ public class CustomDeviceRepositoryImpl implements CustomDeviceRepository {
                         .and(qDevice.user.eq(user)))
                 .fetchOne();
 
-        return device;
+        return Optional.ofNullable(device);
     }
 }

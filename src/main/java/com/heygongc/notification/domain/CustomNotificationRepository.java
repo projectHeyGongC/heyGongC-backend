@@ -5,13 +5,14 @@ import com.heygongc.user.domain.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface CustomNotificationRepository {
-    long deleteOldNotifications(LocalDateTime dateTime);
+    long deleteOldNotifications(LocalDateTime dateTime, Long userSeq);
 
-    Notification findNotificationBySeqAndUser(Long eventSeq, User user);
+    Optional<Notification> findMyNotification(Long eventSeq, User user);
 
-    List<Notification> findByUserSeqAndType(Long userSeq, NotificationTypeEnum type);
+    List<Notification> findNotificationByType(Long userSeq, NotificationTypeEnum type);
 
 }
 

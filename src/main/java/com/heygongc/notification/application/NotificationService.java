@@ -29,25 +29,19 @@ public class NotificationService  {
     }
 
     public Notification getNotification(Long eventSeq, User user) {
-
-        Notification notification = notificationRepository.findNotificationBySeqAndUser(eventSeq, user);
-        if (notification == null) {
-            throw new NotificationNotFoundException();
-        }
-        return notification;
+        return notificationRepository.findMyNotification(eventSeq, user)
+                .orElseThrow(() -> new NotificationNotFoundException("해당 알림이 존재하지 않습니다."));
     }
 
     public List<Notification> getAllNotifications(Long userSeq, NotificationTypeEnum type) {
 
-        return notificationRepository.findByUserSeqAndType(userSeq,type);
+        return notificationRepository.findNotificationByType(userSeq,type);
     }
 
     public Notification addNotification(User user, Long deviceSeq, NotificationInfoRequest request) {
 
-        Device device = deviceRepository.findDeviceBySeqAndUser(deviceSeq, user);
-        if (device == null) {
-            throw new DeviceNotFoundException();
-        }
+        Device device = deviceRepository.findMyDevice(deviceSeq, user)
+                .orElseThrow(DeviceNotFoundException::new); // Optional을 사용한 처리
 
         Notification notification = Notification.builder()
                 .typeEnum(request.type())
@@ -62,27 +56,22 @@ public class NotificationService  {
 
     @Transactional
     public Notification updateReadStatus(Long eventSeq, User user) {
-        Notification notification = notificationRepository.findNotificationBySeqAndUser(eventSeq, user);
+        Notification notification = notificationRepository.findMyNotification(eventSeq, user)
+                .orElseThrow(ForbiddenException::new);
 
-        if (notification != null) {
-            notification.setReadStatus(true);
-            return notification;
-        } else {
-            throw new ForbiddenException();
-        }
-
+        notification.markAsRead();
+        return notification;
     }
 
     @Transactional
     public Boolean deleteOldNotifications(Long userSeq) {
-
-        // Step 1: Delete notifications older than 30 days
+        // Step 1: Delete notifications older than 30 days for a specific user
         LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
-        notificationRepository.deleteOldNotifications(thirtyDaysAgo);
+        notificationRepository.deleteOldNotifications(thirtyDaysAgo, userSeq);
 
-        // Step 2: Ensure only 100 notifications per type remain
+        // Step 2: Ensure only 100 notifications per type remain for the specific user
         for (NotificationTypeEnum type : NotificationTypeEnum.values()) {
-            List<Notification> notifications = notificationRepository.findTop101ByTypeEnumOrderByCreatedAtDesc(type);
+            List<Notification> notifications = notificationRepository.findTop101ByUserAndTypeEnumOrderByCreatedAtDesc(userSeq, type);
             if (notifications.size() > 100) {
                 List<Notification> toDelete = notifications.subList(100, notifications.size());
                 notificationRepository.deleteAll(toDelete);

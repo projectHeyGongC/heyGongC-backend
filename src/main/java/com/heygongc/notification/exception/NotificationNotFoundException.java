@@ -1,6 +1,5 @@
 package com.heygongc.notification.exception;
 
-import com.heygongc.device.exception.DeviceErrorType;
 import com.heygongc.global.error.exception.ApiBusinessException;
 
 public class NotificationNotFoundException extends ApiBusinessException {

@@ -4,7 +4,6 @@ import com.heygongc.device.domain.Device;
 import com.heygongc.device.domain.DeviceRepository;
 import com.heygongc.device.exception.DeviceNotFoundException;
 import com.heygongc.device.presentation.request.DeviceInfoRequest;
-import com.heygongc.device.presentation.response.DeviceResponse;
 import com.heygongc.global.error.exception.ForbiddenException;
 import com.heygongc.user.domain.User;
 import com.heygongc.user.domain.UserRepository;
@@ -12,6 +11,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DeviceService{
@@ -27,10 +27,8 @@ public class DeviceService{
 
 
     public Device getDevice(Long deviceSeq, User user) {
-        Device device = deviceRepository.findDeviceBySeqAndUser(deviceSeq, user);
-        if (device == null) {
-            throw new DeviceNotFoundException();
-        }
+        Device device = deviceRepository.findMyDevice(deviceSeq, user)
+                .orElseThrow(DeviceNotFoundException::new); // Optional을 사용한 처리
         return device;
     }
 
@@ -41,13 +39,9 @@ public class DeviceService{
 
     public Device addDevice(User user, DeviceInfoRequest request) {
 
-        String[] parts = request.deviceQR().split("_");
-        Long parsedDeviceSeq = Long.parseLong(parts[0]);
-        String type = parts[1];
-
         Device device = Device.builder()
-                .deviceSeq(parsedDeviceSeq)
-                .type(type)
+                .deviceSeq(request.getParsedDeviceSeq())
+                .type(request.getType())
                 .name(request.name())
                 .soundMode(false)
                 .sensitivity(DeviceSensitivityEnum.MEDIUM)
@@ -67,30 +61,22 @@ public class DeviceService{
 
     @Transactional
     public Device updateDevice(Long deviceSeq, String deviceName, User user) {
-        Device device = deviceRepository.findDeviceBySeqAndUser(deviceSeq, user);
-        if (device == null) {
-            throw new DeviceNotFoundException();
-        }
+        Device device = deviceRepository.findMyDevice(deviceSeq, user)
+                .orElseThrow(DeviceNotFoundException::new); // Optional을 사용한 처리
 
-        if (deviceName != null) {
-            device.setName(deviceName);
-            // Changes to 'device' are automatically tracked and persisted by JPA at transaction completion
+            device.changeDeviceInfo(deviceName);
             return device;
-        } else {
-            throw new ForbiddenException();
-        }
+
     }
 
 
     @Transactional
     public void deleteDevice(Long deviceSeq, User user) {
-        Device device = deviceRepository.findDeviceBySeqAndUser(deviceSeq, user);
+        deviceRepository.findMyDevice(deviceSeq, user)
+                .orElseThrow(DeviceNotFoundException::new); // Optional을 사용한 처리
 
-        if (device != null) {
-            deviceRepository.deleteById(deviceSeq);
-        } else {
-            throw new ForbiddenException();
-        }
+        deviceRepository.deleteById(deviceSeq);
+
     }
 
     @Transactional

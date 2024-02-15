@@ -2,6 +2,8 @@ package com.heygongc.device.domain;
 
 import com.heygongc.user.domain.User;
 
+import java.util.Optional;
+
 public interface CustomDeviceRepository {
-    Device findDeviceBySeqAndUser(Long deviceSeq, User user);
+    Optional<Device> findMyDevice(Long deviceSeq, User user);
 }

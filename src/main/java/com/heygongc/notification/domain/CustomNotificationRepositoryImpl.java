@@ -4,11 +4,11 @@ import com.heygongc.notification.application.NotificationTypeEnum;
 import com.heygongc.user.domain.User;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
-import org.aspectj.weaver.ast.Not;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 
 public class CustomNotificationRepositoryImpl implements CustomNotificationRepository {
@@ -20,7 +20,7 @@ public class CustomNotificationRepositoryImpl implements CustomNotificationRepos
     }
 
     @Override
-    public Notification findNotificationBySeqAndUser(Long eventSeq, User user) {
+    public Optional<Notification> findMyNotification(Long eventSeq, User user) {
         QNotification qNotification = QNotification.notification;
 
         Notification notification = queryFactory.selectFrom(qNotification)
@@ -28,12 +28,12 @@ public class CustomNotificationRepositoryImpl implements CustomNotificationRepos
                         .and(qNotification.user.eq(user)))
                 .fetchOne();
 
-        return notification;
+        return Optional.ofNullable(notification);
 
     }
 
     @Override
-    public List<Notification> findByUserSeqAndType(Long userSeq, NotificationTypeEnum type) {
+    public List<Notification> findNotificationByType(Long userSeq, NotificationTypeEnum type) {
         QNotification qNotification = QNotification.notification;
 
         return queryFactory.selectFrom(qNotification)
@@ -41,12 +41,14 @@ public class CustomNotificationRepositoryImpl implements CustomNotificationRepos
                         .and(qNotification.typeEnum.eq(type)))
                 .fetch();
     }
+
     @Override
     @Transactional
-    public long deleteOldNotifications(LocalDateTime dateTime) {
+    public long deleteOldNotifications(LocalDateTime dateTime, Long userSeq) {
         QNotification qNotification = QNotification.notification;
         long count = queryFactory.delete(qNotification)
-                .where(qNotification.created_at.before(dateTime))
+                .where(qNotification.created_at.before(dateTime)
+                        .and(qNotification.user.seq.eq(userSeq)))
                 .execute();
         return count;
     }

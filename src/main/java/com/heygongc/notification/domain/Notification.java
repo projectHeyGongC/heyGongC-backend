@@ -1,6 +1,5 @@
 package com.heygongc.notification.domain;
 
-import com.heygongc.device.application.DeviceSensitivityEnum;
 import com.heygongc.device.domain.Device;
 import com.heygongc.notification.application.NotificationTypeEnum;
 import jakarta.persistence.Entity;
@@ -46,4 +45,7 @@ public class Notification extends BaseTimeEntity {
     @JoinColumn(name = "device_seq")
     private Device device;
 
+    public void markAsRead() {
+        this.readStatus = true;
+    }
 }
