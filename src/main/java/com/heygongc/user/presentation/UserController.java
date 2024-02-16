@@ -44,7 +44,7 @@ public class UserController {
     )
     public ResponseEntity<TokenResponse> login(
             @Parameter(description = "SNS타입(google/apple)", required = true, in = ParameterIn.PATH) @PathVariable(name="snsType") String snsType,
-            @Parameter(name = "UserLoginRequest", description = "로그인 요청 정보", required = true, in = ParameterIn.HEADER) @RequestBody UserLoginRequest request) {
+            @Parameter(name = "UserLoginRequest", description = "로그인 요청 정보", required = true) @RequestBody UserLoginRequest request) {
         AuthToken authToken = userService.login(snsType, request);
         // 회원가입 필요한 경우
         if (authToken == null) {
@@ -64,7 +64,7 @@ public class UserController {
     )
     public ResponseEntity<TokenResponse> register(
             @Parameter(description = "SNS타입(google/apple)", required = true, in = ParameterIn.PATH) @PathVariable(name="snsType") String snsType,
-            @Parameter(name = "UserRegisterRequest", description = "회원가입 요청 정보", required = true, in = ParameterIn.HEADER) @RequestBody UserRegisterRequest request) {
+            @Parameter(name = "UserRegisterRequest", description = "회원가입 요청 정보", required = true) @RequestBody UserRegisterRequest request) {
         AuthToken authToken = userService.register(snsType, request);
         TokenResponse tokenResponse = new TokenResponse(authToken.getAccessToken(), authToken.getRefreshToken());
         return ResponseEntity.ok().body(tokenResponse);
