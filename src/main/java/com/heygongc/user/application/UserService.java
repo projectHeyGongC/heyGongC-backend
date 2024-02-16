@@ -51,7 +51,7 @@ public class UserService {
     private UserToken saveJwtToken(Long seq, String refreshToken) {
         // 이미 등록된 jwt 토큰이 있으면 삭제
         if (userTokenRepository.findByUserSeq(seq).isPresent()) {
-            userTokenRepository.deleteByUserSeq(seq);
+            userTokenRepository.deleteToken(seq);
         }
 
         // jwt 토큰 저장
