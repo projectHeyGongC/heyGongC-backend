@@ -55,4 +55,20 @@ public class User extends BaseTimeEntity {
 
     @Column(name = "ads", nullable = false)
     private Boolean ads;
+
+    public void deviceInfo(String deviceId, String deviceOs) {
+        this.deviceId = deviceId;
+        this.deviceOs = deviceOs;
+    }
+
+    public void reRegister(String deviceId, String deviceOs, Boolean ads) {
+        this.deviceId = deviceId;
+        this.deviceOs = deviceOs;
+        this.ads = ads;
+        this.deletedAt = null;
+    }
+
+    public void unRegister() {
+        this.deletedAt = LocalDateTime.now();
+    }
 }

@@ -81,8 +81,7 @@ public class UserService {
         }
 
         // device 정보 저장
-        user.setDeviceId(request.deviceId());
-        user.setDeviceOs(request.deviceOs());
+        user.deviceInfo(request.deviceId(), request.deviceOs());
         userRepository.save(user);
 
         // jwt 토큰 발급
@@ -117,10 +116,7 @@ public class UserService {
         User saveUser;
         if (isUserUnRegistered(user)) {
             // 탈퇴 후 재가입
-            user.setDeviceId(request.deviceId());
-            user.setDeviceOs(request.deviceOs());
-            user.setAds(request.ads());
-            user.setDeletedAt(null);
+            user.reRegister(request.deviceId(), request.deviceOs(), request.ads());
             saveUser = userRepository.save(user);
         } else {
             // 최초 회원가입
@@ -156,7 +152,7 @@ public class UserService {
             throw new AlreadyLeftException("이미 탈퇴한 사용자입니다.");
         }
 
-        user.setDeletedAt(LocalDateTime.now());
+        user.unRegister();
         userRepository.save(user);
     }
 
