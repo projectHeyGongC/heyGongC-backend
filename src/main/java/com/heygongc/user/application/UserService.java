@@ -157,7 +157,7 @@ public class UserService {
     }
 
     @Transactional
-    public String refreshAccessToken(String refreshToken) {
+    public AuthToken refreshToken(String refreshToken) {
         if (!jwtUtil.isValidToken(refreshToken)) {
             throw new InvalidTokenException("유효하지 않은 토큰입니다.");
         }
@@ -174,8 +174,14 @@ public class UserService {
             throw new NewLoginDetectedException("새로운 로그인이 감지되었습니다.");
         }
 
+        // jwt 토큰 발급
         String accessToken = jwtUtil.generateAccessToken(String.valueOf(userSeq), deviceId);
+        String newRefreshToken = jwtUtil.generateRefreshToken(String.valueOf(userSeq), deviceId);
+        AuthToken authToken = new AuthToken(accessToken, newRefreshToken);
 
-        return accessToken;
+        // 토큰 저장
+        saveJwtToken(userSeq, newRefreshToken);
+
+        return authToken;
     }
 }

@@ -5,7 +5,7 @@ import com.heygongc.global.error.ErrorResponse;
 import com.heygongc.user.application.AuthToken;
 import com.heygongc.user.application.UserService;
 import com.heygongc.user.domain.User;
-import com.heygongc.user.presentation.request.RefreshAccessTokenRequest;
+import com.heygongc.user.presentation.request.RefreshTokenRequest;
 import com.heygongc.user.presentation.request.UserLoginRequest;
 import com.heygongc.user.presentation.request.UserRegisterRequest;
 import com.heygongc.user.presentation.response.TokenResponse;
@@ -90,17 +90,18 @@ public class UserController {
     @PostMapping("/token/refresh")
     @Operation(
             summary = "액세스 토큰 재발급",
-            description = "갱신 토큰을 이용해 액세스 토큰을 재발급합니다.",
+            description = "갱신 토큰을 이용해 액세스 토큰과 리프레시 토큰을 재발급합니다.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK(액세스 토큰 반환)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))),
                     @ApiResponse(responseCode = "401", description = "유효하지 않은 토큰", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
                     @ApiResponse(responseCode = "403", description = "새로운 로그인이 존재하는 경우", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
             }
     )
-    public ResponseEntity<String> refreshAccessToken(
-            @Parameter(name = "RefreshAccessTokenRequest", description = "토큰 갱신 요청 정보", required = true, in = ParameterIn.HEADER) @RequestBody RefreshAccessTokenRequest request) {
-        String accessToken = userService.refreshAccessToken(request.refreshToken());
-        return ResponseEntity.ok().body(accessToken);
+    public ResponseEntity<TokenResponse> refreshToken(
+            @Parameter(name = "RefreshTokenRequest", description = "토큰 갱신 요청 정보", required = true, in = ParameterIn.HEADER) @RequestBody RefreshTokenRequest request) {
+        AuthToken authToken = userService.refreshToken(request.refreshToken());
+        TokenResponse tokenResponse = new TokenResponse(authToken.getAccessToken(), authToken.getRefreshToken());
+        return ResponseEntity.ok().body(tokenResponse);
     }
 
     @GetMapping("/info")
