@@ -70,7 +70,7 @@ public class NotificationController {
             }
     )
     public ResponseEntity<List<NotificationResponse>> getAllNotifications(
-            @Parameter(description = "알림 종류", required = true) @RequestParam NotificationTypeEnum type,
+            @Parameter(description = "알림 종류", required = true) @RequestBody NotificationTypeEnum type,
             @Parameter(hidden = true) @LoginUser User user) {
         Long userSeq = user.getSeq();
         List<Notification> notifications = notificationService.getAllNotifications(userSeq, type);
@@ -93,7 +93,7 @@ public class NotificationController {
     )
     public ResponseEntity<NotificationResponse> addNotification(
             @Parameter(hidden = true) @LoginUser User user,
-            @Parameter(description = "알림 시퀀스", required = true) @RequestParam Long deviceSeq,
+            @Parameter(description = "알림 시퀀스", required = true) @RequestBody Long deviceSeq,
             @RequestBody(description = "알림 정보")NotificationInfoRequest request) {
         Notification notification = notificationService.addNotification(user, deviceSeq, request);
         NotificationResponse notificationResponse = new NotificationResponse(

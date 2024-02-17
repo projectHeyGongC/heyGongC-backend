@@ -11,11 +11,13 @@ import org.hibernate.annotations.DynamicUpdate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static lombok.AccessLevel.PROTECTED;
+
 @Entity
 @Getter
 @Setter
 @Builder
-@NoArgsConstructor
+@NoArgsConstructor(access=PROTECTED) // No default constructor for entity 오류 해결을 위해 필요
 @AllArgsConstructor
 @DynamicUpdate
 @Table(name = "device")
@@ -52,9 +54,10 @@ public class Device extends BaseTimeEntity {
     @JoinColumn(name = "user_seq")
     private User user;
 
-    @OneToMany(mappedBy = "notification", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private List<Notification> notifications = new ArrayList<>();
+    @OneToMany(mappedBy = "device", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @Builder.Default
+//    private List<Notification> notifications = new ArrayList<>();
+    private List<Notification> notifications;
     public void changeDeviceName(String deviceName) {
         this.name = deviceName;
     }
