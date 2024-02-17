@@ -125,7 +125,7 @@ public class DeviceController {
     )
     public ResponseEntity<DeviceResponse> updateDevice(
             @Parameter(description = "기기 아이디", required = true, in = ParameterIn.PATH) @PathVariable(name = "id") Long deviceSeq,
-            @Parameter(description = "수정된 기기 이름", required = true) @RequestParam(name = "deviceName") String deviceName,
+            @Parameter(description = "수정된 기기 이름", required = true) @RequestBody(description = "기기 이름") String deviceName,
             @Parameter(hidden = true) @LoginUser User user) {
         Device device = deviceService.updateDevice(deviceSeq, deviceName, user);
 
