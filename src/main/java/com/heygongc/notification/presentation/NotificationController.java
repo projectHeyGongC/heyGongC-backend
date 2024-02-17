@@ -131,24 +131,4 @@ public class NotificationController {
         return ResponseEntity.ok().body(notificationResponse);
     }
 
-    @DeleteMapping
-    @Operation(
-            summary = "오래된 알림 삭제",
-            description = "알림이 30일 이상 지나거나 알림 수가 100개를 넘으면 해당 알림들을 삭제합니다.",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "OK", content = @Content),
-                    @ApiResponse(responseCode = "403", description = "Unauthorized Exception", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
-            }
-    )
-    public ResponseEntity<Void> deleteOldNotifications(@Parameter(hidden = true) @LoginUser User user){
-        Long userSeq = user.getSeq();
-        notificationService.deleteOldNotifications(userSeq);
-
-        return ResponseEntity.ok().build();
-
-    }
-
-
-
-
 }

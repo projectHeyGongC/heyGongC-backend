@@ -12,8 +12,6 @@ import com.heygongc.user.domain.User;
 import com.heygongc.user.domain.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
 import java.util.List;
 @Service
 public class NotificationService  {
@@ -63,9 +61,4 @@ public class NotificationService  {
         return notification;
     }
 
-    @Transactional
-    public void deleteOldNotifications(Long userSeq) {
-        notificationRepository.cleanUpNotifications(userSeq);
-
-    }
 }
