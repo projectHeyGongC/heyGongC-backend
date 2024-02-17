@@ -5,7 +5,6 @@ import com.heygongc.device.domain.Device;
 import com.heygongc.device.presentation.request.DeviceInfoRequest;
 import com.heygongc.device.presentation.response.DeviceResponse;
 import com.heygongc.global.argumentresolver.LoginUser;
-import com.heygongc.global.common.response.ListResponse;
 import com.heygongc.global.error.ErrorResponse;
 import com.heygongc.user.domain.User;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,6 +19,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Tag(name = "Device API", description = "기기 API")
 @RestController
@@ -37,17 +37,18 @@ public class DeviceController {
             summary = "기기 목록",
             description = "해당 유저의 모든 기기 목록을 나열합니다.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ListResponse.class))),
+                    @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))),
             }
     )
-    public ResponseEntity<ListResponse<Device>> getAllDevice(@Parameter(hidden = true) @LoginUser User user){
+    public ResponseEntity<List<DeviceResponse>> getAllDevice(@Parameter(hidden = true) @LoginUser User user){
         Long userSeq = user.getSeq();
         List<Device> devices = deviceService.getAllDevices(userSeq);
-        ListResponse<Device> deviceList = new ListResponse<Device>(
-                devices
-        );
 
-        return ResponseEntity.ok().body(deviceList);
+        List<DeviceResponse> deviceResponses = devices.stream()
+                .map(device -> new DeviceResponse(device.getUser().getSeq(), device.getType(), device.getName()))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok().body(deviceResponses);
     }
 
     @PostMapping

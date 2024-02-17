@@ -1,9 +1,6 @@
 package com.heygongc.notification.presentation;
 
-import com.heygongc.device.domain.Device;
-import com.heygongc.device.presentation.response.DeviceResponse;
 import com.heygongc.global.argumentresolver.LoginUser;
-import com.heygongc.global.common.response.ListResponse;
 import com.heygongc.global.error.ErrorResponse;
 import com.heygongc.notification.application.NotificationService;
 import com.heygongc.notification.application.NotificationTypeEnum;
@@ -19,12 +16,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Tag(name = "Notification API", description = "알림 API")
 @RestController
@@ -70,21 +66,20 @@ public class NotificationController {
             summary = "알림 목록",
             description = "해당 유저의 모든 알림 목록을 나열합니다.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ListResponse.class))),
+                    @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))),
             }
     )
-    public ResponseEntity<ListResponse<Notification>> getAllNotifications(
+    public ResponseEntity<List<NotificationResponse>> getAllNotifications(
             @Parameter(description = "알림 종류", required = true) @RequestParam NotificationTypeEnum type,
             @Parameter(hidden = true) @LoginUser User user) {
         Long userSeq = user.getSeq();
         List<Notification> notifications = notificationService.getAllNotifications(userSeq, type);
 
-        ListResponse<Notification> notificationListResponse = new ListResponse<Notification>(
-                notifications
-        );
+        List<NotificationResponse> notificationResponses = notifications.stream()
+                .map(notification -> new NotificationResponse(notification.getEventSeq(), notification.getUser().getSeq(), notification.getTypeEnum(), notification.getContent(), notification.isReadStatus()))
+                .collect(Collectors.toList());
 
-
-        return ResponseEntity.ok().body(notificationListResponse);
+        return ResponseEntity.ok().body(notificationResponses);
     }
 
     @PostMapping
@@ -145,11 +140,11 @@ public class NotificationController {
                     @ApiResponse(responseCode = "403", description = "Unauthorized Exception", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
             }
     )
-    public ResponseEntity<Boolean> deleteOldNotifications(@Parameter(hidden = true) @LoginUser User user){
+    public ResponseEntity<Void> deleteOldNotifications(@Parameter(hidden = true) @LoginUser User user){
         Long userSeq = user.getSeq();
-        Boolean result = notificationService.deleteOldNotifications(userSeq);
+        notificationService.deleteOldNotifications(userSeq);
 
-        return ResponseEntity.ok().body(result);
+        return ResponseEntity.ok().build();
 
     }
 

@@ -4,14 +4,12 @@ import com.heygongc.device.domain.Device;
 import com.heygongc.device.domain.DeviceRepository;
 import com.heygongc.device.exception.DeviceNotFoundException;
 import com.heygongc.device.presentation.request.DeviceInfoRequest;
-import com.heygongc.global.error.exception.ForbiddenException;
 import com.heygongc.user.domain.User;
 import com.heygongc.user.domain.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class DeviceService{
@@ -64,7 +62,7 @@ public class DeviceService{
         Device device = deviceRepository.findMyDevice(deviceSeq, user)
                 .orElseThrow(DeviceNotFoundException::new); // Optional을 사용한 처리
 
-            device.changeDeviceInfo(deviceName);
+            device.changeDeviceName(deviceName);
             return device;
 
     }

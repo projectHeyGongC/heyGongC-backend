@@ -14,5 +14,9 @@ public interface CustomNotificationRepository {
 
     List<Notification> findNotificationByType(Long userSeq, NotificationTypeEnum type);
 
+    long deleteExcessNotifications(Long userSeq, NotificationTypeEnum type, int threshold);
+
+    void cleanUpNotifications(Long userSeq);
+
 }
 

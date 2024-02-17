@@ -64,20 +64,8 @@ public class NotificationService  {
     }
 
     @Transactional
-    public Boolean deleteOldNotifications(Long userSeq) {
-        // Step 1: Delete notifications older than 30 days for a specific user
-        LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
-        notificationRepository.deleteOldNotifications(thirtyDaysAgo, userSeq);
+    public void deleteOldNotifications(Long userSeq) {
+        notificationRepository.cleanUpNotifications(userSeq);
 
-        // Step 2: Ensure only 100 notifications per type remain for the specific user
-        for (NotificationTypeEnum type : NotificationTypeEnum.values()) {
-            List<Notification> notifications = notificationRepository.findTop101ByUserAndTypeEnumOrderByCreatedAtDesc(userSeq, type);
-            if (notifications.size() > 100) {
-                List<Notification> toDelete = notifications.subList(100, notifications.size());
-                notificationRepository.deleteAll(toDelete);
-            }
-        }
-
-        return true;
     }
 }
