@@ -229,13 +229,15 @@ class UserServiceTest {
         when(userRepository.findById(any())).thenReturn(Optional.ofNullable(user));
         when(userTokenRepository.findByUserSeq(any())).thenReturn(Optional.ofNullable(userToken));
         when(jwtUtil.generateAccessToken(any(),any())).thenReturn("newAccessToken");
+        when(jwtUtil.generateRefreshToken(any(), any())).thenReturn("newRefreshToken");
 
         // when
-        String token = userService.refreshAccessToken(userToken.getToken());
+        AuthToken result = userService.refreshToken(userToken.getToken());
 
         // then
-        assertNotNull(token);
-        assertEquals("newAccessToken", token);
+        assertNotNull(result);
+        assertEquals("newAccessToken", result.getAccessToken());
+        assertEquals("newRefreshToken", result.getRefreshToken());
     }
 
     @Test
@@ -249,6 +251,6 @@ class UserServiceTest {
         when(userTokenRepository.findByUserSeq(any())).thenReturn(Optional.ofNullable(userToken));
 
         // when
-        assertThrows(NewLoginDetectedException.class, () -> userService.refreshAccessToken("newAccessToken"));
+        assertThrows(NewLoginDetectedException.class, () -> userService.refreshToken("newAccessToken"));
     }
 }
