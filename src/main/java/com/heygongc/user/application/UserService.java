@@ -51,7 +51,7 @@ public class UserService {
     private UserToken saveJwtToken(Long seq, String refreshToken) {
         // 이미 등록된 jwt 토큰이 있으면 삭제
         if (userTokenRepository.findByUserSeq(seq).isPresent()) {
-            userTokenRepository.deleteByUserSeq(seq);
+            userTokenRepository.deleteToken(seq);
         }
 
         // jwt 토큰 저장
@@ -81,8 +81,7 @@ public class UserService {
         }
 
         // device 정보 저장
-        user.setDeviceId(request.deviceId());
-        user.setDeviceOs(request.deviceOs());
+        user.deviceInfo(request.deviceId(), request.deviceOs());
         userRepository.save(user);
 
         // jwt 토큰 발급
@@ -117,10 +116,7 @@ public class UserService {
         User saveUser;
         if (isUserUnRegistered(user)) {
             // 탈퇴 후 재가입
-            user.setDeviceId(request.deviceId());
-            user.setDeviceOs(request.deviceOs());
-            user.setAds(request.ads());
-            user.setDeletedAt(null);
+            user.reRegister(request.deviceId(), request.deviceOs(), request.ads());
             saveUser = userRepository.save(user);
         } else {
             // 최초 회원가입
@@ -156,12 +152,12 @@ public class UserService {
             throw new AlreadyLeftException("이미 탈퇴한 사용자입니다.");
         }
 
-        user.setDeletedAt(LocalDateTime.now());
+        user.unRegister();
         userRepository.save(user);
     }
 
     @Transactional
-    public String refreshAccessToken(String refreshToken) {
+    public AuthToken refreshToken(String refreshToken) {
         if (!jwtUtil.isValidToken(refreshToken)) {
             throw new InvalidTokenException("유효하지 않은 토큰입니다.");
         }
@@ -178,8 +174,14 @@ public class UserService {
             throw new NewLoginDetectedException("새로운 로그인이 감지되었습니다.");
         }
 
+        // jwt 토큰 발급
         String accessToken = jwtUtil.generateAccessToken(String.valueOf(userSeq), deviceId);
+        String newRefreshToken = jwtUtil.generateRefreshToken(String.valueOf(userSeq), deviceId);
+        AuthToken authToken = new AuthToken(accessToken, newRefreshToken);
 
-        return accessToken;
+        // 토큰 저장
+        saveJwtToken(userSeq, newRefreshToken);
+
+        return authToken;
     }
 }
