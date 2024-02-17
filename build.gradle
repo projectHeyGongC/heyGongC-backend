@@ -50,8 +50,10 @@ dependencies {
     // Swagger
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
 
+    // fcm
+    implementation 'com.google.firebase:firebase-admin:9.2.0'
     // 로컬 h2
-    runtimeOnly 'com.h2database:h2'
+    runtimeOnly('com.h2database:h2')
 
     testRuntimeOnly 'com.h2database:h2'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
