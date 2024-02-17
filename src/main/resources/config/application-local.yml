@@ -2,27 +2,25 @@ spring:
   config:
     import: classpath:/config/secret.yml
 
-#  datasource:
-#    url: jdbc:h2:mem:heygongc;MODE=PostgreSQL;NON_KEYWORDS=USER
-#    username: sa
-#    password:
-#    driver-class-name: org.h2.Driver
+  datasource:
+    url: ${local.spring.datasource.url}
+    username: ${local.spring.datasource.username}
+    password: ${local.spring.datasource.password}
+    driver-class-name: ${local.spring.datasource.driver-class-name}
 
   jpa:
     show-sql: true
     properties:
       hibernate:
         format_sql: true
-        ddl-auto: update # 로컬 메모리 DB 생성
+        ddl-auto: create # 로컬 메모리 DB 생성
 
 google:
   client:
-    id: 17269488169-9ahv5tpfa8o1c8q2gb26acg991qsjhrq.apps.googleusercontent.com
-    secret: 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
+    id: ${google.client.id}
+    secret: ${google.client.secret}
 
 jwt:
-  # secret : heyGongC2024!@
-  # SHA512암호화
-  secret: 58b909a54a401afcb9da130a5385472a174b54c33fc4768b4e95c5982622287ddd3fce3e826515e28795d6ea51a924b1bf0fdcb090b0334ee49df1ca71375268
-  access.expiration: 3600000 # 60분
-  refresh.expiration: 2592000000 # 30일
+  secret: ${jwt.secret}
+  access.expiration: ${jwt.access.expiration}
+  refresh.expiration: ${jwt.refresh.expiration}
