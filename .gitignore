@@ -38,4 +38,4 @@ out/
 
 generated
 firebase
-secret.yml
+application-local.yml
