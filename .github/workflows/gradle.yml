@@ -25,9 +25,9 @@ jobs:
       - name: Set Main Yaml
         run: |
           touch ./src/main/resources/application-prod.yml
-          echo "${{ secrets.APPLICATION_PROD }}" > ./application-prod.yml
+          echo "${{ secrets.APPLICATION_PROD }}" > ./src/main/resources/application-prod.yml
           touch ./src/test/resources/application-test.yml
-          echo "${{ secrets.APPLICATION_TEST }}" > ./application-test.yml
+          echo "${{ secrets.APPLICATION_TEST }}" > ./src/test/resources/application-test.yml
         shell: bash
         
       # Gradle 실행권한 부여
