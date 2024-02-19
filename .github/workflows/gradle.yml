@@ -21,33 +21,15 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
           
+      # 환경 변수 설정
       - name: Set Main Yaml
-        uses: microsoft/variable-substitution@v1
-        with:
-          files: ./src/main/resources/config/application-prod.yml
-        env:
-          spring.datasource.url: ${{ secrets.PROD_DB_URL }}
-          spring.datasource.username: ${{ secrets.PROD_DB_USERNAME }}
-          spring.datasource.password: ${{ secrets.PROD_DB_PASSWORD }}
-          spring.datasource.driver-class-name: ${{ secrets.PROD_DB_DRIVER_NAME }}
-          spring.jpa.properties.hibernate.default_schema: ${{ secrets.PROD_DB_DEFAULT_SCHEMA }}
-          google.client.id: ${{ secrets.GOOGLE_CLIENT_ID }}
-          google.client.secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-          jwt.secret: ${{ secrets.JWT_SECRET }}
-          jwt.access.expiration: ${{ secrets.JWT_ACCESS_EXPIRATION }}
-          jwt.refresh.expiration: ${{ secrets.JWT_REFRESH_EXPIRATION }}
-          
-      - name: Set Test Yaml
-        uses: microsoft/variable-substitution@v1
-        with:
-          files: ./src/test/resources/application-test.yml
-        env:
-          google.client.id: ${{ secrets.GOOGLE_CLIENT_ID }}
-          google.client.secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-          jwt.secret: ${{ secrets.JWT_SECRET }}
-          jwt.access.expiration: ${{ secrets.JWT_ACCESS_EXPIRATION }}
-          jwt.refresh.expiration: ${{ secrets.JWT_REFRESH_EXPIRATION }}
-      
+        run: |
+          touch ./src/main/resources/application-prod.yml
+          echo "${{ secrets.APPLICATION_PROD }}" > ./application-prod.yml
+          touch ./src/test/resources/application-test.yml
+          echo "${{ secrets.APPLICATION_TEST }}" > ./application-test.yml
+        shell: bash
+        
       # Gradle 실행권한 부여
       - name: Grant execute permission to gradlew
         run: chmod +x ./gradlew
