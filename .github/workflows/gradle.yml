@@ -21,16 +21,16 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
           
-      # 환경 변수 설정
-      - name: Set Prod Yaml
+      # PROD 환경 변수 설정
+      - name: Make Prod Yml
         run: |
           cd ./src/main/resources
           touch ./application-prod.yml
           echo "${{ secrets.APPLICATION_PROD }}" > ./application-prod.yml
         shell: bash
           
-      # 환경 변수 설정
-      - name: Set Test Yaml
+      # TEST 환경 변수 설정
+      - name: Make Test Yml
         run: |
           cd ./src/test/resources
           touch ./application-test.yml
