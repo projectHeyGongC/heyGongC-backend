@@ -22,12 +22,19 @@ jobs:
           distribution: 'adopt'
           
       # 환경 변수 설정
-      - name: Set Main Yaml
+      - name: Set Prod Yaml
         run: |
-          touch ./src/main/resources/application-prod.yml
-          echo "${{ secrets.APPLICATION_PROD }}" > ./src/main/resources/application-prod.yml
-          touch ./src/test/resources/application-test.yml
-          echo "${{ secrets.APPLICATION_TEST }}" > ./src/test/resources/application-test.yml
+          cd ./src/main/resources
+          touch ./application-prod.yml
+          echo "${{ secrets.APPLICATION_PROD }}" > ./application-prod.yml
+        shell: bash
+          
+      # 환경 변수 설정
+      - name: Set Test Yaml
+        run: |
+          cd ./src/test/resources
+          touch ./application-test.yml
+          echo "${{ secrets.APPLICATION_TEST }}" > ./application-test.yml
         shell: bash
         
       # Gradle 실행권한 부여
