@@ -85,12 +85,10 @@ public class UserService {
         userRepository.save(user);
 
         // jwt 토큰 발급
-        String accessToken = jwtUtil.generateAccessToken(String.valueOf(user.getSeq()), user.getDeviceId());
-        String refreshToken = jwtUtil.generateRefreshToken(String.valueOf(user.getSeq()), user.getDeviceId());
-        AuthToken authToken = new AuthToken(accessToken, refreshToken);
+        AuthToken authToken = jwtUtil.generateAuthToken(user.getSeq(), user.getDeviceId());
 
         // 토큰 저장
-        saveJwtToken(user.getSeq(), refreshToken);
+        saveJwtToken(user.getSeq(), authToken.getRefreshToken());
 
         return authToken;
     }
@@ -135,12 +133,10 @@ public class UserService {
         }
 
         // jwt 토큰 발급
-        String accessToken = jwtUtil.generateAccessToken(String.valueOf(saveUser.getSeq()), saveUser.getDeviceId());
-        String refreshToken = jwtUtil.generateRefreshToken(String.valueOf(saveUser.getSeq()), saveUser.getDeviceId());
-        AuthToken authToken = new AuthToken(accessToken, refreshToken);
+        AuthToken authToken = jwtUtil.generateAuthToken(user.getSeq(), user.getDeviceId());
 
         // 토큰 저장
-        saveJwtToken(saveUser.getSeq(), refreshToken);
+        saveJwtToken(user.getSeq(), authToken.getRefreshToken());
 
         return authToken;
     }
@@ -175,12 +171,10 @@ public class UserService {
         }
 
         // jwt 토큰 발급
-        String accessToken = jwtUtil.generateAccessToken(String.valueOf(userSeq), deviceId);
-        String newRefreshToken = jwtUtil.generateRefreshToken(String.valueOf(userSeq), deviceId);
-        AuthToken authToken = new AuthToken(accessToken, newRefreshToken);
+        AuthToken authToken = jwtUtil.generateAuthToken(user.getSeq(), user.getDeviceId());
 
         // 토큰 저장
-        saveJwtToken(userSeq, newRefreshToken);
+        saveJwtToken(user.getSeq(), authToken.getRefreshToken());
 
         return authToken;
     }
