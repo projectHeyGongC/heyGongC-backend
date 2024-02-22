@@ -1,8 +1,8 @@
 package com.heygongc.user.application;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.heygongc.user.exception.ExpiredTokenException;
+import com.heygongc.user.exception.InvalidTokenException;
+import io.jsonwebtoken.*;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -13,12 +13,21 @@ import java.util.Date;
 @Getter
 public class JwtUtil {
 
-    @Value("${jwt.secret}")
-    private String SECRET_KEY;
-    @Value("${jwt.access.expiration}")
-    private Long ACCESS_EXP;
-    @Value("${jwt.refresh.expiration}")
-    private Long REFRESH_EXP;
+    private final String SECRET_KEY;
+    private final Long ACCESS_EXP;
+    private final Long REFRESH_EXP;
+    private final JwtParser jwtParser;
+
+    public JwtUtil(
+            @Value("${jwt.secret}") String secretKey,
+            @Value("${jwt.access.expiration}") Long accessExp,
+            @Value("${jwt.refresh.expiration}") Long refreshExp
+    ) {
+        this.SECRET_KEY = secretKey;
+        this.ACCESS_EXP = accessExp;
+        this.REFRESH_EXP = refreshExp;
+        this.jwtParser = Jwts.parser().setSigningKey(SECRET_KEY);
+    }
 
     public String generateAccessToken(String subject, String audience) {
         Date now = new Date();
@@ -56,18 +65,15 @@ public class JwtUtil {
         return extractClaims(token).getAudience();
     }
 
-    // JWT 토큰의 만료 여부 확인
-    public boolean isTokenExpired(String token) {
-        return extractClaims(token).getExpiration().before(new Date());
-    }
-
-    // JWT 토큰 검증
-    public boolean isValidToken(String token) {
-        return token != null && !isTokenExpired(token);
-    }
-
-    private Claims extractClaims(String token) {
-        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
+    // JWT 토큰이 정상인지 체크, 오류일 경우 Exception 발생
+    public void isValidTokenOrThrowException(String token) {
+        try {
+            jwtParser.parseClaimsJws(token);
+        } catch (ExpiredJwtException e) {
+            throw new ExpiredTokenException();
+        } catch (JwtException e) {
+            throw new InvalidTokenException();
+        }
     }
 
     // 헤더에서 토큰 추출
@@ -76,5 +82,15 @@ public class JwtUtil {
             return header.replace("Bearer ", "");
         }
         return null;
+    }
+
+    public Claims extractClaims(String token) {
+        try {
+            return jwtParser.parseClaimsJws(token).getBody();
+        } catch (ExpiredJwtException e) {
+            throw new ExpiredTokenException();
+        } catch (JwtException e) {
+            throw new InvalidTokenException();
+        }
     }
 }

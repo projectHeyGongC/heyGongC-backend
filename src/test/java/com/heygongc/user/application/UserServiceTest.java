@@ -223,7 +223,7 @@ class UserServiceTest {
     @Test
     public void 토큰_재발급_성공_테스트() {
         // given
-        when(jwtUtil.isValidToken(any())).thenReturn(true);
+        doNothing().when(jwtUtil).isValidTokenOrThrowException(any());
         when(jwtUtil.extractUserSeq(any())).thenReturn(user.getSeq());
         when(jwtUtil.extractDeviceId(any())).thenReturn(user.getDeviceId());
         when(userRepository.findById(any())).thenReturn(Optional.ofNullable(user));
@@ -244,7 +244,7 @@ class UserServiceTest {
     // 신규 사용자 로그인으로 인한 실패 테스트
     public void 토큰_재발급_신규로그인_실패_테스트() {
         // given
-        when(jwtUtil.isValidToken(any())).thenReturn(true);
+        doNothing().when(jwtUtil).isValidTokenOrThrowException(any());
         when(jwtUtil.extractUserSeq(any())).thenReturn(user.getSeq());
         when(jwtUtil.extractDeviceId(any())).thenReturn(user.getDeviceId());
         when(userRepository.findById(any())).thenReturn(Optional.ofNullable(user));
