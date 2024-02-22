@@ -13,20 +13,20 @@ public class AppleOAuthUserProvider {
 
     private final AppleJwtParser appleJwtParser;
     private final AppleOAuth appleOAuth;
-    private final ApplePublicKeyGenerator appleOAuthPublicKeyGenerator;
+    private final ApplePublicKeyGenerator applePublicKeyGenerator;
     private final AppleClaimsValidator appleClaimsValidator;
 
-    public AppleOAuthUserProvider(AppleJwtParser appleJwtParser, AppleOAuth appleOAuth, ApplePublicKeyGenerator appleOAuthPublicKeyGenerator, AppleClaimsValidator appleClaimsValidator) {
+    public AppleOAuthUserProvider(AppleJwtParser appleJwtParser, AppleOAuth appleOAuth, ApplePublicKeyGenerator applePublicKeyGenerator, AppleClaimsValidator appleClaimsValidator) {
         this.appleJwtParser = appleJwtParser;
         this.appleOAuth = appleOAuth;
-        this.appleOAuthPublicKeyGenerator = appleOAuthPublicKeyGenerator;
+        this.applePublicKeyGenerator = applePublicKeyGenerator;
         this.appleClaimsValidator = appleClaimsValidator;
     }
 
     public OAuthUserResponse getApplePlatformMember(String identityToken) {
         Map<String, String> headers = appleJwtParser.parseHeaders(identityToken);
         ApplePublicKeys applePublicKeys = appleOAuth.getPublicKeys();
-        PublicKey publicKey = appleOAuthPublicKeyGenerator.generatePublicKey(headers, applePublicKeys);
+        PublicKey publicKey = applePublicKeyGenerator.generatePublicKey(headers, applePublicKeys);
         Claims claims = appleJwtParser.parseClaims(identityToken, publicKey);
         validateClaims(claims);
         return new OAuthUserResponse(claims.getSubject(), claims.get("email", String.class));

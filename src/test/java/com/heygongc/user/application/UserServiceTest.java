@@ -15,6 +15,7 @@ import com.heygongc.user.presentation.request.UserLoginRequest;
 import com.heygongc.user.presentation.request.UserRegisterRequest;
 import com.heygongc.user.presentation.response.OAuthUserResponse;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -113,7 +114,8 @@ class UserServiceTest {
     }
 
     @Test
-    public void 로그인_성공_테스트() {
+    @DisplayName("가입한 사용자가 로그인 시 토큰을 발급한다")
+    public void login() {
         // given
         when(userRepository.findBySnsId(anyString())).thenReturn(Optional.ofNullable(user));
         when(googleOAuth.getUser(anyString())).thenReturn(oAuthUserResponse);
@@ -134,8 +136,8 @@ class UserServiceTest {
     }
 
     @Test
-    // 미가입 사용자 로그인 실패, null 리턴하여 회원가입 이동
-    public void 로그인_미가입_실패_테스트() {
+    @DisplayName("미가입한 사용자가 로그인 시 null을 리턴한다")
+    public void loginWithIsUnRegistered() {
         // given
         when(googleOAuth.getUser(anyString())).thenReturn(oAuthUserResponse);
         when(appleOAuthUserProvider.getApplePlatformMember(anyString())).thenReturn(oAuthUserResponse);
@@ -150,7 +152,8 @@ class UserServiceTest {
     }
 
     @Test
-    public void 회원가입_성공_테스트() {
+    @DisplayName("미가입한 사용자가 회원가입 시 토큰을 리턴한다")
+    public void register() {
         // given
         when(googleOAuth.getUser(anyString())).thenReturn(oAuthUserResponse);
         when(appleOAuthUserProvider.getApplePlatformMember(anyString())).thenReturn(oAuthUserResponse);
@@ -170,8 +173,8 @@ class UserServiceTest {
     }
 
     @Test
-    // 이미 가입된 사용자가 회원가입 요청 시 실패 테스트
-    public void 회원가입_기가입_실패_테스트() {
+    @DisplayName("가입한 사용자가 회원가입 시 예외를 리턴한다")
+    public void registerWithIsRegistered() {
         // given
         when(userRepository.findBySnsId(anyString())).thenReturn(Optional.ofNullable(user));
         when(googleOAuth.getUser(anyString())).thenReturn(oAuthUserResponse);
@@ -184,7 +187,8 @@ class UserServiceTest {
     }
 
     @Test
-    public void 회원탈퇴_성공_테스트() {
+    @DisplayName("회원탈퇴 시 deletedAt 값을 저장한다")
+    public void unRegister() {
         // given
         when(userRepository.findById(any())).thenReturn(Optional.ofNullable(user));
         when(userRepository.save(any(User.class))).thenReturn(user);
@@ -197,8 +201,8 @@ class UserServiceTest {
     }
 
     @Test
-    // 미가입 사용자 실패 테스트
-    public void 회원탈퇴_미가입_실패_테스트() {
+    @DisplayName("미가입한 사용자가 회원탈퇴 시 예외를 리턴한다")
+    public void unRegisterWithIsUnRegistered() {
         // given
         when(userRepository.findById(any())).thenReturn(Optional.empty());
 
@@ -207,8 +211,8 @@ class UserServiceTest {
     }
 
     @Test
-    // 이미 탈퇴한 사용자 실패 테스트
-    public void 회원탈퇴_기탈퇴_실패_테스트() {
+    @DisplayName("이미 탈퇴한 사용자가 회원탈퇴 시 예외를 리턴한다")
+    public void unRegisterWithAlreadyUnRegistered() {
         // given
         user.setDeletedAt(LocalDateTime.now());
         when(userRepository.findById(any())).thenReturn(Optional.ofNullable(user));
@@ -218,7 +222,8 @@ class UserServiceTest {
     }
 
     @Test
-    public void 토큰_재발급_성공_테스트() {
+    @DisplayName("토큰 재발급 요청 시 액세스토큰과 리프레시토큰을 재발급한다")
+    public void refreshToken() {
         // given
         when(jwtUtil.isValidToken(any())).thenReturn(true);
         when(jwtUtil.extractUserSeq(any())).thenReturn(user.getSeq());
@@ -237,8 +242,8 @@ class UserServiceTest {
     }
 
     @Test
-    // 신규 사용자 로그인으로 인한 실패 테스트
-    public void 토큰_재발급_신규로그인_실패_테스트() {
+    @DisplayName("토큰 재발급 요청 시 신규 사용자가 로그인한 경우 예외를 리턴한다")
+    public void refreshTokenWithIsNewUser() {
         // given
         when(jwtUtil.isValidToken(any())).thenReturn(true);
         when(jwtUtil.extractUserSeq(any())).thenReturn(user.getSeq());
