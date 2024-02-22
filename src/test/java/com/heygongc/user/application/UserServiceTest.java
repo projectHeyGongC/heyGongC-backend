@@ -1,5 +1,7 @@
 package com.heygongc.user.application;
 
+import com.heygongc.user.application.apple.AppleOAuthUserProvider;
+import com.heygongc.user.application.google.GoogleOAuth;
 import com.heygongc.user.domain.User;
 import com.heygongc.user.domain.UserRepository;
 import com.heygongc.user.domain.UserToken;
@@ -11,7 +13,7 @@ import com.heygongc.user.exception.UserNotFoundException;
 import com.heygongc.user.presentation.request.TokenRequest;
 import com.heygongc.user.presentation.request.UserLoginRequest;
 import com.heygongc.user.presentation.request.UserRegisterRequest;
-import com.heygongc.user.presentation.response.GoogleUserResponse;
+import com.heygongc.user.presentation.response.OAuthUserResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,6 +47,9 @@ class UserServiceTest {
     @Mock
     private GoogleOAuth googleOAuth;
 
+    @Mock
+    private AppleOAuthUserProvider appleOAuthUserProvider;
+
     @InjectMocks
     private UserService userService;
 
@@ -54,14 +59,14 @@ class UserServiceTest {
     private Long unRegisterUserSeq;
     private UserLoginRequest userLoginRequest;
     private UserRegisterRequest userRegisterRequest;
-    private GoogleUserResponse googleUserResponse;
+    private OAuthUserResponse oAuthUserResponse;
     private UserToken userToken;
     private UserToken newUserToken;
     private AuthToken authToken;
 
     @BeforeEach
     public void setUp() {
-        snsTypeArr = new String[]{"google"};
+        snsTypeArr = new String[]{"google", "apple"};
         userSeq = 1L;
         unRegisterUserSeq = 2L;
 
@@ -97,25 +102,9 @@ class UserServiceTest {
                 "mockNewRefreshToken",
                 User.builder().seq(userSeq).build());
 
-        googleUserResponse = new GoogleUserResponse(
-                "mockIss",
-                "mockAzp",
-                "mockAud",
+        oAuthUserResponse = new OAuthUserResponse(
                 "mockSub",
-                "mockEmail",
-                "mockEmailVerified",
-                "mockAtHash",
-                "mockName",
-                "mockPicture",
-                "mockGivenName",
-                "mockFamilyName",
-                "mockLocale",
-                "mockIat",
-                "mockExp",
-                "mockAlg",
-                "mockKid",
-                "mockTyp",
-                "mockScope"
+                "mockEmail"
         );
 
         authToken = new AuthToken(
@@ -127,7 +116,8 @@ class UserServiceTest {
     public void 로그인_성공_테스트() {
         // given
         when(userRepository.findBySnsId(anyString())).thenReturn(Optional.ofNullable(user));
-        when(googleOAuth.getUser(anyString())).thenReturn(googleUserResponse);
+        when(googleOAuth.getUser(anyString())).thenReturn(oAuthUserResponse);
+        when(appleOAuthUserProvider.getApplePlatformMember(anyString())).thenReturn(oAuthUserResponse);
         when(userRepository.save(any(User.class))).thenReturn(user);
         when(userTokenRepository.save(any(UserToken.class))).thenReturn(userToken);
         when(jwtUtil.generateAuthToken(any(), any())).thenReturn(authToken);
@@ -147,7 +137,8 @@ class UserServiceTest {
     // 미가입 사용자 로그인 실패, null 리턴하여 회원가입 이동
     public void 로그인_미가입_실패_테스트() {
         // given
-        when(googleOAuth.getUser(anyString())).thenReturn(googleUserResponse);
+        when(googleOAuth.getUser(anyString())).thenReturn(oAuthUserResponse);
+        when(appleOAuthUserProvider.getApplePlatformMember(anyString())).thenReturn(oAuthUserResponse);
 
         for (String snsType : snsTypeArr) {
             // when
@@ -161,7 +152,8 @@ class UserServiceTest {
     @Test
     public void 회원가입_성공_테스트() {
         // given
-        when(googleOAuth.getUser(anyString())).thenReturn(googleUserResponse);
+        when(googleOAuth.getUser(anyString())).thenReturn(oAuthUserResponse);
+        when(appleOAuthUserProvider.getApplePlatformMember(anyString())).thenReturn(oAuthUserResponse);
         when(userRepository.save(any(User.class))).thenReturn(user);
         when(userTokenRepository.save(any(UserToken.class))).thenReturn(userToken);
         when(jwtUtil.generateAuthToken(any(), any())).thenReturn(authToken);
@@ -182,7 +174,8 @@ class UserServiceTest {
     public void 회원가입_기가입_실패_테스트() {
         // given
         when(userRepository.findBySnsId(anyString())).thenReturn(Optional.ofNullable(user));
-        when(googleOAuth.getUser(anyString())).thenReturn(googleUserResponse);
+        when(googleOAuth.getUser(anyString())).thenReturn(oAuthUserResponse);
+        when(appleOAuthUserProvider.getApplePlatformMember(anyString())).thenReturn(oAuthUserResponse);
 
         for (String snsType : snsTypeArr) {
             // when

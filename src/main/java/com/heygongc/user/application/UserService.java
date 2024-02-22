@@ -1,5 +1,7 @@
 package com.heygongc.user.application;
 
+import com.heygongc.user.application.apple.AppleOAuthUserProvider;
+import com.heygongc.user.application.google.GoogleOAuth;
 import com.heygongc.user.domain.User;
 import com.heygongc.user.domain.UserRepository;
 import com.heygongc.user.domain.UserToken;
@@ -7,25 +9,25 @@ import com.heygongc.user.domain.UserTokenRepository;
 import com.heygongc.user.exception.*;
 import com.heygongc.user.presentation.request.UserLoginRequest;
 import com.heygongc.user.presentation.request.UserRegisterRequest;
-import com.heygongc.user.presentation.response.GoogleUserResponse;
+import com.heygongc.user.presentation.response.OAuthUserResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 
 @Service
 public class UserService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final GoogleOAuth googleOAuth;
+    private final AppleOAuthUserProvider appleOAuthUserProvider;
     private final UserRepository userRepository;
     private final UserTokenRepository userTokenRepository;
     private final JwtUtil jwtUtil;
 
-    public UserService(GoogleOAuth googleOAuth, UserRepository userRepository, UserTokenRepository userTokenRepository, JwtUtil jwtUtil) {
+    public UserService(GoogleOAuth googleOAuth, AppleOAuthUserProvider appleOAuthUserProvider, UserRepository userRepository, UserTokenRepository userTokenRepository, JwtUtil jwtUtil) {
         this.googleOAuth = googleOAuth;
+        this.appleOAuthUserProvider = appleOAuthUserProvider;
         this.userRepository = userRepository;
         this.userTokenRepository = userTokenRepository;
         this.jwtUtil = jwtUtil;
@@ -40,11 +42,23 @@ public class UserService {
     }
 
     public User getGoogleUserInfo(String token) {
-        GoogleUserResponse googleUser = googleOAuth.getUser(token);
+        OAuthUserResponse googleUser = googleOAuth.getUser(token);
         return userRepository.findBySnsId(googleUser.sub())
                 .orElse(User.builder()
+                        .snsType(UserSnsType.GOOGLE)
                         .snsId(googleUser.sub())
                         .email(googleUser.email())
+                        .build());
+    }
+
+    public User getAppleUserInfo(String token) {
+        OAuthUserResponse appleUser =
+                appleOAuthUserProvider.getApplePlatformMember(token);
+        return userRepository.findBySnsId(appleUser.sub())
+                .orElse(User.builder()
+                        .snsType(UserSnsType.APPLE)
+                        .snsId(appleUser.sub())
+                        .email(appleUser.email())
                         .build());
     }
 
@@ -69,7 +83,7 @@ public class UserService {
                 user = getGoogleUserInfo(request.token().accessToken());
                 break;
             case "apple":
-//                user = getAppleUserInfo(request.token().accessToken());
+                user = getAppleUserInfo(request.token().accessToken());
                 break;
             default:
                 break;
@@ -101,7 +115,7 @@ public class UserService {
                 user = getGoogleUserInfo(request.token().accessToken());
                 break;
             case "apple":
-//                user = getAppleUserInfo(request.token().accessToken());
+                user = getAppleUserInfo(request.token().accessToken());
                 break;
             default:
                 break;
@@ -123,7 +137,7 @@ public class UserService {
                             .deviceId(request.deviceId())
                             .deviceOs(request.deviceOs())
                             .id("USER" + ((int) (Math.random() * 9999) + 1)) // USER + 랜덤4자리
-                            .snsType(UserSnsType.GOOGLE)
+                            .snsType(user.getSnsType())
                             .snsId(user.getSnsId())
                             .email(user.getEmail())
                             .alarm(true)
