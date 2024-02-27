@@ -28,14 +28,6 @@ jobs:
           touch ./application-prod.yml
           echo "${{ secrets.APPLICATION_PROD }}" > ./application-prod.yml
         shell: bash
-          
-      # TEST 환경 변수 설정
-      - name: Make Test Yml
-        run: |
-          cd ./src/test/resources
-          touch ./application-test.yml
-          echo "${{ secrets.APPLICATION_TEST }}" > ./application-test.yml
-        shell: bash
         
       # Gradle 실행권한 부여
       - name: Grant execute permission to gradlew
