@@ -28,7 +28,7 @@ jobs:
           touch ./application-prod.yml
           echo "${{ secrets.APPLICATION_PROD }}" > ./application-prod.yml
         shell: bash
-          
+
       # TEST 환경 변수 설정
       - name: Make Test Yml
         run: |
