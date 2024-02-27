@@ -37,6 +37,9 @@ import static org.mockito.Mockito.*;
 class UserServiceTest {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    @InjectMocks
+    private UserService userService;
+
     @Mock
     private UserRepository userRepository;
 
@@ -51,9 +54,6 @@ class UserServiceTest {
 
     @Mock
     private AppleOAuthUserProvider appleOAuthUserProvider;
-
-    @InjectMocks
-    private UserService userService;
 
     private static String[] snsTypeArr;
     private User user;

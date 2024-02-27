@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 
 import java.security.*;
 import java.util.Date;
@@ -16,7 +17,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class AppleJwtParserTest {
 
-    private final AppleJwtParser appleJwtParser = new AppleJwtParser();
+    @InjectMocks
+    private AppleJwtParser appleJwtParser = new AppleJwtParser();
 
     @Test
     @DisplayName("Apple identity token으로 헤더를 파싱한다")

@@ -6,12 +6,13 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.security.*;
 import java.util.Date;
+import java.util.HashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -22,14 +23,19 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 class AppleOAuthUserProviderTest {
 
-    @Autowired
+    @InjectMocks
     private AppleOAuthUserProvider appleOAuthUserProvider;
 
-    @MockBean
+    @Mock
+    private AppleJwtParser appleJwtParser;
+
+    @Mock
     private AppleOAuth appleOAuth;
-    @MockBean
+
+    @Mock
     private ApplePublicKeyGenerator applePublicKeyGenerator;
-    @MockBean
+
+    @Mock
     private AppleClaimsValidator appleClaimsValidator;
 
     @Test
@@ -53,9 +59,14 @@ class AppleOAuthUserProviderTest {
                 .signWith(SignatureAlgorithm.RS256, privateKey)
                 .compact();
 
+        when(appleJwtParser.parseHeaders(any())).thenReturn(new HashMap<String, String>());
         when(appleOAuth.getPublicKeys()).thenReturn(mock(ApplePublicKeys.class));
         when(applePublicKeyGenerator.generatePublicKey(any(), any())).thenReturn(publicKey);
         when(appleClaimsValidator.isValid(any())).thenReturn(true);
+        when(appleJwtParser.parseClaims(any(), any())).thenReturn(Jwts.parser()
+                                                                    .setSigningKey(publicKey)
+                                                                    .parseClaimsJws(identityToken)
+                                                                    .getBody());
 
         OAuthUserResponse user = appleOAuthUserProvider.getApplePlatformMember(identityToken);
 
@@ -83,9 +94,14 @@ class AppleOAuthUserProviderTest {
                 .signWith(SignatureAlgorithm.RS256, privateKey)
                 .compact();
 
+        when(appleJwtParser.parseHeaders(any())).thenReturn(new HashMap<String, String>());
         when(appleOAuth.getPublicKeys()).thenReturn(mock(ApplePublicKeys.class));
         when(applePublicKeyGenerator.generatePublicKey(any(), any())).thenReturn(publicKey);
         when(appleClaimsValidator.isValid(any())).thenReturn(false);
+        when(appleJwtParser.parseClaims(any(), any())).thenReturn(Jwts.parser()
+                .setSigningKey(publicKey)
+                .parseClaimsJws(identityToken)
+                .getBody());
 
         assertThrows(InvalidTokenException.class, () -> appleOAuthUserProvider.getApplePlatformMember(identityToken));
     }
