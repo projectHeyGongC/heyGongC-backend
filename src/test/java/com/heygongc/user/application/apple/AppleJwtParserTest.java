@@ -17,8 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class AppleJwtParserTest {
 
-    @InjectMocks
-    private AppleJwtParser appleJwtParser = new AppleJwtParser();
+    private final AppleJwtParser appleJwtParser = new AppleJwtParser();
 
     @Test
     @DisplayName("Apple identity token으로 헤더를 파싱한다")

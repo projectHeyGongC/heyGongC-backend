@@ -16,14 +16,18 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(MockitoExtension.class)
 class JwtUtilTest {
 
-    @Autowired
-    private JwtUtil jwtUtil;
+    public static final String SECRET = "testtesttesttesttesttesttesttesttesttest";
+    public static final Long ACCESS_EXP = 864000L;
+    public static final Long REFRESH_EXP = 1728000L;
+
+    private static JwtUtil jwtUtil;
 
     private static Long userSeq;
     private static String deviceId;
 
     @BeforeAll
     public static void setUpBeforeAll() {
+        jwtUtil = new JwtUtil(SECRET, ACCESS_EXP, REFRESH_EXP);
         userSeq = 1L;
         deviceId = "mockDevicveId";
     }
