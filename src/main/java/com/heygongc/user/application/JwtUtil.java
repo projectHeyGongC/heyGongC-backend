@@ -20,6 +20,14 @@ public class JwtUtil {
     @Value("${jwt.refresh.expiration}")
     private Long REFRESH_EXP;
 
+    public AuthToken generateAuthToken(Long userSeq, String deviceId) {
+        // jwt 토큰 발급
+        String accessToken = generateAccessToken(String.valueOf(userSeq), deviceId);
+        String refreshToken = generateRefreshToken(String.valueOf(userSeq), deviceId);
+
+        return new AuthToken(accessToken, refreshToken);
+    }
+
     public String generateAccessToken(String subject, String audience) {
         Date now = new Date();
         Date expirationDate = new Date(now.getTime() + ACCESS_EXP);
