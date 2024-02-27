@@ -192,4 +192,8 @@ public class UserService {
 
         return authToken;
     }
+
+    public String getToken(String deviceId) {
+        return jwtUtil.generateAccessToken(null, deviceId);
+    }
 }

@@ -1,9 +1,10 @@
-google:
-  client:
-    id: ${GOOGLE_CLIENT_ID}
-    secret: ${GOOGLE_CLIENT_SECRET}
-
 jwt:
-  secret: ${JWT_SECRET}
-  access.expiration: ${JWT_ACCESS_EXPIRATION}
-  refresh.expiration: ${JWT_REFRESH_EXPIRATION}
+  secret: testtesttesttesttesttesttesttesttesttest
+  access.expiration: 864000
+  refresh.expiration: 1728000
+
+oauth:
+  apple:
+    iss: https://appleid.apple.com
+    client-id: test
+    nonce: nonce

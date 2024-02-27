@@ -14,6 +14,7 @@ import com.heygongc.user.presentation.request.TokenRequest;
 import com.heygongc.user.presentation.request.UserLoginRequest;
 import com.heygongc.user.presentation.request.UserRegisterRequest;
 import com.heygongc.user.presentation.response.OAuthUserResponse;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -54,37 +55,30 @@ class UserServiceTest {
     @InjectMocks
     private UserService userService;
 
-    private String[] snsTypeArr;
+    private static String[] snsTypeArr;
     private User user;
-    private Long userSeq;
-    private Long unRegisterUserSeq;
-    private UserLoginRequest userLoginRequest;
-    private UserRegisterRequest userRegisterRequest;
-    private OAuthUserResponse oAuthUserResponse;
-    private UserToken userToken;
-    private UserToken newUserToken;
-    private AuthToken authToken;
+    private static Long userSeq;
+    private static Long unRegisterUserSeq;
+    private static String accessToken;
+    private static UserLoginRequest userLoginRequest;
+    private static UserRegisterRequest userRegisterRequest;
+    private static OAuthUserResponse oAuthUserResponse;
+    private static UserToken userToken;
+    private static UserToken newUserToken;
+    private static AuthToken authToken;
 
-    @BeforeEach
-    public void setUp() {
+    @BeforeAll
+    public static void setUpBeforeAll() {
         snsTypeArr = new String[]{"google", "apple"};
         userSeq = 1L;
         unRegisterUserSeq = 2L;
-
-        user = User.builder()
-                .seq(userSeq)
-                .deviceId("mockDeviceId")
-                .id("mockId")
-                .email("mockEmail")
-                .snsType(UserSnsType.GOOGLE)
-                .ads(true)
-                .build();
+        accessToken = "mockAccessToken";
 
         userLoginRequest = new UserLoginRequest(
                 "mockDeviceId",
                 "mockDeviceOs",
                 new TokenRequest(
-                        "mockAccessToken",
+                        accessToken,
                         "mockRefreshToken"));
 
         userRegisterRequest = new UserRegisterRequest(
@@ -92,7 +86,7 @@ class UserServiceTest {
                 "mockDeviceOs",
                 true,
                 new TokenRequest(
-                        "mockAccessToken",
+                        accessToken,
                         "mockRefreshToken"));
 
         userToken = new UserToken(
@@ -109,8 +103,20 @@ class UserServiceTest {
         );
 
         authToken = new AuthToken(
-                "mockAccessToken",
+                accessToken,
                 "mockRefreshToken");
+    }
+
+    @BeforeEach
+    public void setUpBeforeEach() {
+        user = User.builder()
+                .seq(userSeq)
+                .deviceId("mockDeviceId")
+                .id("mockId")
+                .email("mockEmail")
+                .snsType(UserSnsType.GOOGLE)
+                .ads(true)
+                .build();
     }
 
     @Test
@@ -253,5 +259,19 @@ class UserServiceTest {
 
         // when
         assertThrows(NewLoginDetectedException.class, () -> userService.refreshToken(userToken.getToken()));
+    }
+
+    @Test
+    @DisplayName("토큰 발급 요청 시 신규 액세스토큰을 발급한다")
+    public void getToken() {
+        // given
+        when(jwtUtil.generateAccessToken(any(), any())).thenReturn(accessToken);
+
+        // when
+        String result = userService.getToken(user.getDeviceId());
+
+        // then
+        assertNotNull(result);
+        assertEquals(result, accessToken);
     }
 }
