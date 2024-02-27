@@ -231,7 +231,7 @@ class UserServiceTest {
     @DisplayName("토큰 재발급 요청 시 액세스토큰과 리프레시토큰을 재발급한다")
     public void refreshToken() {
         // given
-        when(jwtUtil.isValidToken(any())).thenReturn(true);
+        doNothing().when(jwtUtil).isValidTokenOrThrowException(any());
         when(jwtUtil.extractUserSeq(any())).thenReturn(user.getSeq());
         when(jwtUtil.extractDeviceId(any())).thenReturn(user.getDeviceId());
         when(userRepository.findById(any())).thenReturn(Optional.ofNullable(user));
@@ -251,7 +251,7 @@ class UserServiceTest {
     @DisplayName("토큰 재발급 요청 시 신규 사용자가 로그인한 경우 예외를 리턴한다")
     public void refreshTokenWithIsNewUser() {
         // given
-        when(jwtUtil.isValidToken(any())).thenReturn(true);
+        doNothing().when(jwtUtil).isValidTokenOrThrowException(any());
         when(jwtUtil.extractUserSeq(any())).thenReturn(user.getSeq());
         when(jwtUtil.extractDeviceId(any())).thenReturn(user.getDeviceId());
         when(userRepository.findById(any())).thenReturn(Optional.ofNullable(user));

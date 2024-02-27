@@ -168,9 +168,7 @@ public class UserService {
 
     @Transactional
     public AuthToken refreshToken(String refreshToken) {
-        if (!jwtUtil.isValidToken(refreshToken)) {
-            throw new InvalidTokenException("유효하지 않은 토큰입니다.");
-        }
+        jwtUtil.isValidTokenOrThrowException(refreshToken);
 
         Long userSeq = jwtUtil.extractUserSeq(refreshToken);
         String deviceId = jwtUtil.extractDeviceId(refreshToken);

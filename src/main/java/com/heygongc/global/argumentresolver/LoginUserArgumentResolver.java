@@ -45,13 +45,7 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
         String accessToken = jwtUtil.extractTokenFromHeader(request.getHeader("Authorization"));
 
         // 유효하지 않은 토큰이면 로그인 페이지로 리디렉션
-        try {
-            if (!jwtUtil.isValidToken(accessToken)) {
-                throw new UnauthenticatedException("유효하지 않은 토큰입니다.");
-            }
-        } catch (SignatureException | MalformedJwtException | ExpiredJwtException e) { //서명 오류 or JWT 구조 문제, 유효 기간 만료
-            throw new UnauthenticatedException("유효하지 않은 토큰입니다.");
-        }
+        jwtUtil.isValidTokenOrThrowException(accessToken);
 
         Long userSeq = jwtUtil.extractUserSeq(accessToken);
         String deviceId = jwtUtil.extractDeviceId(accessToken);
