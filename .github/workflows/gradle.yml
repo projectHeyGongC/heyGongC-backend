@@ -31,7 +31,7 @@ jobs:
 
       # 속도 개선을 위한 Gradle 캐싱
       - name: Cache Gradle packages
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/.gradle/caches
