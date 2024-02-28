@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(MockitoExtension.class)
 class JwtUtilTest {
 
-    public static final String SECRET = "testtesttesttesttesttesttesttesttesttesttest";
+    public static final String SECRET = "testtesttesttesttesttesttesttesttesttest";
     public static final Long ACCESS_EXP = 864000L;
     public static final Long REFRESH_EXP = 1728000L;
 
