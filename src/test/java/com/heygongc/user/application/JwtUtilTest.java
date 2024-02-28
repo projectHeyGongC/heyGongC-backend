@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -17,18 +18,14 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(MockitoExtension.class)
 class JwtUtilTest {
 
-    public static final String SECRET = "testtesttesttesttesttesttesttesttesttest";
-    public static final Long ACCESS_EXP = 864000L;
-    public static final Long REFRESH_EXP = 1728000L;
-
-    private static JwtUtil jwtUtil;
+    @Autowired
+    private JwtUtil jwtUtil;
 
     private static Long userSeq;
     private static String deviceId;
 
     @BeforeAll
     public static void setUpBeforeAll() {
-        jwtUtil = new JwtUtil(SECRET, ACCESS_EXP, REFRESH_EXP);
         userSeq = 1L;
         deviceId = "mockDevicveId";
     }
