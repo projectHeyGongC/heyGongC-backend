@@ -1,7 +1,6 @@
 package com.heygongc.user.application.apple;
 
 import org.springframework.stereotype.Component;
-import org.springframework.util.Base64Utils;
 
 import java.math.BigInteger;
 import java.security.KeyFactory;
@@ -9,6 +8,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPublicKeySpec;
+import java.util.Base64;
 import java.util.Map;
 
 @Component
@@ -26,8 +26,8 @@ public class ApplePublicKeyGenerator {
     }
 
     private PublicKey generatePublicKeyWithApplePublicKey(ApplePublicKey publicKey) {
-        byte[] nBytes = Base64Utils.decodeFromUrlSafeString(publicKey.getN());
-        byte[] eBytes = Base64Utils.decodeFromUrlSafeString(publicKey.getE());
+        byte[] nBytes = Base64.getUrlDecoder().decode(publicKey.getN());
+        byte[] eBytes = Base64.getUrlDecoder().decode(publicKey.getE());
 
         BigInteger n = new BigInteger(POSITIVE_SIGN_NUMBER, nBytes);
         BigInteger e = new BigInteger(POSITIVE_SIGN_NUMBER, eBytes);
