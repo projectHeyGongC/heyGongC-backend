@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 @Tag(name = "Device API", description = "기기 API")
 @RestController
-@RequestMapping("/v1/device")
+@RequestMapping("/v1/devices")
 public class DeviceController {
 
     private final DeviceService deviceService;
@@ -45,7 +45,7 @@ public class DeviceController {
         List<Device> devices = deviceService.getAllDevices(userSeq);
 
         List<DeviceResponse> deviceResponses = devices.stream()
-                .map(device -> new DeviceResponse(device.getUser().getSeq(), device.getType(), device.getName()))
+                .map(device -> new DeviceResponse(device.getType(), device.getName()))
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok().body(deviceResponses);
@@ -65,7 +65,6 @@ public class DeviceController {
             @Valid @RequestBody(description = "기기 정보") DeviceInfoRequest request){
         Device device = deviceService.addDevice(user, request);
         DeviceResponse deviceResponse = new DeviceResponse(
-                user.getSeq(),
                 device.getType(),
                 device.getName()
         );
@@ -105,7 +104,6 @@ public class DeviceController {
             @Parameter(hidden = true) @LoginUser User user) {
         Device device = deviceService.getDevice(deviceSeq, user);
         DeviceResponse deviceResponse = new DeviceResponse(
-                device.getUser().getSeq(),
                 device.getType(),
                 device.getName()
         );
@@ -130,7 +128,6 @@ public class DeviceController {
         Device device = deviceService.updateDevice(deviceSeq, deviceName, user);
 
         DeviceResponse deviceResponse = new DeviceResponse(
-                device.getUser().getSeq(),
                 device.getType(),
                 device.getName()
         );
