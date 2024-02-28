@@ -29,13 +29,16 @@ jobs:
           echo "${{ secrets.APPLICATION_PROD }}" > ./application-prod.yml
         shell: bash
 
-      # TEST 환경 변수 설정
-      - name: Make Test Yml
-        run: |
-          cd ./src/test/resources
-          touch ./application-test.yml
-          echo "${{ secrets.APPLICATION_TEST }}" > ./application-test.yml
-        shell: bash
+      # 속도 개선을 위한 Gradle 캐싱
+      - name: Cache Gradle packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
         
       # Gradle 실행권한 부여
       - name: Grant execute permission to gradlew
@@ -44,6 +47,13 @@ jobs:
       # Spring boot application 빌드
       - name: Build with gradle
         run: ./gradlew clean build
+
+      # gradle 빌드 시 테스트 결
+      - name: Publish Unit Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: ${{ always() }}
+        with:
+          files: build/test-results/**/*.xml
 
       # docker image 빌드
       - name: Build docker image
