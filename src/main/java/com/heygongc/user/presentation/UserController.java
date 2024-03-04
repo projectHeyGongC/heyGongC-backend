@@ -5,7 +5,6 @@ import com.heygongc.global.error.ErrorResponse;
 import com.heygongc.user.application.AuthToken;
 import com.heygongc.user.application.UserService;
 import com.heygongc.user.domain.User;
-import com.heygongc.user.presentation.request.AccessTokenRequest;
 import com.heygongc.user.presentation.request.RefreshTokenRequest;
 import com.heygongc.user.presentation.request.UserLoginRequest;
 import com.heygongc.user.presentation.request.UserRegisterRequest;
@@ -110,12 +109,12 @@ public class UserController {
             summary = "액세스 토큰 발급",
             description = "카메라 앱에서 사용할 액세스 토큰을 신규 발급합니다.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)))
+                    @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class)))
             }
     )
     public ResponseEntity<String> getToken(
-            @Parameter(name = "AccessTokenRequest", description = "토큰 발급 요청 정보", required = true, in = ParameterIn.HEADER) @RequestBody AccessTokenRequest request) {
-        String accessToken = userService.getToken(request.deviceId());
+            @Parameter(name = "deviceId", description = "디바이스 ID", required = true, in = ParameterIn.QUERY) @RequestParam(name="deviceId") String deviceId) {
+        String accessToken = userService.getToken(deviceId);
         return ResponseEntity.ok().body(accessToken);
     }
 
