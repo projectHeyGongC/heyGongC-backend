@@ -147,10 +147,10 @@ public class UserService {
         }
 
         // jwt 토큰 발급
-        AuthToken authToken = jwtUtil.generateAuthToken(user.getSeq(), user.getDeviceId());
+        AuthToken authToken = jwtUtil.generateAuthToken(saveUser.getSeq(), saveUser.getDeviceId());
 
         // 토큰 저장
-        saveJwtToken(user.getSeq(), authToken.getRefreshToken());
+        saveJwtToken(saveUser.getSeq(), authToken.getRefreshToken());
 
         return authToken;
     }
