@@ -65,12 +65,15 @@ public class UserService {
     private UserToken saveJwtToken(Long seq, String refreshToken) {
         // 이미 등록된 jwt 토큰이 있으면 삭제
         if (userTokenRepository.findByUserSeq(seq).isPresent()) {
+            logger.info("delete jwt token >> seq({})", seq);
             userTokenRepository.deleteToken(seq);
         }
 
         // jwt 토큰 저장
         UserToken userToken = new UserToken(refreshToken, User.builder().seq(seq).build());
         userTokenRepository.save(userToken);
+
+        logger.info("saved jwt token >> seq({}), refreshToken({})", seq, refreshToken);
 
         return userToken;
     }
@@ -93,6 +96,7 @@ public class UserService {
         if (!isUserExists(user) || isUserUnRegistered(user)) {
             return null;
         }
+        logger.info("login user info >> snsType({}), snsId({}), email({})", user.getSnsType(), user.getSnsId(), user.getEmail());
 
         // device 정보 저장
         user.deviceInfo(request.deviceId(), request.deviceOs());
@@ -145,6 +149,7 @@ public class UserService {
                             .build()
             );
         }
+        logger.info("register user >> seq({}), snsType({}), snsId({}), email({})", saveUser.getSeq(), saveUser.getSnsType(), saveUser.getSnsId(), saveUser.getEmail());
 
         // jwt 토큰 발급
         AuthToken authToken = jwtUtil.generateAuthToken(saveUser.getSeq(), saveUser.getDeviceId());
