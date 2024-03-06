@@ -51,6 +51,15 @@ public class UserService {
                         .build());
     }
 
+    public User getTestUserInfo() {
+        return userRepository.findBySnsId("TEST_SNS_ID")
+                .orElse(User.builder()
+                        .snsType(UserSnsType.GOOGLE)
+                        .snsId("TEST_SNS_ID")
+                        .email("TEST_EMAIL@gmail.com")
+                        .build());
+    }
+
     public User getAppleUserInfo(String token) {
         OAuthUserResponse appleUser =
                 appleOAuthUserProvider.getApplePlatformMember(token);
@@ -88,6 +97,9 @@ public class UserService {
             case "apple":
                 user = getAppleUserInfo(request.token().accessToken());
                 break;
+            case "test":
+                user = getTestUserInfo();
+                break;
             default:
                 break;
         }
@@ -120,6 +132,9 @@ public class UserService {
                 break;
             case "apple":
                 user = getAppleUserInfo(request.token().accessToken());
+                break;
+            case "test":
+                user = getTestUserInfo();
                 break;
             default:
                 break;
