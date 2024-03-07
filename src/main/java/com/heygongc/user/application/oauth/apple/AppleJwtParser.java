@@ -1,4 +1,4 @@
-package com.heygongc.user.application.apple;
+package com.heygongc.user.application.oauth.apple;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

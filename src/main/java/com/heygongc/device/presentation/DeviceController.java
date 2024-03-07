@@ -6,7 +6,7 @@ import com.heygongc.device.presentation.request.DeviceInfoRequest;
 import com.heygongc.device.presentation.response.DeviceResponse;
 import com.heygongc.global.argumentresolver.LoginUser;
 import com.heygongc.global.error.ErrorResponse;
-import com.heygongc.user.domain.User;
+import com.heygongc.user.domain.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;

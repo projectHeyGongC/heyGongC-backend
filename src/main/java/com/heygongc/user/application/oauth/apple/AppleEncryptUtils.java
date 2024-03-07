@@ -1,4 +1,4 @@
-package com.heygongc.user.application.apple;
+package com.heygongc.user.application.oauth.apple;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

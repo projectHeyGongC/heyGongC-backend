@@ -3,11 +3,13 @@ package com.heygongc.user.presentation;
 import com.heygongc.global.argumentresolver.LoginUser;
 import com.heygongc.global.error.ErrorResponse;
 import com.heygongc.user.application.AuthToken;
+import com.heygongc.user.application.OauthService;
 import com.heygongc.user.application.UserService;
-import com.heygongc.user.domain.User;
+import com.heygongc.user.application.oauth.OauthUser;
+import com.heygongc.user.domain.entity.User;
 import com.heygongc.user.presentation.request.RefreshTokenRequest;
 import com.heygongc.user.presentation.request.UserLoginRequest;
-import com.heygongc.user.presentation.request.UserRegisterRequest;
+import com.heygongc.user.presentation.request.RegisterRequest;
 import com.heygongc.user.presentation.response.TokenResponse;
 import com.heygongc.user.presentation.response.UserResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,11 +31,15 @@ public class UserController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final UserService userService;
-    public UserController(UserService userService) {
+
+    private final OauthService oauthService;
+
+    public UserController(UserService userService, OauthService oauthService) {
         this.userService = userService;
+        this.oauthService = oauthService;
     }
 
-    @PostMapping("/{snsType}/login")
+    @PostMapping("/login")
     @Operation(
             summary = "사용자 로그인",
             description = "구글/애플 액세스 토큰을 이용해 사용자를 조회하여 로그인합니다.",
@@ -43,18 +49,17 @@ public class UserController {
             }
     )
     public ResponseEntity<TokenResponse> login(
-            @Parameter(description = "SNS타입(google/apple)", required = true, in = ParameterIn.PATH) @PathVariable(name="snsType") String snsType,
             @Parameter(name = "UserLoginRequest", description = "로그인 요청 정보", required = true) @RequestBody UserLoginRequest request) {
-        AuthToken authToken = userService.login(snsType, request);
-        // 회원가입 필요한 경우
-        if (authToken == null) {
-            return ResponseEntity.noContent().build();
-        }
-        TokenResponse tokenResponse = new TokenResponse(authToken.getAccessToken(), authToken.getRefreshToken());
-        return ResponseEntity.ok().body(tokenResponse);
+        request.validate();
+        OauthUser oAuthUser = oauthService.getOAuthUser(request.snsType(), request.accessToken());
+        AuthToken authToken = userService.login(oAuthUser, request);
+        return ResponseEntity.ok()
+                .body(
+                        new TokenResponse(authToken.getAccessToken(), authToken.getRefreshToken())
+                );
     }
 
-    @PostMapping("/{snsType}/register")
+    @PostMapping("/register")
     @Operation(
             summary = "사용자 회원가입",
             description = "구글/애플 액세스 토큰을 이용해 사용자를 조회하여 회원가입합니다.",
@@ -62,12 +67,15 @@ public class UserController {
                     @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TokenResponse.class)))
             }
     )
-    public ResponseEntity<TokenResponse> register(
-            @Parameter(description = "SNS타입(google/apple)", required = true, in = ParameterIn.PATH) @PathVariable(name="snsType") String snsType,
-            @Parameter(name = "UserRegisterRequest", description = "회원가입 요청 정보", required = true) @RequestBody UserRegisterRequest request) {
-        AuthToken authToken = userService.register(snsType, request);
-        TokenResponse tokenResponse = new TokenResponse(authToken.getAccessToken(), authToken.getRefreshToken());
-        return ResponseEntity.ok().body(tokenResponse);
+    public ResponseEntity<TokenResponse> register(@Parameter(name = "RegisterRequest", description = "회원가입 요청 정보", required = true)
+                                                  @RequestBody RegisterRequest request) {
+        request.validate();
+        OauthUser oAuthUser = oauthService.getOAuthUser(request.snsType(), request.accessToken());
+        AuthToken authToken = userService.register(oAuthUser, request);
+        return ResponseEntity.ok()
+                .body(
+                        new TokenResponse(authToken.getAccessToken(), authToken.getRefreshToken())
+                );
     }
 
     @PostMapping("/unregister")
@@ -129,7 +137,7 @@ public class UserController {
             }
     )
     public ResponseEntity<UserResponse> getUserInfo(
-        @Parameter(hidden = true) @LoginUser User user) {
+            @Parameter(hidden = true) @LoginUser User user) {
         UserResponse userResponse = new UserResponse(
                 user.getDeviceId(),
                 user.getDeviceOs(),

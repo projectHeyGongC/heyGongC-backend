@@ -3,7 +3,7 @@ package com.heygongc.global.config;
 import com.heygongc.global.argumentresolver.LoginUserArgumentResolver;
 import com.heygongc.global.interceptor.Interceptor;
 import com.heygongc.user.application.JwtUtil;
-import com.heygongc.user.domain.UserRepository;
+import com.heygongc.user.domain.repository.UserRepository;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;

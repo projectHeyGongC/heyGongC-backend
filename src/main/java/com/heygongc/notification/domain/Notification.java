@@ -6,7 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
 import com.heygongc.global.config.BaseTimeEntity;
-import com.heygongc.user.domain.User;
+import com.heygongc.user.domain.entity.User;
 import jakarta.persistence.*;
 import org.hibernate.annotations.DynamicUpdate;
 

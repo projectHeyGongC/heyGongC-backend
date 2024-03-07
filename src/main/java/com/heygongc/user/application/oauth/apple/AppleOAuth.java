@@ -1,4 +1,4 @@
-package com.heygongc.user.application.apple;
+package com.heygongc.user.application.oauth.apple;
 
 import com.heygongc.global.config.FeignConfiguration;
 import org.springframework.cloud.openfeign.FeignClient;

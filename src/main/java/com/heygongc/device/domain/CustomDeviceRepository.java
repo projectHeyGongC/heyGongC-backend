@@ -1,6 +1,6 @@
 package com.heygongc.device.domain;
 
-import com.heygongc.user.domain.User;
+import com.heygongc.user.domain.entity.User;
 
 import java.util.Optional;
 

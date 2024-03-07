@@ -1,4 +1,4 @@
-package com.heygongc.user.application.google;
+package com.heygongc.user.application.oauth.google;
 
 import com.heygongc.global.config.FeignConfiguration;
 import com.heygongc.user.presentation.response.OAuthUserResponse;
@@ -16,6 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface GoogleOAuth {
 
     @PostMapping(value = "/tokeninfo")
-    OAuthUserResponse getUser(@RequestParam("access_token") String accessToken);
+    GoogleUserResponse getUser(@RequestParam("access_token") String accessToken);
 
 }

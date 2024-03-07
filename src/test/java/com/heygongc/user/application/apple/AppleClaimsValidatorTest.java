@@ -1,5 +1,7 @@
 package com.heygongc.user.application.apple;
 
+import com.heygongc.user.application.oauth.apple.AppleClaimsValidator;
+import com.heygongc.user.application.oauth.apple.AppleEncryptUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import org.junit.jupiter.api.DisplayName;

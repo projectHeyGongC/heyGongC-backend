@@ -1,13 +1,9 @@
 package com.heygongc.global.interceptor;
 
 import com.heygongc.global.error.exception.ForbiddenException;
-import com.heygongc.global.error.exception.UnauthenticatedException;
 import com.heygongc.user.application.JwtUtil;
-import com.heygongc.user.domain.User;
-import com.heygongc.user.domain.UserRepository;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureException;
+import com.heygongc.user.domain.entity.User;
+import com.heygongc.user.domain.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
