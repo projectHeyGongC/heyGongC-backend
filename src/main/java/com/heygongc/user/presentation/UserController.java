@@ -45,7 +45,7 @@ public class UserController {
             description = "구글/애플 액세스 토큰을 이용해 사용자를 조회하여 로그인합니다.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK(로그인 성공)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TokenResponse.class))),
-                    @ApiResponse(responseCode = "204", description = "OK(회원가입 필요)", content = @Content)
+                    @ApiResponse(responseCode = "400", description = "USER_NOT_FOUND(회원가입 필요)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
             }
     )
     public ResponseEntity<TokenResponse> login(
