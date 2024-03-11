@@ -25,7 +25,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
-class AppleOAuthUserProviderTest {
+class AppleOauthUserProviderTest {
 
     @InjectMocks
     private AppleOauthUserProvider appleOAuthUserProvider;
