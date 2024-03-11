@@ -1,5 +1,8 @@
 package com.heygongc.user.application.apple;
 
+import com.heygongc.user.application.oauth.apple.AppleOAuth;
+import com.heygongc.user.application.oauth.apple.ApplePublicKey;
+import com.heygongc.user.application.oauth.apple.ApplePublicKeys;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

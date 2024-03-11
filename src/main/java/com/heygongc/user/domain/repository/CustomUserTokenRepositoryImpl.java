@@ -1,8 +1,10 @@
-package com.heygongc.user.domain;
+package com.heygongc.user.domain.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.heygongc.user.domain.entity.QUserToken.userToken;
 
 
 public class CustomUserTokenRepositoryImpl implements CustomUserTokenRepository {
@@ -16,10 +18,10 @@ public class CustomUserTokenRepositoryImpl implements CustomUserTokenRepository 
     @Override
     @Transactional
     public long deleteToken(Long userSeq) {
-        QUserToken qUserToken = QUserToken.userToken;
 
-        long count = queryFactory.delete(qUserToken)
-                .where(qUserToken.user.seq.eq(userSeq))
+
+        long count = queryFactory.delete(userToken)
+                .where(userToken.userSeq.eq(userSeq))
                 .execute();
 
         return count;

@@ -26,9 +26,6 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
-    // postgresql
-    implementation 'org.postgresql:postgresql:42.6.0'
-
     // queryDSL settings
     implementation "com.querydsl:querydsl-jpa:5.0.0:jakarta"
     annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
@@ -37,9 +34,6 @@ dependencies {
 
     // openfeign
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.1.0'
-
-    // postgresql
-    implementation 'org.postgresql:postgresql:42.6.0'
 
     // jjwt
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
@@ -54,6 +48,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-admin:9.2.0'
     // 로컬 h2
     runtimeOnly('com.h2database:h2')
+    runtimeOnly 'org.postgresql:postgresql'
 
     testRuntimeOnly 'com.h2database:h2'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

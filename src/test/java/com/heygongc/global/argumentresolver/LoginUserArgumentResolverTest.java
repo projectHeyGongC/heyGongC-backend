@@ -1,9 +1,9 @@
 package com.heygongc.global.argumentresolver;
 
 import com.heygongc.user.application.JwtUtil;
-import com.heygongc.user.application.UserSnsType;
-import com.heygongc.user.domain.User;
-import com.heygongc.user.domain.UserRepository;
+import com.heygongc.user.domain.entity.User;
+import com.heygongc.user.domain.repository.UserRepository;
+import com.heygongc.user.domain.type.SnsType;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,12 +31,10 @@ class LoginUserArgumentResolverTest {
 
     @BeforeEach
     public void setUp() {
-        user = User.builder()
-                .seq(1L)
+        user = User.createUser()
                 .deviceId("mockDeviceId")
-                .id("mockId")
                 .email("mockEmail")
-                .snsType(UserSnsType.GOOGLE)
+                .snsType(SnsType.GOOGLE)
                 .ads(true)
                 .build();
     }

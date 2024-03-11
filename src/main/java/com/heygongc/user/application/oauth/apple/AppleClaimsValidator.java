@@ -1,4 +1,4 @@
-package com.heygongc.user.application.apple;
+package com.heygongc.user.application.oauth.apple;
 
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Value;

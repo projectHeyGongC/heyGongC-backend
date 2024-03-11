@@ -4,8 +4,8 @@ import com.heygongc.device.domain.Device;
 import com.heygongc.device.domain.DeviceRepository;
 import com.heygongc.device.exception.DeviceNotFoundException;
 import com.heygongc.device.presentation.request.DeviceInfoRequest;
-import com.heygongc.user.domain.User;
-import com.heygongc.user.domain.UserRepository;
+import com.heygongc.user.domain.entity.User;
+import com.heygongc.user.domain.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 

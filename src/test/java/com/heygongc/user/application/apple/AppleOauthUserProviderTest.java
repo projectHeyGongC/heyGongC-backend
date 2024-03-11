@@ -1,14 +1,16 @@
 package com.heygongc.user.application.apple;
 
+import com.heygongc.user.application.oauth.OauthUser;
+import com.heygongc.user.application.oauth.apple.*;
 import com.heygongc.user.exception.InvalidTokenException;
-import com.heygongc.user.presentation.response.OAuthUserResponse;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.security.*;
@@ -21,12 +23,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
-class AppleOAuthUserProviderTest {
+class AppleOauthUserProviderTest {
 
     @InjectMocks
-    private AppleOAuthUserProvider appleOAuthUserProvider;
+    private AppleOauthUserProvider appleOAuthUserProvider;
 
     @Mock
     private AppleJwtParser appleJwtParser;
@@ -70,10 +72,10 @@ class AppleOAuthUserProviderTest {
                                                                     .parseClaimsJws(identityToken)
                                                                     .getBody());
 
-        OAuthUserResponse user = appleOAuthUserProvider.getApplePlatformMember(identityToken);
+        OauthUser oauthUser = appleOAuthUserProvider.getOAuthUserInfo(identityToken);
 
-        assertThat(user.sub()).isEqualTo(expected);
-        assertThat(user.email()).isEqualTo("kth@apple.com");
+        assertThat(oauthUser.id()).isEqualTo(expected);
+        assertThat(oauthUser.email()).isEqualTo("kth@apple.com");
     }
 
     @Test
@@ -105,6 +107,6 @@ class AppleOAuthUserProviderTest {
                 .parseClaimsJws(identityToken)
                 .getBody());
 
-        assertThrows(InvalidTokenException.class, () -> appleOAuthUserProvider.getApplePlatformMember(identityToken));
+        assertThrows(InvalidTokenException.class, () -> appleOAuthUserProvider.getOAuthUserInfo(identityToken));
     }
 }

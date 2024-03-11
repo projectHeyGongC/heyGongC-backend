@@ -7,7 +7,7 @@ import com.heygongc.notification.application.NotificationTypeEnum;
 import com.heygongc.notification.domain.Notification;
 import com.heygongc.notification.presentation.request.NotificationInfoRequest;
 import com.heygongc.notification.presentation.response.NotificationResponse;
-import com.heygongc.user.domain.User;
+import com.heygongc.user.domain.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;

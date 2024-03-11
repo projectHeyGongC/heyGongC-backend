@@ -1,7 +1,7 @@
-package com.heygongc.user.domain;
+package com.heygongc.user.domain.entity;
 
 import com.heygongc.global.config.BaseTimeEntity;
-import com.heygongc.user.application.UserSnsType;
+import com.heygongc.user.domain.type.SnsType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
@@ -13,11 +13,9 @@ import static lombok.AccessLevel.PROTECTED;
 @Entity
 @Getter
 @Setter
-@Builder
-@AllArgsConstructor // Builder 어노테이션을 위해 필요
-@NoArgsConstructor(access=PROTECTED) // No default constructor for entity 오류 해결을 위해 필요
+@NoArgsConstructor(access = PROTECTED) // No default constructor for entity 오류 해결을 위해 필요
 @DynamicUpdate //변경된 필드만 Update
-@Table(name = "user")
+@Table(name = "users")
 public class User extends BaseTimeEntity {
 
     @Id
@@ -25,24 +23,24 @@ public class User extends BaseTimeEntity {
     @Column(name = "user_seq")
     private Long seq;
 
-    @Column(name = "device_id", nullable = false)
-    private String deviceId;
-
-    @Column(name = "device_os", nullable = false)
-    private String deviceOs;
-
-    @Column(name = "user_id", length = 200, nullable = false)
-    private String id;
-
     @Column(name = "sns_type", nullable = false)
     @Enumerated(EnumType.STRING)
-    private UserSnsType snsType;
+    private SnsType snsType;
 
     @Column(name = "sns_id", length = 200, nullable = false)
     private String snsId; //고유식별자
 
     @Column(name = "email", length = 200)
     private String email;
+
+    @Column(name = "user_id", length = 200, nullable = false)
+    private String userId;
+
+    @Column(name = "device_id", nullable = false)
+    private String deviceId;
+
+    @Column(name = "device_os", nullable = false)
+    private String deviceOs;
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
@@ -56,7 +54,23 @@ public class User extends BaseTimeEntity {
     @Column(name = "ads", nullable = false)
     private Boolean ads;
 
-    public void deviceInfo(String deviceId, String deviceOs) {
+    @Builder(builderMethodName = "createUser")
+    public User(SnsType snsType, String snsId, String email, String deviceId, String deviceOs, Boolean alarm, Boolean ads) {
+        this.snsType = snsType;
+        this.snsId = snsId;
+        this.email = email;
+        this.userId = randomUserId();
+        this.deviceId = deviceId;
+        this.deviceOs = deviceOs;
+        this.alarm = alarm;
+        this.ads = ads;
+    }
+
+    private static String randomUserId() {
+        return "USER" + ((int) (Math.random() * 9999) + 1);
+    }
+
+    public void changeDevice(String deviceId, String deviceOs) {
         this.deviceId = deviceId;
         this.deviceOs = deviceOs;
     }
