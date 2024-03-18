@@ -38,8 +38,8 @@ public class DeviceService{
     public Device addDevice(User user, DeviceInfoRequest request) {
 
         Device device = Device.builder()
-                .deviceSeq(request.getParsedDeviceSeq())
-                .type(request.getType())
+                .uuid(request.uuid())
+                .type(request.type())
                 .name(request.name())
                 .soundMode(false)
                 .sensitivity(DeviceSensitivityEnum.MEDIUM)

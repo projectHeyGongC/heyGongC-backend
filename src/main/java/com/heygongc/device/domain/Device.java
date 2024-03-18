@@ -27,6 +27,9 @@ public class Device extends BaseTimeEntity {
     @Column(name = "device_seq")
     private Long deviceSeq;
 
+    @Column(name="uuid", nullable = false)
+    private String uuid;
+
     @Column(name = "type", nullable = false)
     private String type;
 

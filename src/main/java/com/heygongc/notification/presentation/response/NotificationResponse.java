@@ -8,12 +8,6 @@ import jakarta.persistence.Enumerated;
 @Schema(description = "알림 정보 응답")
 public record NotificationResponse (
 
-        @Schema(description = "알림 시퀀스")
-        Long eventSeq,
-
-        @Schema(description = "유저 시퀀스")
-        Long userSeq,
-
         @Schema(description = "알림 종류")
         NotificationTypeEnum typeEnum,
 
