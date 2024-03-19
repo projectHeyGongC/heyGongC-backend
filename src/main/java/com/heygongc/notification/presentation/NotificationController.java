@@ -1,6 +1,5 @@
 package com.heygongc.notification.presentation;
 
-import com.heygongc.global.argumentresolver.LoginUser;
 import com.heygongc.global.error.ErrorResponse;
 import com.heygongc.notification.application.NotificationService;
 import com.heygongc.notification.application.NotificationTypeEnum;
@@ -46,7 +45,7 @@ public class NotificationController {
     )
     public ResponseEntity<NotificationResponse> getNotification(
             @Parameter(description = "알림 시퀀스", required = true, in = ParameterIn.PATH) @PathVariable(name = "eventSeq") Long eventSeq,
-            @Parameter(hidden = true) @LoginUser User user){
+            @Parameter(hidden = true) User user){
         Notification notification = notificationService.getNotification(eventSeq, user);
 
         NotificationResponse notificationResponse = new NotificationResponse(
@@ -71,7 +70,7 @@ public class NotificationController {
     )
     public ResponseEntity<List<NotificationResponse>> getAllNotifications(
             @Parameter(description = "알림 종류", required = true) @RequestBody NotificationTypeEnum type,
-            @Parameter(hidden = true) @LoginUser User user) {
+            @Parameter(hidden = true) User user) {
         Long userSeq = user.getSeq();
         List<Notification> notifications = notificationService.getAllNotifications(userSeq, type);
 
@@ -92,7 +91,7 @@ public class NotificationController {
             }
     )
     public ResponseEntity<NotificationResponse> addNotification(
-            @Parameter(hidden = true) @LoginUser User user,
+            @Parameter(hidden = true) User user,
             @Parameter(description = "알림 시퀀스", required = true) @RequestBody Long deviceSeq,
             @RequestBody(description = "알림 정보")NotificationInfoRequest request) {
         Notification notification = notificationService.addNotification(user, deviceSeq, request);
@@ -117,7 +116,7 @@ public class NotificationController {
             }
 
     )
-    public ResponseEntity<NotificationResponse> updateReadStatus(@PathVariable(name = "eventSeq") Long eventSeq, @Parameter(hidden = true) @LoginUser User user){
+    public ResponseEntity<NotificationResponse> updateReadStatus(@PathVariable(name = "eventSeq") Long eventSeq, @Parameter(hidden = true) User user){
 
         Notification notification = notificationService.updateReadStatus(eventSeq, user);
 

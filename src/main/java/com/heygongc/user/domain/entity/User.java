@@ -82,7 +82,13 @@ public class User extends BaseTimeEntity {
         this.deletedAt = null;
     }
 
-    public void unRegister() {
+    public void withdraw() {
+        this.userId = "*****";
+        this.snsId = "*****" ;
+        this.email = "*****@*****.***";
+        this.deviceId = null;
+        this.deviceOs = null;
+        this.fcmToken = null;
         this.deletedAt = LocalDateTime.now();
     }
 }

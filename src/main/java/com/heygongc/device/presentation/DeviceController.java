@@ -4,7 +4,6 @@ import com.heygongc.device.application.DeviceService;
 import com.heygongc.device.domain.Device;
 import com.heygongc.device.presentation.request.DeviceInfoRequest;
 import com.heygongc.device.presentation.response.DeviceResponse;
-import com.heygongc.global.argumentresolver.LoginUser;
 import com.heygongc.global.error.ErrorResponse;
 import com.heygongc.user.domain.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,7 +39,7 @@ public class DeviceController {
                     @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))),
             }
     )
-    public ResponseEntity<List<DeviceResponse>> getAllDevice(@Parameter(hidden = true) @LoginUser User user){
+    public ResponseEntity<List<DeviceResponse>> getAllDevice(@Parameter(hidden = true) User user){
         Long userSeq = user.getSeq();
         List<Device> devices = deviceService.getAllDevices(userSeq);
 
@@ -61,7 +60,7 @@ public class DeviceController {
             }
     )
     public ResponseEntity<DeviceResponse> addDevice(
-            @Parameter(hidden = true) @LoginUser User user,
+            @Parameter(hidden = true) User user,
             @Valid @RequestBody(description = "기기 정보") DeviceInfoRequest request){
         Device device = deviceService.addDevice(user, request);
         DeviceResponse deviceResponse = new DeviceResponse(
@@ -80,7 +79,7 @@ public class DeviceController {
                     @ApiResponse(responseCode = "200", description = "OK", content = @Content)
             }
     )
-    public ResponseEntity<Void> deleteAllDevice(@Parameter(hidden = true) @LoginUser User user) {
+    public ResponseEntity<Void> deleteAllDevice(@Parameter(hidden = true) User user) {
         Long userSeq = user.getSeq();
         deviceService.deleteAllDevices(userSeq);
 
@@ -102,7 +101,7 @@ public class DeviceController {
     )
     public ResponseEntity<DeviceResponse> getDevice(
             @Parameter(description = "기기 시퀀스", required = true, in = ParameterIn.PATH) @PathVariable(name = "id") Long deviceSeq,
-            @Parameter(hidden = true) @LoginUser User user) {
+            @Parameter(hidden = true) User user) {
         Device device = deviceService.getDevice(deviceSeq, user);
         DeviceResponse deviceResponse = new DeviceResponse(
                 device.getUser().getSeq(),
@@ -126,7 +125,7 @@ public class DeviceController {
     public ResponseEntity<DeviceResponse> updateDevice(
             @Parameter(description = "기기 아이디", required = true, in = ParameterIn.PATH) @PathVariable(name = "id") Long deviceSeq,
             @Parameter(description = "수정된 기기 이름", required = true) @RequestBody(description = "기기 이름") String deviceName,
-            @Parameter(hidden = true) @LoginUser User user) {
+            @Parameter(hidden = true) User user) {
         Device device = deviceService.updateDevice(deviceSeq, deviceName, user);
 
         DeviceResponse deviceResponse = new DeviceResponse(
@@ -150,7 +149,7 @@ public class DeviceController {
     )
     public ResponseEntity<Void> deleteDevice(
             @Parameter(description = "기기 아이디", required = true, in = ParameterIn.PATH) @PathVariable(name = "id") Long deviceSeq,
-            @Parameter(hidden = true) @LoginUser User user) {
+            @Parameter(hidden = true) User user) {
         deviceService.deleteDevice(deviceSeq, user);
 
         return ResponseEntity.ok().build();
