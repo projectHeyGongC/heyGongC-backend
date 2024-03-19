@@ -1,6 +1,7 @@
 package com.heygongc.user.application;
 
 import com.heygongc.common.DatabaseCleaner;
+import com.heygongc.global.type.OsType;
 import com.heygongc.user.domain.entity.User;
 import com.heygongc.user.domain.repository.UserRepository;
 import com.heygongc.user.domain.type.SnsType;
@@ -85,7 +86,7 @@ class UserServiceTest {
                 .deviceId("1111")
                 .snsId("123456789")
                 .snsType(SnsType.GOOGLE)
-                .deviceOs("AOS")
+                .deviceOs(OsType.valueOf("AOS"))
                 .email("test@test.com")
                 .alarm(true)
                 .ads(true)

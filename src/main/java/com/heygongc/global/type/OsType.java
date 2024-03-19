@@ -1,4 +1,4 @@
-package com.heygongc.user.domain.type;
+package com.heygongc.global.type;
 
 public enum OsType {
     AOS,

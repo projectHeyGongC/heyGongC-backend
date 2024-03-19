@@ -1,7 +1,7 @@
 package com.heygongc.notification.application;
 
-import com.heygongc.device.domain.Device;
-import com.heygongc.device.domain.DeviceRepository;
+import com.heygongc.device.domain.entity.Device;
+import com.heygongc.device.domain.repository.DeviceRepository;
 import com.heygongc.device.exception.DeviceNotFoundException;
 import com.heygongc.global.error.exception.ForbiddenException;
 import com.heygongc.notification.domain.Notification;

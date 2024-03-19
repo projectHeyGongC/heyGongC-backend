@@ -1,5 +1,6 @@
 package com.heygongc.user.application;
 
+import com.heygongc.global.type.OsType;
 import com.heygongc.user.application.oauth.OauthFactory;
 import com.heygongc.user.application.oauth.OauthUser;
 import com.heygongc.user.domain.entity.User;
@@ -33,7 +34,7 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException("미가입 사용자입니다."));
 
         // device 정보 저장
-        user.changeDevice(request.deviceId(), request.deviceOs());
+        user.changeDevice(request.deviceId(), OsType.valueOf(request.deviceOs()));
 
         // jwt 토큰 발급
         AuthToken authToken = jwtUtil.generateAuthToken(user.getSeq(), user.getDeviceId());
@@ -56,7 +57,7 @@ public class UserService {
                         .snsId(oauthUser.id())
                         .email(oauthUser.email())
                         .deviceId(request.deviceId())
-                        .deviceOs(request.deviceOs())
+                        .deviceOs(OsType.valueOf(request.deviceOs()))
                         .alarm(true)
                         .ads(request.ads())
                         .build());
@@ -84,10 +85,10 @@ public class UserService {
 
     @Transactional
     public AuthToken refreshToken(String refreshToken) {
-        jwtUtil.isValidTokenOrThrowException(refreshToken);
+        jwtUtil.checkedValidTokenOrThrowException(refreshToken);
 
-        Long userSeq = jwtUtil.extractUserSeq(refreshToken);
-        String deviceId = jwtUtil.extractDeviceId(refreshToken);
+        Long userSeq = Long.parseLong(jwtUtil.extractSubject(refreshToken));
+        String deviceId = jwtUtil.extractAudience(refreshToken);
 
         User user = userRepository.findById(userSeq).orElseThrow(() -> new UserNotFoundException("미가입 사용자입니다."));
         UserToken userToken = userTokenRepository.findByUserSeq(userSeq).orElseThrow(() -> new UserNotFoundException("미가입 사용자입니다."));

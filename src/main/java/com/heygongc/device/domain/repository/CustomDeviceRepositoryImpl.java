@@ -1,5 +1,7 @@
-package com.heygongc.device.domain;
+package com.heygongc.device.domain.repository;
 
+import com.heygongc.device.domain.entity.QDevice;
+import com.heygongc.device.domain.entity.Device;
 import com.heygongc.user.domain.entity.User;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
