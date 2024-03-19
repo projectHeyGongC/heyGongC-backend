@@ -37,6 +37,9 @@ public class JwtUtil {
         return new AuthToken(accessToken, refreshToken);
     }
 
+
+
+
     public String generateAccessToken(String subject, String audience) {
         Date now = new Date();
         Date expirationDate = new Date(now.getTime() + ACCESS_EXP);

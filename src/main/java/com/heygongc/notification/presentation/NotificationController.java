@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 @Tag(name = "Notification API", description = "알림 API")
 @RestController
-@RequestMapping("/v1/notification")
+@RequestMapping("/v1/notifications")
 public class NotificationController {
 
     private final NotificationService notificationService;
@@ -49,8 +49,6 @@ public class NotificationController {
         Notification notification = notificationService.getNotification(eventSeq, user);
 
         NotificationResponse notificationResponse = new NotificationResponse(
-                notification.getEventSeq(),
-                notification.getUser().getSeq(),
                 notification.getTypeEnum(),
                 notification.getContent(),
                 notification.isReadStatus()
@@ -75,7 +73,7 @@ public class NotificationController {
         List<Notification> notifications = notificationService.getAllNotifications(userSeq, type);
 
         List<NotificationResponse> notificationResponses = notifications.stream()
-                .map(notification -> new NotificationResponse(notification.getEventSeq(), notification.getUser().getSeq(), notification.getTypeEnum(), notification.getContent(), notification.isReadStatus()))
+                .map(notification -> new NotificationResponse( notification.getTypeEnum(), notification.getContent(), notification.isReadStatus()))
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok().body(notificationResponses);
@@ -96,8 +94,6 @@ public class NotificationController {
             @RequestBody(description = "알림 정보")NotificationInfoRequest request) {
         Notification notification = notificationService.addNotification(user, deviceSeq, request);
         NotificationResponse notificationResponse = new NotificationResponse(
-                notification.getEventSeq(),
-                notification.getUser().getSeq(),
                 notification.getTypeEnum(),
                 notification.getContent(),
                 notification.isReadStatus()
@@ -121,8 +117,6 @@ public class NotificationController {
         Notification notification = notificationService.updateReadStatus(eventSeq, user);
 
         NotificationResponse notificationResponse = new NotificationResponse(
-                notification.getEventSeq(),
-                notification.getUser().getSeq(),
                 notification.getTypeEnum(),
                 notification.getContent(),
                 notification.isReadStatus()

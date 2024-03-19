@@ -1,6 +1,7 @@
 package com.heygongc.user.domain.entity;
 
 import com.heygongc.global.config.BaseTimeEntity;
+import com.heygongc.global.type.OsType;
 import com.heygongc.user.domain.type.SnsType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -40,7 +41,8 @@ public class User extends BaseTimeEntity {
     private String deviceId;
 
     @Column(name = "device_os", nullable = false)
-    private String deviceOs;
+    @Enumerated(EnumType.STRING)
+    private OsType deviceOs;
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
@@ -55,7 +57,7 @@ public class User extends BaseTimeEntity {
     private Boolean ads;
 
     @Builder(builderMethodName = "createUser")
-    public User(SnsType snsType, String snsId, String email, String deviceId, String deviceOs, Boolean alarm, Boolean ads) {
+    public User(SnsType snsType, String snsId, String email, String deviceId, OsType deviceOs, Boolean alarm, Boolean ads) {
         this.snsType = snsType;
         this.snsId = snsId;
         this.email = email;
@@ -70,12 +72,12 @@ public class User extends BaseTimeEntity {
         return "USER" + ((int) (Math.random() * 9999) + 1);
     }
 
-    public void changeDevice(String deviceId, String deviceOs) {
+    public void changeDevice(String deviceId, OsType deviceOs) {
         this.deviceId = deviceId;
         this.deviceOs = deviceOs;
     }
 
-    public void reRegister(String deviceId, String deviceOs, Boolean ads) {
+    public void reRegister(String deviceId, OsType deviceOs, Boolean ads) {
         this.deviceId = deviceId;
         this.deviceOs = deviceOs;
         this.ads = ads;

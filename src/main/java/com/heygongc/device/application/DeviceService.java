@@ -1,7 +1,7 @@
 package com.heygongc.device.application;
 
-import com.heygongc.device.domain.Device;
-import com.heygongc.device.domain.DeviceRepository;
+import com.heygongc.device.domain.entity.Device;
+import com.heygongc.device.domain.repository.DeviceRepository;
 import com.heygongc.device.exception.DeviceNotFoundException;
 import com.heygongc.device.presentation.request.DeviceInfoRequest;
 import com.heygongc.user.domain.entity.User;
@@ -38,9 +38,9 @@ public class DeviceService{
     public Device addDevice(User user, DeviceInfoRequest request) {
 
         Device device = Device.builder()
-                .deviceSeq(request.getParsedDeviceSeq())
-                .type(request.getType())
-                .name(request.name())
+                .deviceId(request.uuid())
+                .modelName(request.type())
+                .deviceName(request.name())
                 .soundMode(false)
                 .sensitivity(DeviceSensitivityEnum.MEDIUM)
                 .soundActive(false)
