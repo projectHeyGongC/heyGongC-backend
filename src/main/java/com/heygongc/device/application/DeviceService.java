@@ -38,9 +38,9 @@ public class DeviceService{
     public Device addDevice(User user, DeviceInfoRequest request) {
 
         Device device = Device.builder()
-                .uuid(request.uuid())
-                .model(request.type())
-                .name(request.name())
+                .deviceId(request.uuid())
+                .modelName(request.type())
+                .deviceName(request.name())
                 .soundMode(false)
                 .sensitivity(DeviceSensitivityEnum.MEDIUM)
                 .soundActive(false)

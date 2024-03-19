@@ -28,18 +28,18 @@ public class Device extends BaseTimeEntity {
     @Column(name = "device_seq")
     private Long deviceSeq;
 
-    @Column(name="uuid", nullable = false)
-    private String uuid;
+    @Column(name="device_id", nullable = false)
+    private String deviceId;
 
-    @Column(name = "model", nullable = false)
-    private String model;
+    @Column(name = "model_name", nullable = false)
+    private String modelName;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+    @Column(name = "device_name", nullable = false)
+    private String deviceName;
 
-    @Column(name = "os", nullable = false)
+    @Column(name = "device_os", nullable = false)
     @Enumerated(EnumType.STRING)
-    private OsType os;
+    private OsType deviceOs;
 
     @Column(name = "is_paired", nullable = false)
     private Boolean isPaired;
@@ -69,7 +69,7 @@ public class Device extends BaseTimeEntity {
 //    private List<Notification> notifications = new ArrayList<>();
     private List<Notification> notifications;
     public void changeDeviceName(String deviceName) {
-        this.name = deviceName;
+        this.deviceName = deviceName;
     }
 
 }

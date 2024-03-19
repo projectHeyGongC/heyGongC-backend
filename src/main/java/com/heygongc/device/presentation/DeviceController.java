@@ -44,7 +44,7 @@ public class DeviceController {
         List<Device> devices = deviceService.getAllDevices(userSeq);
 
         List<DeviceResponse> deviceResponses = devices.stream()
-                .map(device -> new DeviceResponse(device.getModel(), device.getName()))
+                .map(device -> new DeviceResponse(device.getModelName(), device.getDeviceName()))
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok().body(deviceResponses);
@@ -64,8 +64,8 @@ public class DeviceController {
             @Valid @RequestBody(description = "기기 정보") DeviceInfoRequest request){
         Device device = deviceService.addDevice(user, request);
         DeviceResponse deviceResponse = new DeviceResponse(
-                device.getModel(),
-                device.getName()
+                device.getModelName(),
+                device.getDeviceName()
         );
         return ResponseEntity.ok().body(deviceResponse);
     }
@@ -103,8 +103,8 @@ public class DeviceController {
             @Parameter(hidden = true) User user) {
         Device device = deviceService.getDevice(deviceSeq, user);
         DeviceResponse deviceResponse = new DeviceResponse(
-                device.getModel(),
-                device.getName()
+                device.getModelName(),
+                device.getDeviceName()
         );
 
         return ResponseEntity.ok().body(deviceResponse);
@@ -127,8 +127,8 @@ public class DeviceController {
         Device device = deviceService.updateDevice(deviceSeq, deviceName, user);
 
         DeviceResponse deviceResponse = new DeviceResponse(
-                device.getModel(),
-                device.getName()
+                device.getModelName(),
+                device.getDeviceName()
         );
 
         return ResponseEntity.ok().body(deviceResponse);
