@@ -1,7 +1,7 @@
 package com.heygongc.user.presentation.request;
 
 import com.heygongc.global.utils.EnumUtils;
-import com.heygongc.user.domain.type.OsType;
+import com.heygongc.global.type.OsType;
 import com.heygongc.user.domain.type.SnsType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.util.ObjectUtils;

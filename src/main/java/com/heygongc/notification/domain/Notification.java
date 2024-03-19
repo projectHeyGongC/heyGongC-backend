@@ -1,6 +1,6 @@
 package com.heygongc.notification.domain;
 
-import com.heygongc.device.domain.Device;
+import com.heygongc.device.domain.entity.Device;
 import com.heygongc.notification.application.NotificationTypeEnum;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;

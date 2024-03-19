@@ -1,7 +1,8 @@
-package com.heygongc.device.domain;
+package com.heygongc.device.domain.entity;
 
 import com.heygongc.device.application.DeviceSensitivityEnum;
 import com.heygongc.global.config.BaseTimeEntity;
+import com.heygongc.global.type.OsType;
 import com.heygongc.notification.domain.Notification;
 import com.heygongc.user.domain.entity.User;
 import jakarta.persistence.*;
@@ -27,14 +28,21 @@ public class Device extends BaseTimeEntity {
     @Column(name = "device_seq")
     private Long deviceSeq;
 
-    @Column(name="uuid", nullable = false)
-    private String uuid;
+    @Column(name="device_id", nullable = false)
+    private String deviceId;
 
-    @Column(name = "type", nullable = false)
-    private String type;
+    @Column(name = "model_name", nullable = false)
+    private String modelName;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+    @Column(name = "device_name", nullable = false)
+    private String deviceName;
+
+    @Column(name = "device_os", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private OsType deviceOs;
+
+    @Column(name = "is_paired", nullable = false)
+    private Boolean isPaired;
 
     @Column(name = "sound_mode", nullable = false)
     private boolean soundMode;
@@ -61,7 +69,7 @@ public class Device extends BaseTimeEntity {
 //    private List<Notification> notifications = new ArrayList<>();
     private List<Notification> notifications;
     public void changeDeviceName(String deviceName) {
-        this.name = deviceName;
+        this.deviceName = deviceName;
     }
 
 }
