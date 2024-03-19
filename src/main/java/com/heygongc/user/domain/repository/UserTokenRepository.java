@@ -7,4 +7,6 @@ import java.util.Optional;
 
 public interface UserTokenRepository extends JpaRepository<UserToken, Long>, CustomUserTokenRepository {
     Optional<UserToken> findByUserSeq(Long seq);
+
+    Optional<UserToken> findByRefreshToken(String refreshToken);
 }

@@ -73,38 +73,30 @@ public class UserService {
     }
 
     @Transactional
-    public void unRegister(Long userSeq) {
-        User user = userRepository.findById(userSeq).orElseThrow(() -> new UserNotFoundException("미가입 사용자입니다."));
-        if (user.getDeletedAt() != null) {
-            throw new AlreadyLeftException("이미 탈퇴한 사용자입니다.");
-        }
-
-        user.unRegister();
+    public void unRegister(User user) {
+        user.withdraw();
         userRepository.save(user);
     }
 
     @Transactional
     public AuthToken refreshToken(String refreshToken) {
+
+        // refresh token 유효성 체크
         jwtUtil.checkedValidTokenOrThrowException(refreshToken);
 
-        Long userSeq = Long.parseLong(jwtUtil.extractSubject(refreshToken));
-        String deviceId = jwtUtil.extractAudience(refreshToken);
+        // refresh token 조회
+        UserToken userToken = userTokenRepository.findByRefreshToken(refreshToken)
+                .orElseThrow(() -> new InvalidTokenException("유효하지 않은 토큰입니다."));
 
-        User user = userRepository.findById(userSeq).orElseThrow(() -> new UserNotFoundException("미가입 사용자입니다."));
-        UserToken userToken = userTokenRepository.findByUserSeq(userSeq).orElseThrow(() -> new UserNotFoundException("미가입 사용자입니다."));
-
-        // 저장된 Device나 Token이 일치하지 않을 경우
-        if (!deviceId.equals(user.getDeviceId())
-                || !refreshToken.equals(userToken.getToken())) {
-            throw new NewLoginDetectedException("새로운 로그인이 감지되었습니다.");
-        }
+        // user 정보 조회
+        User user = userRepository.findById(userToken.getUserSeq())
+                .orElseThrow(() -> new UserNotFoundException("미가입 사용자입니다."));
 
         // jwt 토큰 발급
         AuthToken authToken = jwtUtil.generateAuthToken(user.getSeq(), user.getDeviceId());
 
         // 토큰 저장
         saveRefreshToken(user.getSeq(), authToken.getRefreshToken());
-
         return authToken;
     }
 
@@ -122,10 +114,5 @@ public class UserService {
         // jwt 토큰 저장
         UserToken userToken = UserToken.saveToken(refreshToken, userSeq);
         userTokenRepository.save(userToken);
-    }
-
-    // TODO: 분리 필요가 있어보임
-    public String getToken(String deviceId) {
-        return jwtUtil.generateAccessToken(null, deviceId);
     }
 }

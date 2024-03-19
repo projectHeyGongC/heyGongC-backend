@@ -89,8 +89,7 @@ public class UserController {
     )
     public ResponseEntity<Void> unregister(
             @Parameter(hidden = true) User user) {
-        Long userSeq = user.getSeq();
-        userService.unRegister(userSeq);
+        userService.unRegister(user);
         return ResponseEntity.ok().build();
     }
 
@@ -100,8 +99,7 @@ public class UserController {
             description = "갱신 토큰을 이용해 액세스 토큰과 리프레시 토큰을 재발급합니다.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK(액세스 토큰 반환)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))),
-                    @ApiResponse(responseCode = "401", description = "유효하지 않은 토큰", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
-                    @ApiResponse(responseCode = "403", description = "새로운 로그인이 존재하는 경우", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+                    @ApiResponse(responseCode = "401", description = "유효하지 않은 토큰", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
             }
     )
     public ResponseEntity<TokenResponse> refreshToken(
