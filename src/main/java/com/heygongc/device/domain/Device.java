@@ -2,7 +2,7 @@ package com.heygongc.device.domain;
 
 import com.heygongc.device.application.DeviceSensitivityEnum;
 import com.heygongc.global.config.BaseTimeEntity;
-import com.heygongc.notification.domain.Notification;
+import com.heygongc.notification.domain.entity.Notification;
 import com.heygongc.user.domain.entity.User;
 import jakarta.persistence.*;
 import lombok.*;

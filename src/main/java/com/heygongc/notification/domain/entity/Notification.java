@@ -1,13 +1,11 @@
-package com.heygongc.notification.domain;
+package com.heygongc.notification.domain.entity;
 
 import com.heygongc.device.domain.Device;
-import com.heygongc.notification.application.NotificationTypeEnum;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import lombok.*;
 import com.heygongc.global.config.BaseTimeEntity;
+import com.heygongc.notification.domain.type.NotificationType;
 import com.heygongc.user.domain.entity.User;
 import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 
 import static lombok.AccessLevel.PROTECTED;
@@ -24,18 +22,12 @@ public class Notification extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "event_seq")
-    private Long eventSeq;
+    @Column(name = "noti_seq")
+    private Long notiSeq;
 
-    @Column(name = "content", nullable = false)
-    private String content;
-
-    @Column(name = "read_status", nullable = false)
-    private boolean readStatus;
-
-    @Column(name = "type_enum", nullable = false)
+    @Column(name = "type", nullable = false)
     @Enumerated(EnumType.STRING)
-    private NotificationTypeEnum typeEnum;
+    private NotificationType type;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_seq")
@@ -45,7 +37,10 @@ public class Notification extends BaseTimeEntity {
     @JoinColumn(name = "device_seq")
     private Device device;
 
-    public void markAsRead() {
-        this.readStatus = true;
+    @Builder(builderMethodName = "createNotification")
+    public Notification(NotificationType type, User user, Device device) {
+        this.type = type;
+        this.user = user;
+        this.device = device;
     }
 }
