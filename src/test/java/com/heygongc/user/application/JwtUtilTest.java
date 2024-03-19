@@ -44,8 +44,8 @@ class JwtUtilTest {
     void extractInfo() {
         String accessToken = jwtUtil.generateAccessToken(String.valueOf(userSeq), deviceId);
 
-        Long userSeq = Long.parseLong(jwtUtil.extractSubject(accessToken));
-        String deviceId = jwtUtil.extractAudience(accessToken);
+        Long userSeq = jwtUtil.extractUserSeq(accessToken);
+        String deviceId = jwtUtil.extractDeviceId(accessToken);
 
         assertEquals(userSeq, JwtUtilTest.userSeq);
         assertEquals(deviceId, JwtUtilTest.deviceId);
@@ -56,7 +56,7 @@ class JwtUtilTest {
     void isValidWithInvalidToken() {
         String invalidToken = "invalid-token";
 
-        assertThrows(InvalidTokenException.class, () -> jwtUtil.checkedValidTokenOrThrowException(invalidToken));
+        assertThrows(InvalidTokenException.class, () -> jwtUtil.isValidTokenOrThrowException(invalidToken));
     }
 
     @Test
@@ -73,7 +73,7 @@ class JwtUtilTest {
             e.printStackTrace();
         }
 
-        assertThrows(ExpiredTokenException.class, () -> jwtUtil.checkedValidTokenOrThrowException(expiredToken));
+        assertThrows(ExpiredTokenException.class, () -> jwtUtil.isValidTokenOrThrowException(expiredToken));
     }
 
     @Test
@@ -90,7 +90,7 @@ class JwtUtilTest {
             e.printStackTrace();
         }
 
-        assertThrows(ExpiredTokenException.class, () -> jwtUtil.extractSubject(expiredToken));
+        assertThrows(ExpiredTokenException.class, () -> jwtUtil.extractUserSeq(expiredToken));
     }
 
     @Test
@@ -103,6 +103,6 @@ class JwtUtilTest {
         String token = jwtUtil.generateAccessToken(String.valueOf(userSeq), deviceId);
 
         JwtUtil wrongJwtUtil = new JwtUtil(wrongSecretKey, 3600000L, 3600000L);
-        assertThrows(InvalidTokenException.class, () -> wrongJwtUtil.extractSubject(token));
+        assertThrows(InvalidTokenException.class, () -> wrongJwtUtil.extractUserSeq(token));
     }
 }

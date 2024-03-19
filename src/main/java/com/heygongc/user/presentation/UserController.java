@@ -1,5 +1,6 @@
 package com.heygongc.user.presentation;
 
+import com.heygongc.global.argumentresolver.LoginUser;
 import com.heygongc.global.error.ErrorResponse;
 import com.heygongc.user.application.AuthToken;
 import com.heygongc.user.application.OauthService;
@@ -88,7 +89,7 @@ public class UserController {
             }
     )
     public ResponseEntity<Void> unregister(
-            @Parameter(hidden = true) User user) {
+            @Parameter(hidden = true) @LoginUser User user) {
         Long userSeq = user.getSeq();
         userService.unRegister(userSeq);
         return ResponseEntity.ok().build();
@@ -111,6 +112,20 @@ public class UserController {
         return ResponseEntity.ok().body(tokenResponse);
     }
 
+    @GetMapping("/token")
+    @Operation(
+            summary = "액세스 토큰 발급",
+            description = "카메라 앱에서 사용할 액세스 토큰을 신규 발급합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "text/plain", schema = @Schema(implementation = String.class)))
+            }
+    )
+    public ResponseEntity<String> getToken(
+            @Parameter(name = "deviceId", description = "디바이스 ID", required = true, in = ParameterIn.QUERY) @RequestParam(name="deviceId") String deviceId) {
+        String accessToken = userService.getToken(deviceId);
+        return ResponseEntity.ok().body(accessToken);
+    }
+
     @GetMapping("/info")
     @Operation(
             summary = "사용자 정보 조회",
@@ -121,11 +136,15 @@ public class UserController {
                     @ApiResponse(responseCode = "403", description = "새로운 로그인이 존재하는 경우", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
             }
     )
-    public ResponseEntity<UserResponse> getUserInfo(@Parameter(hidden = true) User user) {
+    public ResponseEntity<UserResponse> getUserInfo(
+            @Parameter(hidden = true) @LoginUser User user) {
         UserResponse userResponse = new UserResponse(
+                user.getDeviceId(),
+                user.getDeviceOs(),
                 user.getSnsType().name(),
                 user.getEmail(),
-                user.getAlarm()
+                user.getAlarm(),
+                user.getAds()
         );
         return ResponseEntity.ok().body(userResponse);
     }
