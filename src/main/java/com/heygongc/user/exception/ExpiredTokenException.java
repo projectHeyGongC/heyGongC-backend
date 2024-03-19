@@ -4,19 +4,11 @@ import com.heygongc.global.error.exception.UnauthenticatedException;
 
 public class ExpiredTokenException extends UnauthenticatedException {
 
-    private final String code;
-
     public ExpiredTokenException() {
-        super(UserErrorType.EXPIRED_TOKEN.getMessage());
-        this.code = UserErrorType.EXPIRED_TOKEN.name();
+        super(UserErrorType.EXPIRED_TOKEN.name(), UserErrorType.EXPIRED_TOKEN.getMessage());
     }
 
     public ExpiredTokenException(String message) {
-        super(message);
-        this.code = UserErrorType.EXPIRED_TOKEN.name();
-    }
-
-    public String getCode() {
-        return code;
+        super(UserErrorType.EXPIRED_TOKEN.name(), message);
     }
 }

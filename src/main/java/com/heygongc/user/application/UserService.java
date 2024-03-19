@@ -78,8 +78,10 @@ public class UserService {
 
     @Transactional
     public AuthToken refreshToken(String refreshToken) {
-
         // refresh token 유효성 체크
+        jwtUtil.checkedValidTokenOrThrowException(refreshToken);
+
+        // refresh token 조회
         UserToken userToken = userTokenRepository.findByRefreshToken(refreshToken)
                 .orElseThrow(() -> new InvalidTokenException("유효하지 않은 토큰입니다."));
 
