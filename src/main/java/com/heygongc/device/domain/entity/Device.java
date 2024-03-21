@@ -1,10 +1,10 @@
 package com.heygongc.device.domain.entity;
 
-import com.heygongc.device.application.DeviceSensitivityEnum;
+import com.heygongc.device.domain.type.CameraModeType;
+import com.heygongc.device.domain.type.SensitivityType;
 import com.heygongc.global.config.BaseTimeEntity;
 import com.heygongc.global.type.OsType;
 import com.heygongc.notification.domain.Notification;
-import com.heygongc.user.domain.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -17,10 +17,8 @@ import static lombok.AccessLevel.PROTECTED;
 @Entity
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor(access=PROTECTED) // No default constructor for entity 오류 해결을 위해 필요
-@AllArgsConstructor
-@DynamicUpdate
+@DynamicUpdate //변경된 필드만 Update
 @Table(name = "device")
 public class Device extends BaseTimeEntity {
 
@@ -56,7 +54,7 @@ public class Device extends BaseTimeEntity {
     @Column(name = "sensitivity", nullable = false)
     @Enumerated(EnumType.STRING)
     @ColumnDefault("'MEDIUM'")
-    private DeviceSensitivityEnum sensitivity;
+    private SensitivityType sensitivity;
 
     @Column(name = "sound_active", nullable = false)
     @ColumnDefault("false")
@@ -66,15 +64,19 @@ public class Device extends BaseTimeEntity {
     @ColumnDefault("false")
     private boolean streamActive;
 
-    @Column(name = "front_camera", nullable = false)
-    @ColumnDefault("false")
-    private boolean frontCamera;
+    @Column(name = "camera_mode", nullable = false)
+    @Enumerated(EnumType.STRING)
+    @ColumnDefault("FRONT")
+    private CameraModeType cameraMode;
 
     @Column(name = "battery")
     private int battery;
 
     @Column(name = "temperature")
     private int temperature;
+
+    @OneToMany(mappedBy = "device", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Notification> notifications;
 
     @Builder(builderMethodName = "createDevice")
     public Device(Long userSeq, String deviceId, String modelName, String deviceName, OsType deviceOs){
@@ -85,16 +87,14 @@ public class Device extends BaseTimeEntity {
         this.deviceOs = deviceOs;
         this.isPaired = false;
         this.soundMode = false;
-        this.sensitivity = DeviceSensitivityEnum.MEDIUM;
+        this.sensitivity = SensitivityType.MEDIUM;
         this.soundActive = false;
         this.streamActive = false;
-        this.frontCamera = false;
+        this.cameraMode = CameraModeType.FRONT;
         this.battery = 0;
         this.temperature = 0;
     }
 
-    @OneToMany(mappedBy = "device", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Notification> notifications;
     public void changeDeviceName(String deviceName) {
         this.deviceName = deviceName;
     }
@@ -103,12 +103,32 @@ public class Device extends BaseTimeEntity {
         this.userSeq = null;
         this.isPaired = false;
         this.soundMode = false;
-        this.sensitivity = DeviceSensitivityEnum.MEDIUM;
+        this.sensitivity = SensitivityType.MEDIUM;
         this.soundActive = false;
         this.streamActive = false;
-        this.frontCamera = false;
+        this.cameraMode = CameraModeType.FRONT;
         this.battery = 0;
         this.temperature = 0;
     }
 
+    public void changeDeviceSetting(SensitivityType sensitivity, CameraModeType cameraMode){
+        this.sensitivity = sensitivity;
+        this.cameraMode = cameraMode;
+    }
+
+    public void soundModeOn(){
+        this.soundMode = true;
+    }
+
+    public void soundModeOff(){
+        this.soundMode = false;
+    }
+
+    public void startStreaming(){
+        this.streamActive = true;
+    }
+
+    public void stopStreaming(){
+        this.streamActive = false;
+    }
 }

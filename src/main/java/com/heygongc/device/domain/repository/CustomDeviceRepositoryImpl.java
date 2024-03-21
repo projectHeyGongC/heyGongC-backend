@@ -24,28 +24,29 @@ public class CustomDeviceRepositoryImpl implements CustomDeviceRepository {
 
         Device device = queryFactory.selectFrom(qDevice)
                 .where(qDevice.deviceId.eq(deviceId)
-                        .and(qDevice.user.eq(user)))
+                        .and(qDevice.userSeq.eq(user.getSeq())))
                 .fetchOne();
 
         return Optional.ofNullable(device);
     }
+
     @Override
-    public long deleteCameraDevices(List<String> deviceIds, User user) {
+    public List<Device> updateCameraDevices(List<String> deviceIds, User user) {
         QDevice qDevice = QDevice.device;
 
-        // delete 클로저를 사용하여 조건에 맞는 엔트리를 삭제
-        long deletedCount = queryFactory.delete(qDevice)
+        // 조건에 맞는 Device 엔티티 리스트 조회
+        List<Device> devices = queryFactory.selectFrom(qDevice)
                 .where(qDevice.deviceId.in(deviceIds)
-                        .and(qDevice.user.eq(user)))
-                .execute();
+                        .and(qDevice.userSeq.eq(user.getSeq())))
+                .fetch();
 
-        if (deletedCount == 0) {
-            throw new DeviceNotFoundException("No devices found for deletion.");
+        if (devices.isEmpty()) {
+            throw new DeviceNotFoundException("No devices found for update.");
         }
 
-
-        return deletedCount; // 삭제된 엔트리의 수를 반환
+        return devices; // 업데이트된 디바이스의 수 반환
     }
+
 
 
 }

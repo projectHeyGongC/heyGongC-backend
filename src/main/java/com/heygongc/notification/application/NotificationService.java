@@ -36,9 +36,9 @@ public class NotificationService  {
         return notificationRepository.findNotificationByType(userSeq,type);
     }
 
-    public Notification addNotification(User user, Long deviceSeq, NotificationInfoRequest request) {
+    public Notification addNotification(User user, String deviceId, NotificationInfoRequest request) {
 
-        Device device = deviceRepository.findMyDevice(deviceSeq, user)
+        Device device = deviceRepository.findMyDevice(deviceId, user)
                 .orElseThrow(DeviceNotFoundException::new); // Optional을 사용한 처리
 
         Notification notification = Notification.builder()
