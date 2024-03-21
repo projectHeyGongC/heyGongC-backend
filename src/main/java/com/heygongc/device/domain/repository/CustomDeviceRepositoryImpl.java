@@ -40,12 +40,9 @@ public class CustomDeviceRepositoryImpl implements CustomDeviceRepository {
                         .and(qDevice.userSeq.eq(user.getSeq())))
                 .fetch();
 
-        if (devices.isEmpty()) {
-            throw new DeviceNotFoundException("No devices found for update.");
-        }
 
         return devices; // 조건에 해당하는 디바이스 리스트 반환
-
+    }
 
 
 }
