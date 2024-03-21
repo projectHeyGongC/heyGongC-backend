@@ -24,8 +24,8 @@ public class DeviceService{
 
 
 
-    public Device getDevice(Long deviceSeq, User user) {
-        Device device = deviceRepository.findMyDevice(deviceSeq, user)
+    public Device getDevice(String deviceId, User user) {
+        Device device = deviceRepository.findMyDevice(deviceId, user)
                 .orElseThrow(DeviceNotFoundException::new); // Optional을 사용한 처리
         return device;
     }
@@ -35,31 +35,36 @@ public class DeviceService{
     }
 
 
-    public Device addDevice(User user, DeviceInfoRequest request) {
+//    public Device addDevice(User user, DeviceInfoRequest request) {
+//
+//        Device device = Device.builder()
+//                .deviceId(request.uuid())
+//                .modelName(request.type())
+//                .deviceName(request.name())
+//                .soundMode(false)
+//                .sensitivity(DeviceSensitivityEnum.MEDIUM)
+//                .soundActive(false)
+//                .streamActive(false)
+//                .frontCamera(false)
+//                .user(user)
+//                .build();
+//        deviceRepository.save(device);
+//
+//        return device;
+//    }
 
-        Device device = Device.builder()
-                .deviceId(request.uuid())
-                .modelName(request.type())
-                .deviceName(request.name())
-                .soundMode(false)
-                .sensitivity(DeviceSensitivityEnum.MEDIUM)
-                .soundActive(false)
-                .streamActive(false)
-                .frontCamera(false)
-                .user(user)
-                .build();
-        deviceRepository.save(device);
-
-
-
-
+    public Device subscribeDevice(DeviceInfoRequest request) {
+        Device device = deviceRepository.findByDeviceId(request.deviceId())
+                .orElseThrow(DeviceNotFoundException::new);
+        device.changeDeviceName(request.deviceName());
+        device.pairDevice();
 
         return device;
     }
 
     @Transactional
-    public Device updateDevice(Long deviceSeq, String deviceName, User user) {
-        Device device = deviceRepository.findMyDevice(deviceSeq, user)
+    public Device updateDevice(String deviceId, String deviceName, User user) {
+        Device device = deviceRepository.findMyDevice(deviceId, user)
                 .orElseThrow(DeviceNotFoundException::new); // Optional을 사용한 처리
 
             device.changeDeviceName(deviceName);
@@ -69,18 +74,9 @@ public class DeviceService{
 
 
     @Transactional
-    public void deleteDevice(Long deviceSeq, User user) {
-        deviceRepository.findMyDevice(deviceSeq, user)
-                .orElseThrow(DeviceNotFoundException::new); // Optional을 사용한 처리
-
-        deviceRepository.deleteById(deviceSeq);
+    public void deleteDevice(List<String> deviceIds, User user) {
+        deviceRepository.deleteCameraDevices(deviceIds, user);
 
     }
-
-    @Transactional
-    public void deleteAllDevices(Long userSeq) {
-        deviceRepository.deleteAllByUserSeq(userSeq);
-    }
-
 
 }
