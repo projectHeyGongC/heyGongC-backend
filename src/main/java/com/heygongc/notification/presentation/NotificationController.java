@@ -90,9 +90,9 @@ public class NotificationController {
     )
     public ResponseEntity<NotificationResponse> addNotification(
             @Parameter(hidden = true) User user,
-            @Parameter(description = "알림 시퀀스", required = true) @RequestBody Long deviceSeq,
+            @Parameter(description = "알림 시퀀스", required = true) @RequestBody String deviceId,
             @RequestBody(description = "알림 정보")NotificationInfoRequest request) {
-        Notification notification = notificationService.addNotification(user, deviceSeq, request);
+        Notification notification = notificationService.addNotification(user, deviceId, request);
         NotificationResponse notificationResponse = new NotificationResponse(
                 notification.getTypeEnum(),
                 notification.getContent(),
