@@ -9,7 +9,6 @@ import com.heygongc.device.exception.DeviceNotFoundException;
 import com.heygongc.device.presentation.request.DeviceInfoRequest;
 import com.heygongc.global.utils.EnumUtils;
 import com.heygongc.user.domain.entity.User;
-import com.heygongc.user.domain.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -54,7 +53,7 @@ public class DeviceService{
 
     @Transactional
     public void disconnectDevice(List<String> deviceIds, User user) {
-        List<Device> devices = deviceRepository.updateCameraDevices(deviceIds, user);
+        List<Device> devices = deviceRepository.findCameraDevices(deviceIds, user);
         // 각 디바이스 상태 업데이트
         devices.forEach(device -> {
             device.unpairDevice();

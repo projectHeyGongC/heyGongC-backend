@@ -9,6 +9,6 @@ import java.util.Optional;
 public interface CustomDeviceRepository {
     Optional<Device> findMyDevice(String deviceId, User user);
 
-    List<Device> updateCameraDevices(List<String> deviceIds, User user);
+    List<Device> findCameraDevices(List<String> deviceIds, User user);
 
 }

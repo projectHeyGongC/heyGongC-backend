@@ -31,7 +31,7 @@ public class CustomDeviceRepositoryImpl implements CustomDeviceRepository {
     }
 
     @Override
-    public List<Device> updateCameraDevices(List<String> deviceIds, User user) {
+    public List<Device> findCameraDevices(List<String> deviceIds, User user) {
         QDevice qDevice = QDevice.device;
 
         // 조건에 맞는 Device 엔티티 리스트 조회
