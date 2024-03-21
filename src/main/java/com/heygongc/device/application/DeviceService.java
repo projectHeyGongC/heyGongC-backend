@@ -34,6 +34,8 @@ public class DeviceService{
                 .orElseThrow(DeviceNotFoundException::new);
         device.changeDeviceName(request.deviceName());
         device.pairDevice();
+        deviceRepository.save(device);
+
 
         return device;
     }
@@ -43,8 +45,10 @@ public class DeviceService{
         Device device = deviceRepository.findMyDevice(deviceId, user)
                 .orElseThrow(DeviceNotFoundException::new); // Optional을 사용한 처리
 
-            device.changeDeviceName(deviceName);
-            return device;
+        device.changeDeviceName(deviceName);
+        deviceRepository.save(device);
+
+        return device;
 
     }
 
@@ -54,7 +58,10 @@ public class DeviceService{
         // 각 디바이스 상태 업데이트
         devices.forEach(device -> {
             device.unpairDevice();
+            deviceRepository.save(device);
         });
+
+
 
     }
 
@@ -65,6 +72,9 @@ public class DeviceService{
 
         device.changeDeviceSetting(EnumUtils.getEnumConstant(SensitivityType.class, sensitivity),
                 EnumUtils.getEnumConstant(CameraModeType.class, cameraMode));
+
+        deviceRepository.save(device);
+
     }
 
     @Transactional
@@ -91,6 +101,8 @@ public class DeviceService{
             default:
                 throw new IllegalArgumentException("Invalid control type: " + controlType);
         }
+
+        deviceRepository.save(device);
     }
 
 }

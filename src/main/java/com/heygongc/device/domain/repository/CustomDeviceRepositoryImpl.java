@@ -44,8 +44,7 @@ public class CustomDeviceRepositoryImpl implements CustomDeviceRepository {
             throw new DeviceNotFoundException("No devices found for update.");
         }
 
-        return devices; // 업데이트된 디바이스의 수 반환
-    }
+        return devices; // 조건에 해당하는 디바이스 리스트 반환
 
 
 
