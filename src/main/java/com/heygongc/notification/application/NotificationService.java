@@ -17,12 +17,10 @@ import java.util.List;
 public class NotificationService  {
 
     private final NotificationRepository notificationRepository;
-    private final UserRepository userRepository;
     private final DeviceRepository deviceRepository;
 
-    public NotificationService( NotificationRepository notificationRepository, UserRepository userRepository, DeviceRepository deviceRepository) {
+    public NotificationService( NotificationRepository notificationRepository, DeviceRepository deviceRepository) {
         this.notificationRepository = notificationRepository;
-        this.userRepository = userRepository;
         this.deviceRepository = deviceRepository;
     }
 

@@ -68,7 +68,7 @@ public class DeviceController {
     )
     public ResponseEntity<Void> subscribeDevice(
             @Parameter(name = "DeviceInfoRequest", description = "카메라 기기 정보", required = true) @RequestBody DeviceInfoRequest request){
-        Device device = deviceService.subscribeDevice(request);
+        deviceService.subscribeDevice(request);
         return ResponseEntity.ok().build();
     }
 
@@ -86,7 +86,7 @@ public class DeviceController {
             @Parameter(name = "deviceName", description = "수정된 기기 이름", required = true) @RequestBody String deviceName,
             @Parameter(hidden = true) User user) {
 
-        Device device = deviceService.updateDevice(deviceId, deviceName, user);
+        deviceService.updateDevice(deviceId, deviceName, user);
 
         return ResponseEntity.ok().build();
     }

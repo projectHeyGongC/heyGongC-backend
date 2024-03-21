@@ -2,7 +2,6 @@ package com.heygongc.device.presentation.request;
 
 import com.heygongc.device.domain.type.CameraModeType;
 import com.heygongc.device.domain.type.SensitivityType;
-import com.heygongc.global.type.OsType;
 import com.heygongc.global.utils.EnumUtils;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.util.ObjectUtils;

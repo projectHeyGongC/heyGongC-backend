@@ -6,12 +6,10 @@ import com.heygongc.device.domain.type.CameraModeType;
 import com.heygongc.device.domain.type.ControlType;
 import com.heygongc.device.domain.type.SensitivityType;
 import com.heygongc.device.exception.DeviceNotFoundException;
-import com.heygongc.device.presentation.request.ControlTypeRequest;
 import com.heygongc.device.presentation.request.DeviceInfoRequest;
 import com.heygongc.global.utils.EnumUtils;
 import com.heygongc.user.domain.entity.User;
 import com.heygongc.user.domain.repository.UserRepository;
-import com.heygongc.user.domain.type.SnsType;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -21,20 +19,11 @@ import java.util.List;
 public class DeviceService{
 
     private final DeviceRepository deviceRepository;
-    private final UserRepository userRepository;
 
-    public DeviceService(DeviceRepository deviceRepository, UserRepository userRepository){
+    public DeviceService(DeviceRepository deviceRepository){
         this.deviceRepository = deviceRepository;
-        this.userRepository = userRepository;
     }
 
-
-
-    public Device getDevice(String deviceId, User user) {
-        Device device = deviceRepository.findMyDevice(deviceId, user)
-                .orElseThrow(DeviceNotFoundException::new); // Optional을 사용한 처리
-        return device;
-    }
 
     public List<Device> getAllDevices(Long userSeq) {
         return deviceRepository.findAllByUserSeq(userSeq);
