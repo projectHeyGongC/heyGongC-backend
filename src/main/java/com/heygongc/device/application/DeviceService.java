@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class DeviceService{
@@ -59,19 +60,20 @@ public class DeviceService{
     @Transactional
     public void disconnectDevice(List<String> deviceIds, User user) {
         List<Device> devices = deviceRepository.findAllDevices(deviceIds, user);
+        List<String> tokens = devices.stream()
+                .map(Device::getFcmToken)
+                .collect(Collectors.toList());
 
         HashMap<String, String> data = new HashMap<>();
         data.put("action", "2");
 
-        // 각 디바이스 상태 업데이트
-        devices.forEach(device -> {
-            device.unpairDevice();
-            deviceRepository.save(device);
-            firebaseCloudMessaging.sendMessage(device.getFcmToken(), "QR 코드 보이기", data);
+        devices.forEach(Device::unpairDevice);
+        deviceRepository.saveAll(devices);
 
-        });
+        if (!tokens.isEmpty()) {
+            firebaseCloudMessaging.sendMessage(tokens, "QR 코드 보이기", data);
+        }
     }
-
     @Transactional
     public void changeDeviceSetting(String deviceId, String sensitivity, String cameraMode, User user){
         Device device = deviceRepository.findMyDevice(deviceId, user)
