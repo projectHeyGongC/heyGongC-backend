@@ -2,7 +2,6 @@ package com.heygongc.device.domain.repository;
 
 import com.heygongc.device.domain.entity.QDevice;
 import com.heygongc.device.domain.entity.Device;
-import com.heygongc.device.exception.DeviceNotFoundException;
 import com.heygongc.user.domain.entity.User;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -31,7 +30,7 @@ public class CustomDeviceRepositoryImpl implements CustomDeviceRepository {
     }
 
     @Override
-    public List<Device> findCameraDevices(List<String> deviceIds, User user) {
+    public List<Device> findAllDevices(List<String> deviceIds, User user) {
         QDevice qDevice = QDevice.device;
 
         // 조건에 맞는 Device 엔티티 리스트 조회

@@ -75,11 +75,14 @@ public class Device extends BaseTimeEntity {
     @Column(name = "temperature")
     private int temperature;
 
+    @Column(name = "fcm_token")
+    private String fcmToken;
+
     @OneToMany(mappedBy = "device", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Notification> notifications;
 
     @Builder(builderMethodName = "createDevice")
-    public Device(Long userSeq, String deviceId, String modelName, String deviceName, OsType deviceOs){
+    public Device(Long userSeq, String deviceId, String modelName, String deviceName, OsType deviceOs, String fcmToken){
         this.userSeq = userSeq;
         this.deviceId = deviceId;
         this.modelName = modelName;
@@ -93,6 +96,7 @@ public class Device extends BaseTimeEntity {
         this.cameraMode = CameraModeType.FRONT;
         this.battery = 0;
         this.temperature = 0;
+        this.fcmToken = fcmToken;
     }
 
     public void changeDeviceName(String deviceName) {
@@ -109,6 +113,7 @@ public class Device extends BaseTimeEntity {
         this.cameraMode = CameraModeType.FRONT;
         this.battery = 0;
         this.temperature = 0;
+        this.fcmToken = null;
     }
 
     public void changeDeviceSetting(SensitivityType sensitivity, CameraModeType cameraMode){
