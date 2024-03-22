@@ -1,9 +1,9 @@
 package com.heygongc.notification.application;
 
 import com.heygongc.common.DatabaseCleaner;
-import com.heygongc.device.application.DeviceSensitivityEnum;
-import com.heygongc.device.domain.Device;
-import com.heygongc.device.domain.DeviceRepository;
+import com.heygongc.device.domain.entity.Device;
+import com.heygongc.device.domain.repository.DeviceRepository;
+import com.heygongc.global.type.OsType;
 import com.heygongc.notification.domain.entity.Notification;
 import com.heygongc.notification.domain.repository.NotificationRepository;
 import com.heygongc.notification.domain.type.NotificationType;
@@ -79,7 +79,7 @@ class NotificationServiceTest {
     }
 
     private AddNotificationRequest addNotificationRequest(Device device) {
-        return new AddNotificationRequest(NotificationType.SOUND.name(), device.getDeviceSeq());
+        return new AddNotificationRequest(NotificationType.SOUND.name(), device.getDeviceId());
     }
 
     private User 사용자_등록() {
@@ -87,7 +87,7 @@ class NotificationServiceTest {
                 .deviceId("1111")
                 .snsId("123456789")
                 .snsType(SnsType.GOOGLE)
-                .deviceOs("AOS")
+                .deviceOs(OsType.AOS)
                 .email("test@test.com")
                 .alarm(true)
                 .ads(true)
@@ -95,16 +95,20 @@ class NotificationServiceTest {
     }
 
     private Device 디바이스_등록(User user) {
-        return deviceRepository.save(Device.builder()
-                .type("iPhone 15 Pro")
-                .name("testDeviceName")
-                .soundMode(false)
-                .sensitivity(DeviceSensitivityEnum.MEDIUM)
-                .soundActive(false)
-                .streamActive(false)
-                .frontCamera(false)
-                .user(user)
-                .build());
+
+        Device device = Device.createDevice()
+                .deviceId("123123")
+                .modelName("IPHONE14")
+                .deviceOs(OsType.AOS)
+                .fcmToken("4712478v")
+                .build();
+
+        device.changeDeviceName("거실");
+        device.setDeviceOwner(user.getSeq());
+        device.pairDevice();
+
+
+        return deviceRepository.save(device);
     }
 
     private Notification 알림_등록(User user, Device device) {

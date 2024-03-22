@@ -30,7 +30,7 @@ public class NotificationService  {
 
     @Transactional
     public void addNotification(User user, AddNotificationRequest request) {
-        Device device = deviceRepository.findMyDevice(request.deviceSeq(), user)
+        Device device = deviceRepository.findMyDevice(request.deviceId(), user)
                 .orElseThrow(DeviceNotFoundException::new);
 
         notificationRepository.save(Notification.createNotification()

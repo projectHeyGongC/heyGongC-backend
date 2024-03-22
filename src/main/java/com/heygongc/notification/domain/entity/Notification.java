@@ -2,7 +2,7 @@ package com.heygongc.notification.domain.entity;
 
 import com.heygongc.device.domain.entity.Device;
 import com.heygongc.global.config.BaseTimeEntity;
-import com.heygongc.notification.application.NotificationType;
+import com.heygongc.notification.domain.type.NotificationType;
 import com.heygongc.user.domain.entity.User;
 import jakarta.persistence.*;
 import lombok.*;

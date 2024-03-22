@@ -9,7 +9,7 @@ import org.springframework.util.ObjectUtils;
 @Schema(title = "알림 정보")
 public record AddNotificationRequest(
         @Schema(description = "알림 타입(SOUND:소리감지알림,DEVICE:기기연동알림)", allowableValues = {"SOUND", "DEVICE"}) String type,
-        @Schema(description = "디바이스 시퀀스") Long deviceSeq
+        @Schema(description = "디바이스 시퀀스") String deviceId
     ) implements RequestValidator {
 
     @Override
@@ -20,7 +20,7 @@ public record AddNotificationRequest(
         if (EnumUtils.hasNoEnumConstant(NotificationType.class, this.type)) {
             throw new IllegalArgumentException("알림 타입은 SOUND 또는 DEVICE이어야 합니다.");
         }
-        if (ObjectUtils.isEmpty(this.deviceSeq)) {
+        if (ObjectUtils.isEmpty(this.deviceId)) {
             throw new IllegalArgumentException("디바이스 시퀀스는 필수입니다.");
         }
     }

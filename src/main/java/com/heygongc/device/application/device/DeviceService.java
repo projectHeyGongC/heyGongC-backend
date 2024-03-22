@@ -35,11 +35,12 @@ public class DeviceService{
         return deviceRepository.findAllByUserSeq(userSeq);
     }
 
-    public void subscribeDevice(DeviceInfoRequest request) {
+    public void subscribeDevice(DeviceInfoRequest request, User user) {
         Device device = deviceRepository.findByDeviceId(request.deviceId())
                 .orElseThrow(DeviceNotFoundException::new);
         device.changeDeviceName(request.deviceName());
         device.pairDevice();
+        device.setDeviceOwner(user.getSeq());
         deviceRepository.save(device);
 
         HashMap<String, String> data = new HashMap<>();

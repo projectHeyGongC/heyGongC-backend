@@ -4,7 +4,7 @@ import com.heygongc.device.domain.type.CameraModeType;
 import com.heygongc.device.domain.type.SensitivityType;
 import com.heygongc.global.config.BaseTimeEntity;
 import com.heygongc.global.type.OsType;
-import com.heygongc.notification.domain.Notification;
+import com.heygongc.notification.domain.entity.Notification;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -82,7 +82,7 @@ public class Device extends BaseTimeEntity {
     private List<Notification> notifications;
 
     @Builder(builderMethodName = "createDevice")
-    public Device(String deviceId, String modelName, OsType deviceOs){
+    public Device(String deviceId, String modelName, OsType deviceOs, String fcmToken){
         this.deviceId = deviceId;
         this.modelName = modelName;
         this.deviceOs = deviceOs;
@@ -134,4 +134,6 @@ public class Device extends BaseTimeEntity {
     public void stopStreaming(){
         this.streamActive = false;
     }
+
+    public void setDeviceOwner(Long userSeq) { this.userSeq = userSeq; }
 }

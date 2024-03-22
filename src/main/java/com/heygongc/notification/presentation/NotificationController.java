@@ -43,7 +43,7 @@ public class NotificationController {
         String retunrMsg = "%s에서 소리가 감지되었습니다.";
         List<NotificationResponse> response = notifications.stream()
                 .map(notification -> new NotificationResponse(
-                        String.format(retunrMsg, notification.getDevice().getName()),
+                        String.format(retunrMsg, notification.getDevice().getDeviceName()),
                         notification.getCreated_at())
                 )
                 .collect(Collectors.toList());
