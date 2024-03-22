@@ -37,7 +37,7 @@ public class UserService {
         user.changeDevice(request.deviceId(), OsType.valueOf(request.deviceOs()));
 
         // jwt 토큰 발급
-        AuthToken authToken = jwtUtil.generateAuthToken(user.getSeq(), user.getDeviceId());
+        AuthToken authToken = generateAuthToken(user.getSeq(), user.getDeviceId());
 
         // 토큰 저장
         saveRefreshToken(user.getSeq(), authToken.getRefreshToken());
@@ -64,7 +64,7 @@ public class UserService {
 
 
         // jwt 토큰 발급
-        AuthToken authToken = jwtUtil.generateAuthToken(user.getSeq(), user.getDeviceId());
+        AuthToken authToken = generateAuthToken(user.getSeq(), user.getDeviceId());
 
         // 토큰 저장
         saveRefreshToken(user.getSeq(), authToken.getRefreshToken());
@@ -93,7 +93,7 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException("미가입 사용자입니다."));
 
         // jwt 토큰 발급
-        AuthToken authToken = jwtUtil.generateAuthToken(user.getSeq(), user.getDeviceId());
+        AuthToken authToken = generateAuthToken(user.getSeq(), user.getDeviceId());
 
         // 토큰 저장
         saveRefreshToken(user.getSeq(), authToken.getRefreshToken());
@@ -114,5 +114,13 @@ public class UserService {
         // jwt 토큰 저장
         UserToken userToken = UserToken.saveToken(refreshToken, userSeq);
         userTokenRepository.save(userToken);
+    }
+
+    private AuthToken generateAuthToken(Long userSeq, String deviceId) {
+        // jwt 토큰 발급
+        String accessToken = jwtUtil.generateAccessToken(String.valueOf(userSeq), deviceId);
+        String refreshToken = jwtUtil.generateRefreshToken(String.valueOf(userSeq), deviceId);
+
+        return new AuthToken(accessToken, refreshToken);
     }
 }

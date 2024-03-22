@@ -1,4 +1,4 @@
-package com.heygongc.device.presentation.request;
+package com.heygongc.device.presentation.request.device;
 
 import com.heygongc.global.type.OsType;
 import com.heygongc.global.utils.EnumUtils;

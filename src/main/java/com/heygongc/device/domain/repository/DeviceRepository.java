@@ -11,6 +11,5 @@ public interface DeviceRepository extends JpaRepository<Device, Long>, CustomDev
     List<Device> findAllByUserSeq(Long userSeq);
     void deleteAllByUserSeq(Long userSeq);
 
-
     Optional<Device> findByDeviceId(String deviceId);
 }

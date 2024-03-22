@@ -1,4 +1,4 @@
-package com.heygongc.device.presentation.request;
+package com.heygongc.device.presentation.request.camera;
 
 import com.heygongc.device.domain.type.CameraModeType;
 import com.heygongc.device.domain.type.SensitivityType;
