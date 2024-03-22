@@ -18,7 +18,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 @Setter
 @NoArgsConstructor(access=PROTECTED) // No default constructor for entity 오류 해결을 위해 필요
-@DynamicUpdate //변경된 필드만 Update
+@DynamicUpdate
 @Table(name = "device")
 public class Device extends BaseTimeEntity {
 
