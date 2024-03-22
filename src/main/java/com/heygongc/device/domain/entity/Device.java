@@ -66,7 +66,7 @@ public class Device extends BaseTimeEntity {
 
     @Column(name = "camera_mode", nullable = false)
     @Enumerated(EnumType.STRING)
-    @ColumnDefault("FRONT")
+    @ColumnDefault("'FRONT'")
     private CameraModeType cameraMode;
 
     @Column(name = "battery")
