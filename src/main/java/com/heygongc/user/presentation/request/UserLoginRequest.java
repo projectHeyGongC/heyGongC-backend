@@ -1,7 +1,7 @@
 package com.heygongc.user.presentation.request;
 
 import com.heygongc.global.utils.EnumUtils;
-import com.heygongc.user.domain.type.OsType;
+import com.heygongc.global.type.OsType;
 import com.heygongc.user.domain.type.SnsType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.util.ObjectUtils;
@@ -9,7 +9,7 @@ import org.springframework.util.ObjectUtils;
 @Schema(description = "사용자 로그인 요청")
 public record UserLoginRequest(
         @Schema(description = "디바이스 ID") String deviceId,
-        @Schema(description = "디바이스 OS") String deviceOs,
+        @Schema(description = "디바이스 OS(AOS:안드로이드,IOS:애플)", allowableValues = {"AOS","IOS"}) String deviceOs,
         @Schema(description = "SNS 타입(GOOGLE:구글,APPLE:애플)", allowableValues = {"GOOGLE","APPLE"}) String snsType,
         @Schema(description = "SNS 토큰") String accessToken
 ) {

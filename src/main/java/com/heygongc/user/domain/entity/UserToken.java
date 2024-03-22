@@ -14,17 +14,17 @@ public class UserToken {
 
     @Id
     @Column(name = "refresh_token", nullable = false)
-    private String token;
+    private String refreshToken;
 
     @Column(name = "user_seq", nullable = false, updatable = false)
     private Long userSeq;
 
-    protected UserToken(String token, Long userSeq) {
-        this.token = token;
+    protected UserToken(String refreshToken, Long userSeq) {
+        this.refreshToken = refreshToken;
         this.userSeq = userSeq;
     }
 
-    public static UserToken saveToken(String token, Long userSeq) {
-        return new UserToken(token, userSeq);
+    public static UserToken saveToken(String refreshToken, Long userSeq) {
+        return new UserToken(refreshToken, userSeq);
     }
 }

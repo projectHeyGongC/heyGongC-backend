@@ -1,6 +1,7 @@
 package com.heygongc.user.application;
 
-import com.heygongc.common.DatabaseCleaner;
+import com.heygongc.common.ServiceTest;
+import com.heygongc.global.type.OsType;
 import com.heygongc.user.domain.entity.User;
 import com.heygongc.user.domain.repository.UserRepository;
 import com.heygongc.user.domain.type.SnsType;
@@ -8,22 +9,16 @@ import com.heygongc.user.exception.UserNotFoundException;
 import com.heygongc.user.presentation.request.RegisterRequest;
 import com.heygongc.user.presentation.request.UserLoginRequest;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
-import static com.heygongc.user.fixture.OauthUserFixture.testGoogleUser;
+import static com.heygongc.user.setup.OauthUserSetup.testGoogleUser;
 
-@SpringBootTest
-@ActiveProfiles("test")
+
 @SuppressWarnings("NonAsciiCharacters")
-class UserServiceTest {
+class UserServiceTest extends ServiceTest {
 
-    @Autowired
-    private DatabaseCleaner cleaner;
 
     @Autowired
     private UserService userService;
@@ -31,11 +26,6 @@ class UserServiceTest {
     @Autowired
     private UserRepository userRepository;
 
-
-    @AfterEach
-    void tearDown() {
-        cleaner.execute();
-    }
 
     @Test
     @DisplayName("가입한 사용자가 로그인 시 토큰을 발급한다")
@@ -85,7 +75,7 @@ class UserServiceTest {
                 .deviceId("1111")
                 .snsId("123456789")
                 .snsType(SnsType.GOOGLE)
-                .deviceOs("AOS")
+                .deviceOs(OsType.valueOf("AOS"))
                 .email("test@test.com")
                 .alarm(true)
                 .ads(true)
