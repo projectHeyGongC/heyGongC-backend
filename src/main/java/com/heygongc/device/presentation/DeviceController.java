@@ -1,12 +1,12 @@
 package com.heygongc.device.presentation;
 
-import com.heygongc.device.application.DeviceService;
+import com.heygongc.device.application.device.DeviceService;
 import com.heygongc.device.domain.entity.Device;
-import com.heygongc.device.presentation.request.CameraDeviceSettingRequest;
-import com.heygongc.device.presentation.request.ControlTypeRequest;
-import com.heygongc.device.presentation.request.DeviceIdsRequest;
-import com.heygongc.device.presentation.request.DeviceInfoRequest;
-import com.heygongc.device.presentation.response.DeviceResponse;
+import com.heygongc.device.presentation.request.camera.CameraDeviceSettingRequest;
+import com.heygongc.device.presentation.request.camera.ControlTypeRequest;
+import com.heygongc.device.presentation.request.device.DeviceIdsRequest;
+import com.heygongc.device.presentation.request.device.DeviceInfoRequest;
+import com.heygongc.device.presentation.response.device.DeviceResponse;
 import com.heygongc.global.error.ErrorResponse;
 import com.heygongc.user.domain.entity.User;
 import io.swagger.v3.oas.annotations.Operation;

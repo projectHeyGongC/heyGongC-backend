@@ -16,46 +16,38 @@ public class JwtUtil {
     private final String SECRET_KEY;
     private final Long ACCESS_EXP;
     private final Long REFRESH_EXP;
+    private final Long LONG_ACCESS_EXP;
     private final JwtParser jwtParser;
 
     public JwtUtil(
             @Value("${jwt.secret}") String secretKey,
             @Value("${jwt.access.expiration}") Long accessExp,
-            @Value("${jwt.refresh.expiration}") Long refreshExp
+            @Value("${jwt.refresh.expiration}") Long refreshExp,
+            @Value("${jwt.long.access.expiration}") Long longAccessExp
     ) {
         this.SECRET_KEY = secretKey;
         this.ACCESS_EXP = accessExp;
         this.REFRESH_EXP = refreshExp;
+        this.LONG_ACCESS_EXP = longAccessExp;
         this.jwtParser = Jwts.parser().setSigningKey(SECRET_KEY);
     }
 
-    public AuthToken generateAuthToken(Long userSeq, String deviceId) {
-        // jwt 토큰 발급
-        String accessToken = generateAccessToken(String.valueOf(userSeq), deviceId);
-        String refreshToken = generateRefreshToken(String.valueOf(userSeq), deviceId);
-
-        return new AuthToken(accessToken, refreshToken);
-    }
-
-
-
-
     public String generateAccessToken(String subject, String audience) {
-        Date now = new Date();
-        Date expirationDate = new Date(now.getTime() + ACCESS_EXP);
-
-        return Jwts.builder()
-                .setSubject(subject)
-                .setAudience(audience)
-                .setIssuedAt(now)
-                .setExpiration(expirationDate)
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
-                .compact();
+        return genarateToken(subject, audience, ACCESS_EXP);
     }
 
     public String generateRefreshToken(String subject, String audience) {
+        return genarateToken(subject, audience, REFRESH_EXP);
+    }
+
+    public String generateLongAccessToken(String subject, String audience) {
+        return genarateToken(subject, audience, LONG_ACCESS_EXP);
+    }
+
+    public String genarateToken(String subject, String audience, Long exp) {
+
         Date now = new Date();
-        Date expirationDate = new Date(now.getTime() + REFRESH_EXP);
+        Date expirationDate = new Date(now.getTime() + exp);
 
         return Jwts.builder()
                 .setSubject(subject)
@@ -66,12 +58,10 @@ public class JwtUtil {
                 .compact();
     }
 
-    // JWT 토큰에서 사용자 정보 추출
     public String extractSubject(String token) {
         return extractClaims(token).getSubject();
     }
 
-    // JWT 토큰에서 디바이스 ID 정보 추출
     public String extractAudience(String token) {
         return extractClaims(token).getAudience();
     }

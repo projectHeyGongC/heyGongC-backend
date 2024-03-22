@@ -1,4 +1,4 @@
-package com.heygongc.device.presentation.request;
+package com.heygongc.device.presentation.request.device;
 
 import com.heygongc.device.domain.entity.Device;
 import io.swagger.v3.oas.annotations.media.Schema;

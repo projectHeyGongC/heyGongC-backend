@@ -1,4 +1,4 @@
-package com.heygongc.device.presentation.request;
+package com.heygongc.device.presentation.request.camera;
 
 import com.heygongc.device.domain.type.ControlType;
 import com.heygongc.global.utils.EnumUtils;

@@ -64,7 +64,8 @@ class JwtUtilTest {
     void isValidTokenWithExpiredToken() {
         long accessExp = 1L;
         long refreshExp = 1L;
-        JwtUtil jwtUtil = new JwtUtil("secret-key", accessExp, refreshExp);
+        long longAccessExp = 1L;
+        JwtUtil jwtUtil = new JwtUtil("secret-key", accessExp, refreshExp, longAccessExp);
 
         String expiredToken = jwtUtil.generateAccessToken(String.valueOf(userSeq), deviceId);
         try {
@@ -81,7 +82,8 @@ class JwtUtilTest {
     void extractInfoWithExpiredToken() {
         long accessExp = 1L;
         long refreshExp = 1L;
-        JwtUtil jwtUtil = new JwtUtil("secret-key", accessExp, refreshExp);
+        long longAccessExp = 1L;
+        JwtUtil jwtUtil = new JwtUtil("secret-key", accessExp, refreshExp, longAccessExp);
 
         String expiredToken = jwtUtil.generateAccessToken(String.valueOf(userSeq), deviceId);
         try {
@@ -99,10 +101,10 @@ class JwtUtilTest {
         String correctSecretKey = "correct-secret-key";
         String wrongSecretKey = "wrong-secret-key";
 
-        JwtUtil jwtUtil = new JwtUtil(correctSecretKey, 3600000L, 3600000L);
+        JwtUtil jwtUtil = new JwtUtil(correctSecretKey, 3600000L, 3600000L, 3600000L);
         String token = jwtUtil.generateAccessToken(String.valueOf(userSeq), deviceId);
 
-        JwtUtil wrongJwtUtil = new JwtUtil(wrongSecretKey, 3600000L, 3600000L);
+        JwtUtil wrongJwtUtil = new JwtUtil(wrongSecretKey, 3600000L, 3600000L, 3600000L);
         assertThrows(InvalidTokenException.class, () -> wrongJwtUtil.extractSubject(token));
     }
 }

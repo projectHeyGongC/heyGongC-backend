@@ -1,4 +1,4 @@
-package com.heygongc.device.application;
+package com.heygongc.device.application.device;
 
 import com.heygongc.device.domain.entity.Device;
 import com.heygongc.device.domain.repository.DeviceRepository;
@@ -6,7 +6,7 @@ import com.heygongc.device.domain.type.CameraModeType;
 import com.heygongc.device.domain.type.ControlType;
 import com.heygongc.device.domain.type.SensitivityType;
 import com.heygongc.device.exception.DeviceNotFoundException;
-import com.heygongc.device.presentation.request.DeviceInfoRequest;
+import com.heygongc.device.presentation.request.device.DeviceInfoRequest;
 import com.heygongc.global.infra.FirebaseCloudMessaging;
 import com.heygongc.global.utils.EnumUtils;
 import com.heygongc.user.domain.entity.User;

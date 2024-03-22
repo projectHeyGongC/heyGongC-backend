@@ -82,11 +82,9 @@ public class Device extends BaseTimeEntity {
     private List<Notification> notifications;
 
     @Builder(builderMethodName = "createDevice")
-    public Device(Long userSeq, String deviceId, String modelName, String deviceName, OsType deviceOs, String fcmToken){
-        this.userSeq = userSeq;
+    public Device(String deviceId, String modelName, OsType deviceOs){
         this.deviceId = deviceId;
         this.modelName = modelName;
-        this.deviceName = deviceName;
         this.deviceOs = deviceOs;
         this.isPaired = false;
         this.soundMode = false;

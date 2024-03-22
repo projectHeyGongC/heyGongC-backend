@@ -15,8 +15,9 @@ spring:
 
 jwt:
   secret: testtesttesttesttesttesttesttesttesttest
-  access.expiration: 864000
-  refresh.expiration: 1728000
+  access.expiration: 600000 # 10분
+  refresh.expiration: 1800000 # 30분
+  long.access.expiration: 3600000 # 60분
 
 oauth:
   apple:

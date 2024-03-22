@@ -1,4 +1,4 @@
-package com.heygongc.device.presentation.response;
+package com.heygongc.device.presentation.response.device;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
