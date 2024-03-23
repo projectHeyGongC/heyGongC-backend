@@ -35,24 +35,23 @@ public class JwtUtil {
     }
 
     public String generateUserAccessToken(String subject, String audience) {
-        return genarateToken("USER", subject, audience, ACCESS_EXP);
+        return genarateToken(subject, audience, ACCESS_EXP);
     }
 
     public String generateUserRefreshToken(String subject, String audience) {
-        return genarateToken("USER", subject, audience, REFRESH_EXP);
+        return genarateToken(subject, audience, REFRESH_EXP);
     }
 
     public String generateCameraAccessToken(String subject, String audience) {
-        return genarateToken("CAMERA", subject, audience, LONG_ACCESS_EXP);
+        return genarateToken(subject, audience, LONG_ACCESS_EXP);
     }
 
-    public String genarateToken(String issuer, String subject, String audience, Long exp) {
+    public String genarateToken(String subject, String audience, Long exp) {
 
         Date now = new Date();
         Date expirationDate = new Date(now.getTime() + exp);
 
         return Jwts.builder()
-                .setIssuer(issuer)
                 .setSubject(subject)
                 .setAudience(audience)
                 .setIssuedAt(now)
@@ -63,10 +62,6 @@ public class JwtUtil {
 
     public String extractSubject(String token) {
         return extractClaims(token).getSubject();
-    }
-
-    public String extractIssuers(String token) {
-        return extractClaims(token).getIssuer();
     }
 
     public String extractAudience(String token) {
