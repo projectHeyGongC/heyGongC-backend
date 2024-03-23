@@ -33,7 +33,7 @@ public class CameraService {
                                 .build()
         ));
 
-        String accessToken = jwtUtil.generateLongAccessToken(String.valueOf(device.getDeviceSeq()), device.getDeviceId());
+        String accessToken = jwtUtil.generateCameraAccessToken(String.valueOf(device.getDeviceSeq()), device.getDeviceId());
 
         return accessToken;
     }

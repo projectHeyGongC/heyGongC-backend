@@ -44,11 +44,15 @@ public class UserService {
         // device 정보 저장
         user.changeDevice(request.deviceId(), OsType.valueOf(request.deviceOs()));
 
+        // fcm 토큰 저장
+        user.provideFcmToken(request.fcmToken());
+
         // jwt 토큰 발급
         AuthToken authToken = generateAuthToken(user.getSeq(), user.getDeviceId());
 
         // 토큰 저장
         saveRefreshToken(user.getSeq(), authToken.getRefreshToken());
+
 
         return authToken;
     }
@@ -90,11 +94,11 @@ public class UserService {
     public AuthToken refreshToken(String refreshToken) {
 
         // refresh token 유효성 체크
-        jwtUtil.checkedValidTokenOrThrowException(refreshToken);
+        jwtUtil.UserCheckedValidTokenOrThrowException(refreshToken);
 
         // refresh token 조회
         UserToken userToken = userTokenRepository.findByRefreshToken(refreshToken)
-                .orElseThrow(() -> new InvalidTokenException("유효하지 않은 토큰입니다."));
+                .orElseThrow(() -> new InvalidUserTokenException("유효하지 않은 토큰입니다."));
 
         // user 정보 조회
         User user = userRepository.findById(userToken.getUserSeq())
@@ -126,8 +130,8 @@ public class UserService {
 
     private AuthToken generateAuthToken(Long userSeq, String deviceId) {
         // jwt 토큰 발급
-        String accessToken = jwtUtil.generateAccessToken(String.valueOf(userSeq), deviceId);
-        String refreshToken = jwtUtil.generateRefreshToken(String.valueOf(userSeq), deviceId);
+        String accessToken = jwtUtil.generateUserAccessToken(String.valueOf(userSeq), deviceId);
+        String refreshToken = jwtUtil.generateUserRefreshToken(String.valueOf(userSeq), deviceId);
 
         return new AuthToken(accessToken, refreshToken);
     }
@@ -140,7 +144,7 @@ public class UserService {
 
         }
         HashMap<String, String> data = new HashMap<>();
-        data.put("action", "6");
+        data.put("action", "5");
         firebaseCloudMessaging.sendMessage(fcmToken, "소리 알람 보내기", data);
 
     }

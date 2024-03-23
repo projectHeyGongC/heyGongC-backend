@@ -2,16 +2,16 @@ package com.heygongc.user.exception;
 
 import com.heygongc.global.error.exception.UnauthenticatedException;
 
-public class InvalidTokenException extends UnauthenticatedException {
+public class InvalidUserTokenException extends UnauthenticatedException {
 
     private final String code;
 
-    public InvalidTokenException() {
+    public InvalidUserTokenException() {
         super(UserErrorType.INVALID_TOKEN.getMessage());
         this.code = UserErrorType.INVALID_TOKEN.name();
     }
 
-    public InvalidTokenException(String message) {
+    public InvalidUserTokenException(String message) {
         super(message);
         this.code = UserErrorType.INVALID_TOKEN.name();
     }
