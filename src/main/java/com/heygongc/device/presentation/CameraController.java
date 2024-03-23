@@ -32,8 +32,8 @@ public class CameraController {
                     @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", schema = @Schema(implementation = CameraSubscribeResponse.class)))
             }
     )
-    public ResponseEntity<CameraSubscribeResponse> subscribeCamera(@Parameter(name = "CameraSubscribeRequest", description = "카메라 등록 요청 정보", required = true)
-                                                                   @RequestBody CameraSubscribeRequest request) {
+    public ResponseEntity<CameraSubscribeResponse> subscribeCamera(
+            @Parameter(name = "CameraSubscribeRequest", description = "카메라 등록 요청 정보", required = true) @RequestBody CameraSubscribeRequest request) {
         request.validate();
         String accessToken = cameraService.subscribeCamera(request);
         return ResponseEntity.ok()

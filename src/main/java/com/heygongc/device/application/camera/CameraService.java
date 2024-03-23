@@ -8,8 +8,6 @@ import com.heygongc.user.application.JwtUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 public class CameraService {
 
@@ -28,10 +26,11 @@ public class CameraService {
         Device device = deviceRepository.findByDeviceId(request.deviceId())
                 .orElseGet(() -> deviceRepository.save(
                         Device.createDevice()
-                            .deviceId(request.deviceId())
-                            .deviceOs(OsType.valueOf(request.deviceOs()))
-                            .modelName(request.modelName())
-                            .build()
+                                .deviceId(request.deviceId())
+                                .modelName(request.modelName())
+                                .deviceOs(OsType.valueOf(request.deviceOs()))
+                                .fcmToken(request.fcmToken())
+                                .build()
         ));
 
         String accessToken = jwtUtil.generateLongAccessToken(String.valueOf(device.getDeviceSeq()), device.getDeviceId());
