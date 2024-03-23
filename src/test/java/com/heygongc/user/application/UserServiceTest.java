@@ -62,6 +62,24 @@ class UserServiceTest extends ServiceTest {
         Assertions.assertThat(token.getRefreshToken()).isNotNull();
     }
 
+    @Test
+    public void 회원탈퇴() {
+        // given
+        User 구글테스트계정 = 구글_테스트_계정_등록();
+
+        // when
+        userService.unRegister(구글테스트계정);
+        User 삭제된계정 = userRepository.findById(구글테스트계정.getSeq()).get();
+
+        // then
+        Assertions.assertThat(삭제된계정.getUserId()).isEqualTo("*****");
+        Assertions.assertThat(삭제된계정.getSnsId()).isEqualTo("*****");
+        Assertions.assertThat(삭제된계정.getEmail()).isEqualTo("*****@*****.***");
+        Assertions.assertThat(삭제된계정.getDeviceId()).isEqualTo("*****");
+        Assertions.assertThat(삭제된계정.getFcmToken()).isNull();
+        Assertions.assertThat(삭제된계정.getDeletedAt()).isNotNull();
+    }
+
     private UserLoginRequest userLoginRequest() {
         return new UserLoginRequest("1111", "AOS", "google", "token");
     }

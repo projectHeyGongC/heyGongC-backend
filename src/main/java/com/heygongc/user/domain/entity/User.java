@@ -88,8 +88,7 @@ public class User extends BaseTimeEntity {
         this.userId = "*****";
         this.snsId = "*****" ;
         this.email = "*****@*****.***";
-        this.deviceId = null;
-        this.deviceOs = null;
+        this.deviceId = "*****";
         this.fcmToken = null;
         this.deletedAt = LocalDateTime.now();
     }
