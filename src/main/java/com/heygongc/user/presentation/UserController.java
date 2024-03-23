@@ -98,7 +98,7 @@ public class UserController {
             summary = "액세스 토큰 재발급",
             description = "갱신 토큰을 이용해 액세스 토큰과 리프레시 토큰을 재발급합니다.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "OK(액세스 토큰 반환)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))),
+                    @ApiResponse(responseCode = "200", description = "OK(액세스 토큰 반환)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TokenResponse.class))),
                     @ApiResponse(responseCode = "401", description = "유효하지 않은 토큰", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
             }
     )
