@@ -137,7 +137,7 @@ public class UserService {
     }
 
     public void alertSoundAlarm(Long userSeq){
-        Optional<User> user = userRepository.findByUserSeq(userSeq);
+        Optional<User> user = userRepository.findBySeq(userSeq);
         String fcmToken = "";
         if (user.isPresent()){
             fcmToken = user.get().getFcmToken();
