@@ -23,4 +23,3 @@ oauth:
   apple:
     iss: https://appleid.apple.com
     client-id: test
-    nonce: nonce

@@ -18,16 +18,13 @@ class AppleClaimsValidatorTest {
 
     private static final String ISS = "iss";
     private static final String CLIENT_ID = "aud";
-    private static final String NONCE = "nonce";
-    private static final String NONCE_KEY = "nonce";
 
-    private final AppleClaimsValidator appleClaimsValidator = new AppleClaimsValidator(ISS, CLIENT_ID, NONCE);
+    private final AppleClaimsValidator appleClaimsValidator = new AppleClaimsValidator(ISS, CLIENT_ID);
 
     @Test
     @DisplayName("올바른 Claims 이면 true 반환한다")
     void isValid() {
         Map<String, Object> claimsMap = new HashMap<>();
-        claimsMap.put(NONCE_KEY, AppleEncryptUtils.encrypt(NONCE));
 
         Claims claims = Jwts.claims(claimsMap)
                 .setIssuer(ISS)
@@ -39,13 +36,11 @@ class AppleClaimsValidatorTest {
     @ParameterizedTest
     @DisplayName("nonce, iss, aud(client_id) 중 올바르지 않은 값이 존재하면 false 반환한다")
     @CsvSource({
-            "invalid, iss, aud",
-            "nonce, invalid, aud",
-            "nonce, iss, invalid"
+            "invalid, aud",
+            "iss, invalid"
     })
-    void isInvalid(String nonce, String iss, String clientId) {
+    void isInvalid(String iss, String clientId) {
         Map<String, Object> claimsMap = new HashMap<>();
-        claimsMap.put(NONCE_KEY, AppleEncryptUtils.encrypt(nonce));
 
         Claims claims = Jwts.claims(claimsMap)
                 .setIssuer(iss)
