@@ -24,12 +24,8 @@ public class CameraController {
 
     private final CameraService cameraService;
 
-    private final UserService userService;
-
-    public CameraController(CameraService cameraService, UserService userService) {
-
+    public CameraController(CameraService cameraService) {
         this.cameraService = cameraService;
-        this.userService = userService;
     }
 
     @PostMapping("/subscribe")
@@ -120,7 +116,7 @@ public class CameraController {
             @Parameter(hidden = true) Device device
     ) {
 
-        userService.alertSoundAlarm(device.getUserSeq());
+        cameraService.alertSoundAlarm(device);
 
         return ResponseEntity.ok().build();
 
