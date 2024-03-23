@@ -7,12 +7,12 @@ import com.heygongc.device.presentation.request.camera.ControlTypeRequest;
 import com.heygongc.device.presentation.request.device.DeviceIdsRequest;
 import com.heygongc.device.presentation.request.device.DeviceInfoRequest;
 import com.heygongc.device.presentation.response.device.DeviceResponse;
-import com.heygongc.device.presentation.response.device.DeviceResponses;
 import com.heygongc.global.error.ErrorResponse;
 import com.heygongc.user.domain.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -40,7 +40,7 @@ public class DeviceController {
             summary = "기기 목록",
             description = "해당 유저의 모든 기기 목록을 나열합니다.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DeviceResponses.class))),
+                    @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = DeviceResponse.class))))
             }
     )
     public ResponseEntity<List<DeviceResponse>> getAllDevices(@Parameter(hidden = true) User user){
