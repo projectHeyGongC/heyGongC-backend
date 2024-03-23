@@ -81,7 +81,7 @@ class UserServiceTest extends ServiceTest {
     }
 
     private UserLoginRequest userLoginRequest() {
-        return new UserLoginRequest("1111", "AOS", "google", "token");
+        return new UserLoginRequest("1111", "deviceId2","AOS", "google", "token");
     }
 
     private RegisterRequest userRegisterRequest() {
