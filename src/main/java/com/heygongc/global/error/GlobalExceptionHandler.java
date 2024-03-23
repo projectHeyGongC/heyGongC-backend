@@ -3,6 +3,7 @@ package com.heygongc.global.error;
 import com.heygongc.global.error.exception.ApiBusinessException;
 import com.heygongc.global.error.exception.ForbiddenException;
 import com.heygongc.global.error.exception.UnauthenticatedException;
+import com.heygongc.user.exception.AlreadySignInException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -21,6 +22,17 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ApiBusinessException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public HttpEntity<ErrorResponse> handler(ApiBusinessException e) {
+        return new HttpEntity<>(ErrorResponse.from(e.getCode(), e.getMessage()));
+    }
+
+    /**
+     * iOS에서 테스트해보기 위한 용도 삭제예정!
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(AlreadySignInException.class)
+    @ResponseStatus(HttpStatus.CREATED)
+    public HttpEntity<ErrorResponse> handler(AlreadySignInException e) {
         return new HttpEntity<>(ErrorResponse.from(e.getCode(), e.getMessage()));
     }
 
