@@ -7,6 +7,7 @@ import com.heygongc.notification.presentation.response.NotificationResponse;
 import com.heygongc.user.domain.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -34,7 +35,7 @@ public class NotificationController {
             summary = "알림 목록 조회",
             description = "[뷰어 > 모니터링 > 알림] 사용자의 알림 목록을 조회합니다.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", schema = @Schema(implementation = List.class)))
+                    @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = NotificationResponse.class))))
             }
     )
     public ResponseEntity<List<NotificationResponse>> getAllNotifications(@Parameter(hidden = true) User user) {
