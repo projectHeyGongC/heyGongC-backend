@@ -1,7 +1,7 @@
 package com.heygongc.user.application;
 
+import com.heygongc.global.infra.FirebaseCloudMessaging;
 import com.heygongc.global.type.OsType;
-import com.heygongc.user.application.oauth.OauthFactory;
 import com.heygongc.user.application.oauth.OauthUser;
 import com.heygongc.user.domain.entity.User;
 import com.heygongc.user.domain.repository.UserRepository;
@@ -15,6 +15,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
+import java.util.Optional;
+
 @Service
 public class UserService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -22,10 +25,15 @@ public class UserService {
     private final UserTokenRepository userTokenRepository;
     private final JwtUtil jwtUtil;
 
-    public UserService(UserRepository userRepository, UserTokenRepository userTokenRepository, JwtUtil jwtUtil) {
+    private final FirebaseCloudMessaging firebaseCloudMessaging;
+
+
+    public UserService(UserRepository userRepository, UserTokenRepository userTokenRepository, JwtUtil jwtUtil, FirebaseCloudMessaging firebaseCloudMessaging) {
         this.userRepository = userRepository;
         this.userTokenRepository = userTokenRepository;
         this.jwtUtil = jwtUtil;
+        this.firebaseCloudMessaging = firebaseCloudMessaging;
+
     }
 
     @Transactional
@@ -122,5 +130,18 @@ public class UserService {
         String refreshToken = jwtUtil.generateRefreshToken(String.valueOf(userSeq), deviceId);
 
         return new AuthToken(accessToken, refreshToken);
+    }
+
+    public void alertSoundAlarm(Long userSeq){
+        Optional<User> user = userRepository.findByUserSeq(userSeq);
+        String fcmToken = "";
+        if (user.isPresent()){
+            fcmToken = user.get().getFcmToken();
+
+        }
+        HashMap<String, String> data = new HashMap<>();
+        data.put("action", "6");
+        firebaseCloudMessaging.sendMessage(fcmToken, "소리 알람 보내기", data);
+
     }
 }

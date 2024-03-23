@@ -37,4 +37,18 @@ public class CameraService {
 
         return accessToken;
     }
+
+    @Transactional
+    public void changeCameraDeviceStatus(int battery, int temperature, Device device){
+        device.changeCameraDeviceStatus(battery, temperature);
+
+    }
+
+    public boolean checkCameraQRStatus(Device device){
+        return device.checkCameraQRStatus();
+    }
+
+
+
+
 }
