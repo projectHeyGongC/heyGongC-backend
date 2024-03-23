@@ -93,4 +93,8 @@ public class User extends BaseTimeEntity {
         this.fcmToken = null;
         this.deletedAt = LocalDateTime.now();
     }
+
+    public void provideFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
+    }
 }

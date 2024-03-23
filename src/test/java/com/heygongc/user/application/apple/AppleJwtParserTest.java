@@ -1,7 +1,7 @@
 package com.heygongc.user.application.apple;
 
 import com.heygongc.user.application.oauth.apple.AppleJwtParser;
-import com.heygongc.user.exception.InvalidTokenException;
+import com.heygongc.user.exception.InvalidUserTokenException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -48,7 +48,7 @@ class AppleJwtParserTest {
     @Test
     @DisplayName("올바르지 않은 형식의 Apple identity token으로 헤더를 파싱하면 예외를 반환한다")
     void parseHeadersWithInvalidToken() {
-        assertThrows(InvalidTokenException.class, () -> appleJwtParser.parseHeaders("invalidToken"));
+        assertThrows(InvalidUserTokenException.class, () -> appleJwtParser.parseHeaders("invalidToken"));
     }
 
     @Test
@@ -97,7 +97,7 @@ class AppleJwtParserTest {
                 .signWith(SignatureAlgorithm.RS256, privateKey)
                 .compact();
 
-        assertThrows(InvalidTokenException.class, () -> appleJwtParser.parseClaims(identityToken, publicKey));
+        assertThrows(InvalidUserTokenException.class, () -> appleJwtParser.parseClaims(identityToken, publicKey));
     }
 
     @Test
@@ -121,6 +121,6 @@ class AppleJwtParserTest {
                 .signWith(SignatureAlgorithm.RS256, privateKey)
                 .compact();
 
-        assertThrows(InvalidTokenException.class, () -> appleJwtParser.parseClaims(identityToken, differentPublicKey));
+        assertThrows(InvalidUserTokenException.class, () -> appleJwtParser.parseClaims(identityToken, differentPublicKey));
     }
 }

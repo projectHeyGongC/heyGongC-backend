@@ -1,7 +1,7 @@
 package com.heygongc.user.application;
 
-import com.heygongc.user.exception.ExpiredTokenException;
-import com.heygongc.user.exception.InvalidTokenException;
+import com.heygongc.user.exception.UserExpiredTokenException;
+import com.heygongc.user.exception.InvalidUserTokenException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,7 +33,7 @@ class JwtUtilTest {
     @Test
     @DisplayName("userSeq와 deviceId를 통해 유효한 JWT 토큰을 생성한다")
     public void generateAccessToken() {
-        String accessToken = jwtUtil.generateAccessToken(String.valueOf(userSeq), deviceId);
+        String accessToken = jwtUtil.generateUserAccessToken(String.valueOf(userSeq), deviceId);
 
         assertNotNull(accessToken);
         assertFalse(accessToken.isEmpty());
@@ -42,7 +42,7 @@ class JwtUtilTest {
     @Test
     @DisplayName("올바른 토큰 정보로 userSeq와 deviceId를 추출한다")
     void extractInfo() {
-        String accessToken = jwtUtil.generateAccessToken(String.valueOf(userSeq), deviceId);
+        String accessToken = jwtUtil.generateUserAccessToken(String.valueOf(userSeq), deviceId);
 
         Long userSeq = Long.parseLong(jwtUtil.extractSubject(accessToken));
         String deviceId = jwtUtil.extractAudience(accessToken);
@@ -56,7 +56,7 @@ class JwtUtilTest {
     void isValidWithInvalidToken() {
         String invalidToken = "invalid-token";
 
-        assertThrows(InvalidTokenException.class, () -> jwtUtil.checkedValidTokenOrThrowException(invalidToken));
+        assertThrows(InvalidUserTokenException.class, () -> jwtUtil.UserCheckedValidTokenOrThrowException(invalidToken));
     }
 
     @Test
@@ -67,14 +67,14 @@ class JwtUtilTest {
         long longAccessExp = 1L;
         JwtUtil jwtUtil = new JwtUtil("secret-key", accessExp, refreshExp, longAccessExp);
 
-        String expiredToken = jwtUtil.generateAccessToken(String.valueOf(userSeq), deviceId);
+        String expiredToken = jwtUtil.generateUserAccessToken(String.valueOf(userSeq), deviceId);
         try {
             Thread.sleep(accessExp);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        assertThrows(ExpiredTokenException.class, () -> jwtUtil.checkedValidTokenOrThrowException(expiredToken));
+        assertThrows(UserExpiredTokenException.class, () -> jwtUtil.UserCheckedValidTokenOrThrowException(expiredToken));
     }
 
     @Test
@@ -85,14 +85,14 @@ class JwtUtilTest {
         long longAccessExp = 1L;
         JwtUtil jwtUtil = new JwtUtil("secret-key", accessExp, refreshExp, longAccessExp);
 
-        String expiredToken = jwtUtil.generateAccessToken(String.valueOf(userSeq), deviceId);
+        String expiredToken = jwtUtil.generateUserAccessToken(String.valueOf(userSeq), deviceId);
         try {
             Thread.sleep(accessExp);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        assertThrows(ExpiredTokenException.class, () -> jwtUtil.extractSubject(expiredToken));
+        assertThrows(UserExpiredTokenException.class, () -> jwtUtil.extractSubject(expiredToken));
     }
 
     @Test
@@ -102,9 +102,9 @@ class JwtUtilTest {
         String wrongSecretKey = "wrong-secret-key";
 
         JwtUtil jwtUtil = new JwtUtil(correctSecretKey, 3600000L, 3600000L, 3600000L);
-        String token = jwtUtil.generateAccessToken(String.valueOf(userSeq), deviceId);
+        String token = jwtUtil.generateUserAccessToken(String.valueOf(userSeq), deviceId);
 
         JwtUtil wrongJwtUtil = new JwtUtil(wrongSecretKey, 3600000L, 3600000L, 3600000L);
-        assertThrows(InvalidTokenException.class, () -> wrongJwtUtil.extractSubject(token));
+        assertThrows(InvalidUserTokenException.class, () -> wrongJwtUtil.extractSubject(token));
     }
 }

@@ -1,10 +1,11 @@
 package com.heygongc.global.filter;
 
+import com.heygongc.device.domain.entity.Device;
+import com.heygongc.device.domain.repository.DeviceRepository;
+import com.heygongc.device.exception.DeviceNotFoundException;
 import com.heygongc.global.error.exception.ForbiddenException;
 import com.heygongc.global.error.exception.UnauthenticatedException;
 import com.heygongc.user.application.JwtUtil;
-import com.heygongc.user.domain.entity.User;
-import com.heygongc.user.domain.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.MethodParameter;
@@ -17,23 +18,24 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import java.util.Objects;
 
 @Component
-public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver {
+public class PairDeviceArgumentResolver implements HandlerMethodArgumentResolver {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private static final String AUTHORIZATION = "Authorization";
     private static final String Bearer = "Bearer ";
 
     private final JwtUtil jwtUtil;
-    private final UserRepository userRepository;
+    private final DeviceRepository deviceRepository;
 
-    public LoginUserArgumentResolver(JwtUtil jwtUtil, UserRepository userRepository) {
+
+    public PairDeviceArgumentResolver(JwtUtil jwtUtil, DeviceRepository deviceRepository) {
         this.jwtUtil = jwtUtil;
-        this.userRepository = userRepository;
+        this.deviceRepository = deviceRepository;
     }
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterType() == User.class;
+        return parameter.getParameterType() == Device.class;
     }
 
     @Override
@@ -45,21 +47,20 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
         }
 
         // 유효하지 않은 토큰이면 로그인 페이지로 리디렉션
-        jwtUtil.UserCheckedValidTokenOrThrowException(accessToken);
+        jwtUtil.DeviceCheckedValidTokenOrThrowException(accessToken);
 
-        Long userSeq = Long.parseLong(jwtUtil.extractSubject(accessToken));
+        Long deviceSeq = Long.parseLong(jwtUtil.extractSubject(accessToken));
         String deviceId = jwtUtil.extractAudience(accessToken);
-        logger.info("userSeq({}), deviceId({})", userSeq, deviceId);
+        logger.info("deviceSeq({}), deviceId({})", deviceSeq, deviceId);
 
-        // DB에 저장되어 있지 않을 경우
-        User user = userRepository.findById(userSeq)
-                .orElseThrow(UnauthenticatedException::new);
+        Device device = deviceRepository.findByDeviceId(deviceId)
+                .orElseThrow(DeviceNotFoundException::new);
 
-        if (!Objects.equals(user.getDeviceId(), deviceId)) {
-            throw new ForbiddenException("새로운 로그인이 감지되었습니다.");
+        if (!Objects.equals(device.getDeviceId(), deviceId)) {
+            throw new ForbiddenException("서로 다른 기기입니다.");
         }
 
-        return user;
+        return device;
     }
 
     private String extractTokenFromHeader(String header) {
@@ -69,3 +70,4 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
         return null;
     }
 }
+

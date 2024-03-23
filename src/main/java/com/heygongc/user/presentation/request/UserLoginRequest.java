@@ -11,7 +11,9 @@ public record UserLoginRequest(
         @Schema(description = "디바이스 ID") String deviceId,
         @Schema(description = "디바이스 OS(AOS:안드로이드,IOS:애플)", allowableValues = {"AOS","IOS"}) String deviceOs,
         @Schema(description = "SNS 타입(GOOGLE:구글,APPLE:애플)", allowableValues = {"GOOGLE","APPLE"}) String snsType,
-        @Schema(description = "SNS 토큰") String accessToken
+        @Schema(description = "SNS 토큰") String accessToken,
+
+        @Schema(description = "FCM 토큰") String fcmToken
 ) {
 
         public void validate() {
@@ -37,6 +39,10 @@ public record UserLoginRequest(
 
                 if (ObjectUtils.isEmpty(this.accessToken)) {
                         throw new IllegalArgumentException("SNS 토큰은 필수입니다.");
+                }
+
+                if (ObjectUtils.isEmpty(this.fcmToken)) {
+                        throw new IllegalArgumentException("FCM 토큰은 필수입니다.");
                 }
         }
 }

@@ -136,4 +136,13 @@ public class Device extends BaseTimeEntity {
     }
 
     public void setDeviceOwner(Long userSeq) { this.userSeq = userSeq; }
+
+    public void changeCameraDeviceStatus(int battery, int temperature){
+        this.battery = battery;
+        this.temperature = temperature;
+    }
+
+    public boolean checkCameraQRStatus() {
+        return this.isPaired;
+    }
 }

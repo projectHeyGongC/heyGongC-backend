@@ -1,7 +1,9 @@
 package com.heygongc.user.application;
 
-import com.heygongc.user.exception.ExpiredTokenException;
-import com.heygongc.user.exception.InvalidTokenException;
+import com.heygongc.device.exception.DeviceExpiredTokenException;
+import com.heygongc.device.exception.InvalidDeviceTokenException;
+import com.heygongc.user.exception.UserExpiredTokenException;
+import com.heygongc.user.exception.InvalidUserTokenException;
 import io.jsonwebtoken.*;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,24 +34,25 @@ public class JwtUtil {
         this.jwtParser = Jwts.parser().setSigningKey(SECRET_KEY);
     }
 
-    public String generateAccessToken(String subject, String audience) {
-        return genarateToken(subject, audience, ACCESS_EXP);
+    public String generateUserAccessToken(String subject, String audience) {
+        return genarateToken("USER", subject, audience, ACCESS_EXP);
     }
 
-    public String generateRefreshToken(String subject, String audience) {
-        return genarateToken(subject, audience, REFRESH_EXP);
+    public String generateUserRefreshToken(String subject, String audience) {
+        return genarateToken("USER", subject, audience, REFRESH_EXP);
     }
 
-    public String generateLongAccessToken(String subject, String audience) {
-        return genarateToken(subject, audience, LONG_ACCESS_EXP);
+    public String generateCameraAccessToken(String subject, String audience) {
+        return genarateToken("CAMERA", subject, audience, LONG_ACCESS_EXP);
     }
 
-    public String genarateToken(String subject, String audience, Long exp) {
+    public String genarateToken(String issuer, String subject, String audience, Long exp) {
 
         Date now = new Date();
         Date expirationDate = new Date(now.getTime() + exp);
 
         return Jwts.builder()
+                .setIssuer(issuer)
                 .setSubject(subject)
                 .setAudience(audience)
                 .setIssuedAt(now)
@@ -62,28 +65,47 @@ public class JwtUtil {
         return extractClaims(token).getSubject();
     }
 
+    public String extractIssuers(String token) {
+        return extractClaims(token).getIssuer();
+    }
+
     public String extractAudience(String token) {
         return extractClaims(token).getAudience();
     }
 
-    // JWT 토큰이 정상인지 체크, 오류일 경우 Exception 발생
-    public void checkedValidTokenOrThrowException(String token) {
+    // USER JWT 토큰이 정상인지 체크, 오류일 경우 Exception 발생
+    public void UserCheckedValidTokenOrThrowException(String token) {
         try {
             jwtParser.parseClaimsJws(token);
         } catch (ExpiredJwtException e) {
-            throw new ExpiredTokenException();
+            throw new UserExpiredTokenException();
         } catch (JwtException e) {
-            throw new InvalidTokenException();
+            throw new InvalidUserTokenException();
         }
+    }
+
+    // DEVICE JWT 토큰이 정상인지 체크, 오류일 경우 Exception 발생
+
+    public void DeviceCheckedValidTokenOrThrowException(String token){
+
+        try {
+            jwtParser.parseClaimsJws(token);
+        } catch (ExpiredJwtException e) {
+            throw new DeviceExpiredTokenException();
+        } catch (JwtException e) {
+            throw new InvalidDeviceTokenException();
+        }
+
+
     }
 
     public Claims extractClaims(String token) {
         try {
             return jwtParser.parseClaimsJws(token).getBody();
         } catch (ExpiredJwtException e) {
-            throw new ExpiredTokenException();
+            throw new UserExpiredTokenException();
         } catch (JwtException e) {
-            throw new InvalidTokenException();
+            throw new InvalidUserTokenException();
         }
     }
 }
