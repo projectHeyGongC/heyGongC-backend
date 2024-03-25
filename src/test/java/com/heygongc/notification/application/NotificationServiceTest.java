@@ -11,6 +11,7 @@ import com.heygongc.user.domain.entity.User;
 import com.heygongc.user.domain.repository.UserRepository;
 import com.heygongc.user.domain.type.SnsType;
 import org.assertj.core.api.Assertions;
+import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,7 @@ class NotificationServiceTest extends ServiceTest {
 
     @Test
     @DisplayName("사용자의 알림 목록을 조회한다")
-    public void getAllNotifications() {
+    public void 알림목록조회() {
         // given
         User user = 사용자_등록();
         Device device = 디바이스_등록(user);
@@ -47,6 +48,21 @@ class NotificationServiceTest extends ServiceTest {
         Assertions.assertThat(notifications).isNotNull();
         Assertions.assertThat(notifications.size()).isGreaterThan(0);
         Assertions.assertThat(notifications.get(0).getNotiSeq()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("알림 목록이 없을 경우 empty List를 리턴한다")
+    public void 알림목록조회_NoData() {
+        // given
+        User user = 사용자_등록();
+        Device device = 디바이스_등록(user);
+
+        // when
+        List<Notification> notifications = notificationService.getAllNotifications(user.getSeq());
+
+        // then
+        Assertions.assertThat(notifications).isNotNull();
+        Assertions.assertThat(notifications.size()).isEqualTo(0);
     }
 
     private User 사용자_등록() {
@@ -73,7 +89,6 @@ class NotificationServiceTest extends ServiceTest {
         device.changeDeviceName("거실");
         device.setDeviceOwner(user.getSeq());
         device.pairDevice();
-
 
         return deviceRepository.save(device);
     }
