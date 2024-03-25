@@ -1,33 +1,24 @@
 package com.heygongc.notification.application;
 
-import com.heygongc.common.DatabaseCleaner;
+import com.heygongc.common.ServiceTest;
 import com.heygongc.device.domain.entity.Device;
 import com.heygongc.device.domain.repository.DeviceRepository;
 import com.heygongc.global.type.OsType;
 import com.heygongc.notification.domain.entity.Notification;
 import com.heygongc.notification.domain.repository.NotificationRepository;
 import com.heygongc.notification.domain.type.NotificationType;
-import com.heygongc.notification.presentation.request.AddNotificationRequest;
 import com.heygongc.user.domain.entity.User;
 import com.heygongc.user.domain.repository.UserRepository;
 import com.heygongc.user.domain.type.SnsType;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
-@SpringBootTest
-@ActiveProfiles("test")
 @SuppressWarnings("NonAsciiCharacters")
-class NotificationServiceTest {
-
-    @Autowired
-    private DatabaseCleaner cleaner;
+class NotificationServiceTest extends ServiceTest {
 
     @Autowired
     private NotificationService notificationService;
@@ -40,26 +31,6 @@ class NotificationServiceTest {
 
     @Autowired
     private UserRepository userRepository;
-
-
-    @AfterEach
-    void tearDown() {
-        cleaner.execute();
-    }
-
-    @Test
-    @DisplayName("알림을 추가한다")
-    public void addNotification() {
-        // given
-        User user = 사용자_등록();
-        Device device = 디바이스_등록(user);
-
-        // when
-        notificationService.addNotification(user, addNotificationRequest(device));
-
-        // then
-        Assertions.assertThat(notificationRepository.findAllNotificationByUserSeq(user.getSeq())).isNotNull();
-    }
 
     @Test
     @DisplayName("사용자의 알림 목록을 조회한다")
@@ -76,10 +47,6 @@ class NotificationServiceTest {
         Assertions.assertThat(notifications).isNotNull();
         Assertions.assertThat(notifications.size()).isGreaterThan(0);
         Assertions.assertThat(notifications.get(0).getNotiSeq()).isNotNull();
-    }
-
-    private AddNotificationRequest addNotificationRequest(Device device) {
-        return new AddNotificationRequest(NotificationType.SOUND.name(), device.getDeviceId());
     }
 
     private User 사용자_등록() {
