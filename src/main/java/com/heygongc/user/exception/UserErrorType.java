@@ -6,7 +6,6 @@ public enum UserErrorType {
     ALREADY_SIGN_IN("이미 로그인한 사용자입니다."),
     ALREADY_SIGN_UP("이미 가입한 사용자입니다."),
     ALREADY_LEFT("이미 탈퇴한 사용자입니다."),
-    INVALID_TOKEN ("유효하지 않은 토큰입니다."),
     NEW_LOGIN_DETECTED("새로운 로그인이 감지되었습니다."),
     ;
 

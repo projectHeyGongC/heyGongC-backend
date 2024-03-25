@@ -1,7 +1,7 @@
 package com.heygongc.user.application;
 
 import com.heygongc.global.error.exception.ExpiredTokenException;
-import com.heygongc.user.exception.InvalidUserTokenException;
+import com.heygongc.global.error.exception.InvalidTokenException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -56,7 +56,7 @@ class JwtUtilTest {
     void isValidWithInvalidToken() {
         String invalidToken = "invalid-token";
 
-        assertThrows(InvalidUserTokenException.class, () -> jwtUtil.checkedValidTokenOrThrowException(invalidToken));
+        assertThrows(InvalidTokenException.class, () -> jwtUtil.checkedValidTokenOrThrowException(invalidToken));
     }
 
     @Test
@@ -105,6 +105,6 @@ class JwtUtilTest {
         String token = jwtUtil.generateUserAccessToken(String.valueOf(userSeq), deviceId);
 
         JwtUtil wrongJwtUtil = new JwtUtil(wrongSecretKey, 3600000L, 3600000L, 3600000L);
-        assertThrows(InvalidUserTokenException.class, () -> wrongJwtUtil.extractSubject(token));
+        assertThrows(InvalidTokenException.class, () -> wrongJwtUtil.extractSubject(token));
     }
 }

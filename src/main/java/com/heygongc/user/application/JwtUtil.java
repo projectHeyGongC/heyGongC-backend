@@ -1,7 +1,7 @@
 package com.heygongc.user.application;
 
 import com.heygongc.global.error.exception.ExpiredTokenException;
-import com.heygongc.user.exception.InvalidUserTokenException;
+import com.heygongc.global.error.exception.InvalidTokenException;
 import io.jsonwebtoken.*;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
@@ -64,7 +64,7 @@ public class JwtUtil {
         } catch (ExpiredJwtException e) {
             throw new ExpiredTokenException();
         } catch (JwtException e) {
-            throw new InvalidUserTokenException();
+            throw new InvalidTokenException();
         }
     }
 
@@ -82,7 +82,7 @@ public class JwtUtil {
         } catch (ExpiredJwtException e) {
             throw new ExpiredTokenException();
         } catch (JwtException e) {
-            throw new InvalidUserTokenException();
+            throw new InvalidTokenException();
         }
     }
 }
