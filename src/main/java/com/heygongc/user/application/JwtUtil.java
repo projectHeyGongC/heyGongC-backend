@@ -1,8 +1,6 @@
 package com.heygongc.user.application;
 
-import com.heygongc.device.exception.DeviceExpiredTokenException;
-import com.heygongc.device.exception.InvalidDeviceTokenException;
-import com.heygongc.user.exception.UserExpiredTokenException;
+import com.heygongc.global.error.exception.ExpiredTokenException;
 import com.heygongc.user.exception.InvalidUserTokenException;
 import io.jsonwebtoken.*;
 import lombok.Getter;
@@ -35,19 +33,18 @@ public class JwtUtil {
     }
 
     public String generateUserAccessToken(String subject, String audience) {
-        return genarateToken(subject, audience, ACCESS_EXP);
+        return generateToken(subject, audience, ACCESS_EXP);
     }
 
     public String generateUserRefreshToken(String subject, String audience) {
-        return genarateToken(subject, audience, REFRESH_EXP);
+        return generateToken(subject, audience, REFRESH_EXP);
     }
 
     public String generateCameraAccessToken(String subject, String audience) {
-        return genarateToken(subject, audience, LONG_ACCESS_EXP);
+        return generateToken(subject, audience, LONG_ACCESS_EXP);
     }
 
-    public String genarateToken(String subject, String audience, Long exp) {
-
+    private String generateToken(String subject, String audience, Long exp) {
         Date now = new Date();
         Date expirationDate = new Date(now.getTime() + exp);
 
@@ -60,6 +57,17 @@ public class JwtUtil {
                 .compact();
     }
 
+    // JWT 토큰이 정상인지 체크, 오류일 경우 Exception 발생
+    public void checkedValidTokenOrThrowException(String token) {
+        try {
+            jwtParser.parseClaimsJws(token);
+        } catch (ExpiredJwtException e) {
+            throw new ExpiredTokenException();
+        } catch (JwtException e) {
+            throw new InvalidUserTokenException();
+        }
+    }
+
     public String extractSubject(String token) {
         return extractClaims(token).getSubject();
     }
@@ -68,37 +76,11 @@ public class JwtUtil {
         return extractClaims(token).getAudience();
     }
 
-    // USER JWT 토큰이 정상인지 체크, 오류일 경우 Exception 발생
-    public void UserCheckedValidTokenOrThrowException(String token) {
-        try {
-            jwtParser.parseClaimsJws(token);
-        } catch (ExpiredJwtException e) {
-            throw new UserExpiredTokenException();
-        } catch (JwtException e) {
-            throw new InvalidUserTokenException();
-        }
-    }
-
-    // DEVICE JWT 토큰이 정상인지 체크, 오류일 경우 Exception 발생
-
-    public void DeviceCheckedValidTokenOrThrowException(String token){
-
-        try {
-            jwtParser.parseClaimsJws(token);
-        } catch (ExpiredJwtException e) {
-            throw new DeviceExpiredTokenException();
-        } catch (JwtException e) {
-            throw new InvalidDeviceTokenException();
-        }
-
-
-    }
-
-    public Claims extractClaims(String token) {
+    private Claims extractClaims(String token) {
         try {
             return jwtParser.parseClaimsJws(token).getBody();
         } catch (ExpiredJwtException e) {
-            throw new UserExpiredTokenException();
+            throw new ExpiredTokenException();
         } catch (JwtException e) {
             throw new InvalidUserTokenException();
         }

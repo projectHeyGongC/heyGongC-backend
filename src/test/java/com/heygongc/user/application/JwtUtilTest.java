@@ -1,6 +1,6 @@
 package com.heygongc.user.application;
 
-import com.heygongc.user.exception.UserExpiredTokenException;
+import com.heygongc.global.error.exception.ExpiredTokenException;
 import com.heygongc.user.exception.InvalidUserTokenException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -56,7 +56,7 @@ class JwtUtilTest {
     void isValidWithInvalidToken() {
         String invalidToken = "invalid-token";
 
-        assertThrows(InvalidUserTokenException.class, () -> jwtUtil.UserCheckedValidTokenOrThrowException(invalidToken));
+        assertThrows(InvalidUserTokenException.class, () -> jwtUtil.checkedValidTokenOrThrowException(invalidToken));
     }
 
     @Test
@@ -74,7 +74,7 @@ class JwtUtilTest {
             e.printStackTrace();
         }
 
-        assertThrows(UserExpiredTokenException.class, () -> jwtUtil.UserCheckedValidTokenOrThrowException(expiredToken));
+        assertThrows(ExpiredTokenException.class, () -> jwtUtil.checkedValidTokenOrThrowException(expiredToken));
     }
 
     @Test
@@ -92,7 +92,7 @@ class JwtUtilTest {
             e.printStackTrace();
         }
 
-        assertThrows(UserExpiredTokenException.class, () -> jwtUtil.extractSubject(expiredToken));
+        assertThrows(ExpiredTokenException.class, () -> jwtUtil.extractSubject(expiredToken));
     }
 
     @Test

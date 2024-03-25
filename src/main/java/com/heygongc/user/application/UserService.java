@@ -87,7 +87,7 @@ public class UserService {
     public AuthToken refreshToken(String refreshToken) {
 
         // refresh token 유효성 체크
-        jwtUtil.UserCheckedValidTokenOrThrowException(refreshToken);
+        jwtUtil.checkedValidTokenOrThrowException(refreshToken);
 
         // refresh token 조회
         UserToken userToken = userTokenRepository.findByRefreshToken(refreshToken)
