@@ -1,22 +1,20 @@
 package com.heygongc.user.application;
 
-import com.heygongc.global.infra.FirebaseCloudMessaging;
 import com.heygongc.global.type.OsType;
 import com.heygongc.user.application.oauth.OauthUser;
 import com.heygongc.user.domain.entity.User;
-import com.heygongc.user.domain.repository.UserRepository;
 import com.heygongc.user.domain.entity.UserToken;
+import com.heygongc.user.domain.repository.UserRepository;
 import com.heygongc.user.domain.repository.UserTokenRepository;
-import com.heygongc.user.exception.*;
-import com.heygongc.user.presentation.request.UserLoginRequest;
+import com.heygongc.user.exception.AlreadySignInException;
+import com.heygongc.user.exception.InvalidUserTokenException;
+import com.heygongc.user.exception.UserNotFoundException;
 import com.heygongc.user.presentation.request.RegisterRequest;
+import com.heygongc.user.presentation.request.UserLoginRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.HashMap;
-import java.util.Optional;
 
 @Service
 public class UserService {
@@ -25,15 +23,10 @@ public class UserService {
     private final UserTokenRepository userTokenRepository;
     private final JwtUtil jwtUtil;
 
-    private final FirebaseCloudMessaging firebaseCloudMessaging;
-
-
-    public UserService(UserRepository userRepository, UserTokenRepository userTokenRepository, JwtUtil jwtUtil, FirebaseCloudMessaging firebaseCloudMessaging) {
+    public UserService(UserRepository userRepository, UserTokenRepository userTokenRepository, JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.userTokenRepository = userTokenRepository;
         this.jwtUtil = jwtUtil;
-        this.firebaseCloudMessaging = firebaseCloudMessaging;
-
     }
 
     @Transactional
@@ -134,18 +127,5 @@ public class UserService {
         String refreshToken = jwtUtil.generateUserRefreshToken(String.valueOf(userSeq), deviceId);
 
         return new AuthToken(accessToken, refreshToken);
-    }
-
-    public void alertSoundAlarm(Long userSeq){
-        Optional<User> user = userRepository.findBySeq(userSeq);
-        String fcmToken = "";
-        if (user.isPresent()){
-            fcmToken = user.get().getFcmToken();
-
-        }
-        HashMap<String, String> data = new HashMap<>();
-        data.put("action", "5");
-        firebaseCloudMessaging.sendMessage(fcmToken, "소리 알람 보내기", data);
-
     }
 }
