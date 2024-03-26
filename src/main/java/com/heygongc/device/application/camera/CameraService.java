@@ -53,12 +53,12 @@ public class CameraService {
     }
 
     @Transactional
-    public void changeCameraDeviceStatus(int battery, int temperature, Device device) {
+    public void changeCameraDeviceStatus(Device device, int battery, int temperature) {
         device.changeCameraDeviceStatus(battery, temperature);
     }
 
-    public boolean checkCameraQRStatus(Device device) {
-        return device.checkCameraQRStatus();
+    public boolean isConnected(Device device){
+        return device.isConnected();
     }
 
     @Transactional

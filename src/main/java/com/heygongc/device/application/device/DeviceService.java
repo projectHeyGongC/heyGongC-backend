@@ -39,7 +39,7 @@ public class DeviceService{
         Device device = deviceRepository.findByDeviceId(request.deviceId())
                 .orElseThrow(DeviceNotFoundException::new);
         device.changeDeviceName(request.deviceName());
-        device.pairDevice();
+        device.connectDevice();
         device.setDeviceOwner(user.getSeq());
         deviceRepository.save(device);
 
@@ -68,7 +68,7 @@ public class DeviceService{
         HashMap<String, String> data = new HashMap<>();
         data.put("action", "2");
 
-        devices.forEach(Device::unpairDevice);
+        devices.forEach(Device::disConnectDevice);
         deviceRepository.saveAll(devices);
 
         if (!tokens.isEmpty()) {

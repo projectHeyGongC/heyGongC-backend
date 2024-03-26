@@ -43,9 +43,9 @@ public class Device extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private OsType deviceOs;
 
-    @Column(name = "is_paired", nullable = false)
+    @Column(name = "is_connected", nullable = false)
     @ColumnDefault("false")
-    private boolean isPaired;
+    private boolean isConnected;
 
     @Column(name = "sound_mode", nullable = false)
     @ColumnDefault("false")
@@ -86,7 +86,7 @@ public class Device extends BaseTimeEntity {
         this.deviceId = deviceId;
         this.modelName = modelName;
         this.deviceOs = deviceOs;
-        this.isPaired = false;
+        this.isConnected = false;
         this.soundMode = false;
         this.sensitivity = SensitivityType.MEDIUM;
         this.soundActive = false;
@@ -100,10 +100,10 @@ public class Device extends BaseTimeEntity {
     public void changeDeviceName(String deviceName) {
         this.deviceName = deviceName;
     }
-    public void pairDevice() { this.isPaired = true;}
-    public void unpairDevice() {
+    public void connectDevice() { this.isConnected = true;}
+    public void disConnectDevice() {
         this.userSeq = null;
-        this.isPaired = false;
+        this.isConnected = false;
         this.soundMode = false;
         this.sensitivity = SensitivityType.MEDIUM;
         this.soundActive = false;
@@ -140,9 +140,5 @@ public class Device extends BaseTimeEntity {
     public void changeCameraDeviceStatus(int battery, int temperature){
         this.battery = battery;
         this.temperature = temperature;
-    }
-
-    public boolean checkCameraQRStatus() {
-        return this.isPaired;
     }
 }
