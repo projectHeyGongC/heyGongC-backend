@@ -41,7 +41,6 @@ public class DeviceService{
         device.changeDeviceName(request.deviceName());
         device.pairDevice();
         device.setDeviceOwner(user.getSeq());
-        deviceRepository.save(device);
 
         HashMap<String, String> data = new HashMap<>();
         data.put("action", "1");
@@ -54,7 +53,6 @@ public class DeviceService{
                 .orElseThrow(DeviceNotFoundException::new); // Optional을 사용한 처리
 
         device.changeDeviceName(deviceName);
-        deviceRepository.save(device);
 
     }
 
@@ -69,7 +67,6 @@ public class DeviceService{
         data.put("action", "2");
 
         devices.forEach(Device::unpairDevice);
-        deviceRepository.saveAll(devices);
 
         if (!tokens.isEmpty()) {
             firebaseCloudMessaging.sendMessage(tokens, "QR 코드 보이기", data);
@@ -82,9 +79,7 @@ public class DeviceService{
 
         device.changeDeviceSetting(EnumUtils.getEnumConstant(SensitivityType.class, sensitivity),
                 EnumUtils.getEnumConstant(CameraModeType.class, cameraMode));
-
-        deviceRepository.save(device);
-
+        
     }
 
     @Transactional
@@ -120,7 +115,6 @@ public class DeviceService{
                 throw new IllegalArgumentException("Invalid control type: " + controlType);
         }
 
-        deviceRepository.save(device);
     }
 
 }
