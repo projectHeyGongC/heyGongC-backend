@@ -50,7 +50,7 @@ public class DeviceService{
     @Transactional
     public void updateDevice(String deviceId, String deviceName, User user) {
         Device device = deviceRepository.findMyDevice(deviceId, user)
-                .orElseThrow(DeviceNotFoundException::new); // Optional을 사용한 처리
+                .orElseThrow(DeviceNotFoundException::new);
 
         device.changeDeviceName(deviceName);
 
