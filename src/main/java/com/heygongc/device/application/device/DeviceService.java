@@ -86,7 +86,7 @@ public class DeviceService{
     public void controlDevice(String deviceId, String controlType, User user){
 
         Device device = deviceRepository.findMyDevice(deviceId, user)
-                .orElseThrow(DeviceNotFoundException::new); // Optional을 사용한 처리
+                .orElseThrow(DeviceNotFoundException::new);
 
         ControlType type = EnumUtils.getEnumConstant(ControlType.class, controlType);
 
