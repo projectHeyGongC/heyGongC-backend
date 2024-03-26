@@ -75,7 +75,7 @@ public class DeviceService{
     @Transactional
     public void changeDeviceSetting(String deviceId, String sensitivity, String cameraMode, User user){
         Device device = deviceRepository.findMyDevice(deviceId, user)
-                .orElseThrow(DeviceNotFoundException::new); // Optional을 사용한 처리
+                .orElseThrow(DeviceNotFoundException::new);
 
         device.changeDeviceSetting(EnumUtils.getEnumConstant(SensitivityType.class, sensitivity),
                 EnumUtils.getEnumConstant(CameraModeType.class, cameraMode));
