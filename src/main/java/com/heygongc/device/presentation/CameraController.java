@@ -1,5 +1,6 @@
 package com.heygongc.device.presentation;
 
+import com.heygongc.device.application.camera.CameraPushService;
 import com.heygongc.device.application.camera.CameraService;
 import com.heygongc.device.domain.entity.Device;
 import com.heygongc.device.presentation.request.camera.CameraStatusRequest;
@@ -7,7 +8,7 @@ import com.heygongc.device.presentation.request.camera.CameraSubscribeRequest;
 import com.heygongc.device.presentation.response.camera.CameraDeviceSettingResponse;
 import com.heygongc.device.presentation.response.camera.CameraIsPairedResponse;
 import com.heygongc.device.presentation.response.camera.CameraSubscribeResponse;
-import com.heygongc.user.application.UserService;
+import com.heygongc.user.domain.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -23,9 +24,11 @@ import org.springframework.web.bind.annotation.*;
 public class CameraController {
 
     private final CameraService cameraService;
+    private final CameraPushService cameraPushService;
 
-    public CameraController(CameraService cameraService) {
+    public CameraController(CameraService cameraService, CameraPushService cameraPushService) {
         this.cameraService = cameraService;
+        this.cameraPushService = cameraPushService;
     }
 
     @PostMapping("/subscribe")
@@ -113,10 +116,12 @@ public class CameraController {
             }
     )
     public ResponseEntity<Void> alertSoundAlarm(
-            @Parameter(hidden = true) Device device
-    ) {
+            @Parameter(hidden = true) Device device) {
+        User user = cameraService.getUserByDevice(device);
+        cameraService.alertSoundAlarm(device, user);
 
-        cameraService.alertSoundAlarm(device);
+        String fcmToken = user.getFcmToken();
+        cameraPushService.alertSoundAlarm(fcmToken);
 
         return ResponseEntity.ok().build();
 
