@@ -7,7 +7,7 @@ import com.heygongc.user.domain.entity.UserToken;
 import com.heygongc.user.domain.repository.UserRepository;
 import com.heygongc.user.domain.repository.UserTokenRepository;
 import com.heygongc.user.exception.AlreadySignInException;
-import com.heygongc.user.exception.InvalidUserTokenException;
+import com.heygongc.global.error.exception.InvalidTokenException;
 import com.heygongc.user.exception.UserNotFoundException;
 import com.heygongc.user.presentation.request.RegisterRequest;
 import com.heygongc.user.presentation.request.UserLoginRequest;
@@ -87,11 +87,11 @@ public class UserService {
     public AuthToken refreshToken(String refreshToken) {
 
         // refresh token 유효성 체크
-        jwtUtil.UserCheckedValidTokenOrThrowException(refreshToken);
+        jwtUtil.checkedValidTokenOrThrowException(refreshToken);
 
         // refresh token 조회
         UserToken userToken = userTokenRepository.findByRefreshToken(refreshToken)
-                .orElseThrow(() -> new InvalidUserTokenException("유효하지 않은 토큰입니다."));
+                .orElseThrow(() -> new InvalidTokenException("유효하지 않은 토큰입니다."));
 
         // user 정보 조회
         User user = userRepository.findById(userToken.getUserSeq())

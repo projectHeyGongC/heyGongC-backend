@@ -45,13 +45,12 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
         }
 
         // 유효하지 않은 토큰이면 로그인 페이지로 리디렉션
-        jwtUtil.UserCheckedValidTokenOrThrowException(accessToken);
+        jwtUtil.checkedValidTokenOrThrowException(accessToken);
 
         Long userSeq = Long.parseLong(jwtUtil.extractSubject(accessToken));
         String deviceId = jwtUtil.extractAudience(accessToken);
         logger.info("userSeq({}), deviceId({})", userSeq, deviceId);
 
-        // DB에 저장되어 있지 않을 경우
         User user = userRepository.findById(userSeq)
                 .orElseThrow(UnauthenticatedException::new);
 

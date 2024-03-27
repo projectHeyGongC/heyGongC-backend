@@ -5,6 +5,7 @@ import com.heygongc.device.domain.entity.Device;
 import com.heygongc.notification.domain.entity.Notification;
 import com.heygongc.user.domain.entity.User;
 import org.assertj.core.api.Assertions;
+import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ class NotificationServiceTest extends ServiceTest {
 
     @Test
     @DisplayName("사용자의 알림 목록을 조회한다")
-    public void getAllNotifications() {
+    public void 알림목록조회() {
         // given
         User 구글테스트계정 = saveGoogleUser();
         Device 디바이스 = saveDevice(구글테스트계정);

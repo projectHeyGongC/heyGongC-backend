@@ -3,7 +3,6 @@ package com.heygongc.device.application.camera;
 import com.heygongc.device.domain.entity.Device;
 import com.heygongc.device.domain.repository.DeviceRepository;
 import com.heygongc.device.presentation.request.camera.CameraSubscribeRequest;
-import com.heygongc.global.infra.FirebaseCloudMessaging;
 import com.heygongc.global.type.OsType;
 import com.heygongc.notification.domain.entity.Notification;
 import com.heygongc.notification.domain.repository.NotificationRepository;
@@ -15,8 +14,6 @@ import com.heygongc.user.exception.UserNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-
 @Service
 public class CameraService {
 
@@ -24,14 +21,17 @@ public class CameraService {
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
     private final JwtUtil jwtUtil;
-    private final FirebaseCloudMessaging firebaseCloudMessaging;
 
-    public CameraService(DeviceRepository deviceRepository, UserRepository userRepository, NotificationRepository notificationRepository, JwtUtil jwtUtil, FirebaseCloudMessaging firebaseCloudMessaging) {
+    public CameraService(DeviceRepository deviceRepository, UserRepository userRepository, NotificationRepository notificationRepository, JwtUtil jwtUtil) {
         this.deviceRepository = deviceRepository;
         this.userRepository = userRepository;
         this.notificationRepository = notificationRepository;
         this.jwtUtil = jwtUtil;
-        this.firebaseCloudMessaging = firebaseCloudMessaging;
+    }
+
+    public User getUserByDevice(Device device) {
+        return userRepository.findBySeq(device.getUserSeq())
+                .orElseThrow(() -> new UserNotFoundException("미가입 사용자입니다."));
     }
 
     @Transactional
@@ -62,19 +62,11 @@ public class CameraService {
     }
 
     @Transactional
-    public void alertSoundAlarm(Device device) {
-        User user = userRepository.findBySeq(device.getUserSeq())
-                .orElseThrow(() -> new UserNotFoundException("미가입 사용자입니다."));
-        String fcmToken = user.getFcmToken();
-
+    public void alertSoundAlarm(Device device, User user) {
         notificationRepository.save(Notification.createNotification()
                 .type(NotificationType.SOUND)
                 .device(device)
                 .user(user)
                 .build());
-
-        HashMap<String, String> data = new HashMap<>();
-        data.put("action", "5");
-        firebaseCloudMessaging.sendMessage(fcmToken, "소리 알람 보내기", data);
     }
 }
