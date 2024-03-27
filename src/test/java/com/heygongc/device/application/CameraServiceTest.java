@@ -41,7 +41,7 @@ public class CameraServiceTest extends ServiceTest {
 
         // then
         Assertions.assertThat(저장된계정).isNotNull();
-        Assertions.assertThat(저장된계정.getSeq()).isEqualTo(구글테스트계정.getSeq());
+        Assertions.assertThat(저장된계정.getUserSeq()).isEqualTo(구글테스트계정.getUserSeq());
     }
 
     @Test
@@ -141,13 +141,13 @@ public class CameraServiceTest extends ServiceTest {
         // given
         User 구글테스트계정 = saveGoogleUser();
         Device 디바이스 = saveDevice(구글테스트계정);
-        List<Notification> before알림 = notificationRepository.findAllNotificationByUserSeq(구글테스트계정.getSeq());
+        List<Notification> before알림 = notificationRepository.findAllNotificationByUserSeq(구글테스트계정.getUserSeq());
 
         // when
         cameraService.alertSoundAlarm(디바이스, 구글테스트계정);
 
         // then
-        List<Notification> after알림 = notificationRepository.findAllNotificationByUserSeq(구글테스트계정.getSeq());
+        List<Notification> after알림 = notificationRepository.findAllNotificationByUserSeq(구글테스트계정.getUserSeq());
 
         Assertions.assertThat(before알림).isEmpty();
         Assertions.assertThat(after알림).isNotEmpty();
