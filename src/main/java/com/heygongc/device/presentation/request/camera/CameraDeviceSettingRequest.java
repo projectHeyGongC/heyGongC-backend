@@ -2,6 +2,7 @@ package com.heygongc.device.presentation.request.camera;
 
 import com.heygongc.device.domain.type.CameraModeType;
 import com.heygongc.device.domain.type.SensitivityType;
+import com.heygongc.global.common.request.RequestValidator;
 import com.heygongc.global.utils.EnumUtils;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.util.ObjectUtils;
@@ -13,12 +14,10 @@ public record CameraDeviceSettingRequest(
                 "MEDIUM: 보통,<br>" +
                 "LOW: 둔감<br>" +
                 "VERYLOW: 매우 둔감)", allowableValues = {"VERYHIGH","HIGH", "MEDIUM", "LOW", "VERYLOW"}) String sensitivity,
-
         @Schema(description = "카메라 모드(FRONT:전면 카메라,BACK:후면 카메라)", allowableValues = {"FRONT","BACK"}) String cameraMode
+) implements RequestValidator {
 
-
-        ) {
-
+    @Override
     public void validate() {
         if (ObjectUtils.isEmpty(this.sensitivity)) {
             throw new IllegalArgumentException("민감도는 필수입니다.");
@@ -35,6 +34,5 @@ public record CameraDeviceSettingRequest(
         if (EnumUtils.hasNoEnumConstant(CameraModeType.class, this.cameraMode)) {
             throw new IllegalArgumentException("카메라 모드는 FRONT 또는 BACK이어야 합니다.");
         }
-
     }
 }
