@@ -45,16 +45,15 @@ public class CameraServiceTest extends ServiceTest {
     }
 
     @Test
-    @DisplayName("Device 정보를 가지고 User 정보를 조회할 때, User 정보가 없으면 null을 리턴한다")
+    @DisplayName("Device 정보를 가지고 User 정보를 조회할 때, User 정보가 없으면 에러가 발생한다")
     void getUserByDeviceWithNoData() {
         // given
         Device 디바이스 = saveDevice();
 
         // when
-        User 저장된계정 = cameraService.getUserByDevice(디바이스);
-
         // then
-        Assertions.assertThat(저장된계정).isNull();
+        Assertions.assertThatThrownBy(() -> cameraService.getUserByDevice(디바이스))
+                .isInstanceOf(UserNotFoundException.class);
     }
 
     @Test
@@ -153,17 +152,6 @@ public class CameraServiceTest extends ServiceTest {
         Assertions.assertThat(before알림).isEmpty();
         Assertions.assertThat(after알림).isNotEmpty();
         Assertions.assertThat(after알림.get(0).getDevice().getDeviceSeq()).isEqualTo(디바이스.getDeviceSeq());
-    }
-
-    @Test
-    @DisplayName("미가입한 사용자가 카메라 소리감지 발생 시 에러가 발생한다")
-    void alertSoundAlarmWithIsUnRegistered() {
-        // given
-        Device 디바이스 = saveDevice();
-
-        // then
-        Assertions.assertThatThrownBy(() -> cameraService.alertSoundAlarm(디바이스, User.createUser().build()))
-                .isInstanceOf(UserNotFoundException.class);
     }
 
 
