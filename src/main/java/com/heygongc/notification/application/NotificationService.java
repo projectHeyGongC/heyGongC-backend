@@ -16,6 +16,6 @@ public class NotificationService  {
     }
 
     public List<Notification> getAllNotifications(Long userSeq) {
-        return notificationRepository.findAllByUserSeq(userSeq);
+        return notificationRepository.findAllNotificationByUserSeq(userSeq);
     }
 }
