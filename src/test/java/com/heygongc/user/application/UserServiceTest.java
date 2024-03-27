@@ -1,10 +1,8 @@
 package com.heygongc.user.application;
 
 import com.heygongc.common.ServiceTest;
-import com.heygongc.global.type.OsType;
 import com.heygongc.user.domain.entity.User;
 import com.heygongc.user.domain.repository.UserRepository;
-import com.heygongc.user.domain.type.SnsType;
 import com.heygongc.user.exception.UserNotFoundException;
 import com.heygongc.user.presentation.request.RegisterRequest;
 import com.heygongc.user.presentation.request.UserLoginRequest;
@@ -14,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.heygongc.user.setup.OauthUserSetup.testGoogleUser;
+import static com.heygongc.user.setup.UserSetup.saveGoogleUser;
 
 
 @SuppressWarnings("NonAsciiCharacters")
@@ -31,7 +30,7 @@ class UserServiceTest extends ServiceTest {
     @DisplayName("가입한 사용자가 로그인 시 토큰을 발급한다")
     public void login() {
         // given
-        구글_테스트_계정_등록();
+        saveGoogleUser();
 
         // when
         AuthToken token = userService.login(testGoogleUser(), userLoginRequest());
@@ -65,7 +64,7 @@ class UserServiceTest extends ServiceTest {
     @Test
     public void 회원탈퇴() {
         // given
-        User 구글테스트계정 = 구글_테스트_계정_등록();
+        User 구글테스트계정 = saveGoogleUser();
 
         // when
         userService.unRegister(구글테스트계정);
@@ -86,17 +85,5 @@ class UserServiceTest extends ServiceTest {
 
     private RegisterRequest userRegisterRequest() {
         return new RegisterRequest("1111", "AOS", true, "google", "token", "fcmToken");
-    }
-
-    private User 구글_테스트_계정_등록() {
-        return userRepository.save(User.createUser()
-                .deviceId("1111")
-                .snsId("123456789")
-                .snsType(SnsType.GOOGLE)
-                .deviceOs(OsType.valueOf("AOS"))
-                .email("test@test.com")
-                .alarm(true)
-                .ads(true)
-                .build());
     }
 }

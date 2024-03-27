@@ -3,7 +3,7 @@ package com.heygongc.user.application.oauth.apple;
 import com.heygongc.user.application.oauth.OauthProvider;
 import com.heygongc.user.application.oauth.OauthUser;
 import com.heygongc.user.domain.type.SnsType;
-import com.heygongc.user.exception.InvalidUserTokenException;
+import com.heygongc.global.error.exception.InvalidTokenException;
 import io.jsonwebtoken.Claims;
 import org.springframework.stereotype.Component;
 
@@ -27,7 +27,7 @@ public class AppleOauthUserProvider implements OauthProvider {
 
     private void validateClaims(Claims claims) {
         if (!appleClaimsValidator.isValid(claims)) {
-            throw new InvalidUserTokenException("Apple OAuth Claims 값이 올바르지 않습니다.");
+            throw new InvalidTokenException("Apple OAuth Claims 값이 올바르지 않습니다.");
         }
     }
 

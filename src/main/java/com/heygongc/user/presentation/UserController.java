@@ -49,7 +49,6 @@ public class UserController {
     )
     public ResponseEntity<TokenResponse> login(
             @Parameter(name = "UserLoginRequest", description = "로그인 요청 정보", required = true) @RequestBody UserLoginRequest request) {
-        request.validate();
         OauthUser oAuthUser = oauthService.getOAuthUser(request.snsType(), request.accessToken());
         AuthToken authToken = userService.login(oAuthUser, request);
         return ResponseEntity.ok()
@@ -68,7 +67,6 @@ public class UserController {
     )
     public ResponseEntity<TokenResponse> register(@Parameter(name = "RegisterRequest", description = "회원가입 요청 정보", required = true)
                                                   @RequestBody RegisterRequest request) {
-        request.validate();
         OauthUser oAuthUser = oauthService.getOAuthUser(request.snsType(), request.accessToken());
         AuthToken authToken = userService.register(oAuthUser, request);
         return ResponseEntity.ok()

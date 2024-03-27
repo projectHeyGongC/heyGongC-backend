@@ -2,7 +2,7 @@ package com.heygongc.user.application.oauth.apple;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.heygongc.user.exception.InvalidUserTokenException;
+import com.heygongc.global.error.exception.InvalidTokenException;
 import io.jsonwebtoken.*;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +23,7 @@ public class AppleJwtParser {
             String decodedHeader = new String(Base64.getUrlDecoder().decode(encodedHeader));
             return OBJECT_MAPPER.readValue(decodedHeader, Map.class);
         } catch (JsonProcessingException | ArrayIndexOutOfBoundsException e) {
-            throw new InvalidUserTokenException("Apple OAuth Identity Token 형식이 올바르지 않습니다.");
+            throw new InvalidTokenException("Apple OAuth Identity Token 형식이 올바르지 않습니다.");
         }
     }
 
@@ -34,9 +34,9 @@ public class AppleJwtParser {
                     .parseClaimsJws(idToken)
                     .getBody();
         } catch (ExpiredJwtException e) {
-            throw new InvalidUserTokenException("Apple OAuth 로그인 중 Identity Token 유효기간이 만료됐습니다.");
+            throw new InvalidTokenException("Apple OAuth 로그인 중 Identity Token 유효기간이 만료됐습니다.");
         } catch (UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException e) {
-            throw new InvalidUserTokenException("Apple OAuth Identity Token 값이 올바르지 않습니다.");
+            throw new InvalidTokenException("Apple OAuth Identity Token 값이 올바르지 않습니다.");
         }
     }
 }

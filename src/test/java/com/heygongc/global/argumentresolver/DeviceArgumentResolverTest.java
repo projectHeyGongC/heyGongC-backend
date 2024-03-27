@@ -1,5 +1,5 @@
 package com.heygongc.global.argumentresolver;
 
-class LoginUserArgumentResolverTest {
+class DeviceArgumentResolverTest {
     // TODO: 아래 내용을 작성해 주세요
 }

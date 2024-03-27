@@ -39,9 +39,8 @@ public class DeviceService{
         Device device = deviceRepository.findByDeviceId(request.deviceId())
                 .orElseThrow(DeviceNotFoundException::new);
         device.changeDeviceName(request.deviceName());
-        device.pairDevice();
-        device.setDeviceOwner(user.getUserSeq());
-        deviceRepository.save(device);
+        device.connectDevice();
+        device.setDeviceOwner(user.getSeq());
 
         HashMap<String, String> data = new HashMap<>();
         data.put("action", "1");
@@ -51,10 +50,9 @@ public class DeviceService{
     @Transactional
     public void updateDevice(String deviceId, String deviceName, User user) {
         Device device = deviceRepository.findMyDevice(deviceId, user)
-                .orElseThrow(DeviceNotFoundException::new); // Optional을 사용한 처리
+                .orElseThrow(DeviceNotFoundException::new);
 
         device.changeDeviceName(deviceName);
-        deviceRepository.save(device);
 
     }
 
@@ -68,7 +66,7 @@ public class DeviceService{
         HashMap<String, String> data = new HashMap<>();
         data.put("action", "2");
 
-        devices.forEach(Device::unpairDevice);
+        devices.forEach(Device::disConnectDevice);
         deviceRepository.saveAll(devices);
 
         if (!tokens.isEmpty()) {
@@ -78,20 +76,18 @@ public class DeviceService{
     @Transactional
     public void changeDeviceSetting(String deviceId, String sensitivity, String cameraMode, User user){
         Device device = deviceRepository.findMyDevice(deviceId, user)
-                .orElseThrow(DeviceNotFoundException::new); // Optional을 사용한 처리
+                .orElseThrow(DeviceNotFoundException::new);
 
         device.changeDeviceSetting(EnumUtils.getEnumConstant(SensitivityType.class, sensitivity),
                 EnumUtils.getEnumConstant(CameraModeType.class, cameraMode));
-
-        deviceRepository.save(device);
-
+        
     }
 
     @Transactional
     public void controlDevice(String deviceId, String controlType, User user){
 
         Device device = deviceRepository.findMyDevice(deviceId, user)
-                .orElseThrow(DeviceNotFoundException::new); // Optional을 사용한 처리
+                .orElseThrow(DeviceNotFoundException::new);
 
         ControlType type = EnumUtils.getEnumConstant(ControlType.class, controlType);
 
@@ -120,7 +116,6 @@ public class DeviceService{
                 throw new IllegalArgumentException("Invalid control type: " + controlType);
         }
 
-        deviceRepository.save(device);
     }
 
 }
