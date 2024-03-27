@@ -30,7 +30,7 @@ public class CameraService {
     }
 
     public User getUserByDevice(Device device) {
-        return userRepository.findBySeq(device.getUserSeq())
+        return userRepository.findByUserSeq(device.getUserSeq())
                 .orElseThrow(() -> new UserNotFoundException("미가입 사용자입니다."));
     }
 

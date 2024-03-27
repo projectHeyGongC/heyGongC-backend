@@ -40,7 +40,7 @@ public class DeviceService{
                 .orElseThrow(DeviceNotFoundException::new);
         device.changeDeviceName(request.deviceName());
         device.connectDevice();
-        device.setDeviceOwner(user.getSeq());
+        device.setDeviceOwner(user.getUserSeq());
 
         HashMap<String, String> data = new HashMap<>();
         data.put("action", "1");
