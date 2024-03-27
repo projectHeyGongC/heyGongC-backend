@@ -39,7 +39,7 @@ public class DeviceService{
         Device device = deviceRepository.findByDeviceId(request.deviceId())
                 .orElseThrow(DeviceNotFoundException::new);
         device.changeDeviceName(request.deviceName());
-        device.pairDevice();
+        device.connectDevice();
         device.setDeviceOwner(user.getSeq());
 
         HashMap<String, String> data = new HashMap<>();
@@ -66,7 +66,8 @@ public class DeviceService{
         HashMap<String, String> data = new HashMap<>();
         data.put("action", "2");
 
-        devices.forEach(Device::unpairDevice);
+        devices.forEach(Device::disConnectDevice);
+        deviceRepository.saveAll(devices);
 
         if (!tokens.isEmpty()) {
             firebaseCloudMessaging.sendMessage(tokens, "QR 코드 보이기", data);

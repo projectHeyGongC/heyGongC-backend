@@ -6,7 +6,7 @@ import com.heygongc.device.domain.entity.Device;
 import com.heygongc.device.presentation.request.camera.CameraStatusRequest;
 import com.heygongc.device.presentation.request.camera.CameraSubscribeRequest;
 import com.heygongc.device.presentation.response.camera.CameraDeviceSettingResponse;
-import com.heygongc.device.presentation.response.camera.CameraIsPairedResponse;
+import com.heygongc.device.presentation.response.camera.CameraIsConnectedResponse;
 import com.heygongc.device.presentation.response.camera.CameraSubscribeResponse;
 import com.heygongc.user.domain.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
@@ -59,12 +59,8 @@ public class CameraController {
     )
     public ResponseEntity<Void> setCameraStatus(
             @Parameter(name = "CameraStatusRequest", description = "카메라 등록 요청 정보", required = true) @RequestBody CameraStatusRequest request,
-            @Parameter(hidden = true) Device device
-    ) {
-//        String accessToken = cameraService.subscribeCamera(request);
-
-        cameraService.changeCameraDeviceStatus(request.battery(), request.temperature(), device);
-
+            @Parameter(hidden = true) Device device) {
+        cameraService.changeCameraDeviceStatus(device, request.battery(), request.temperature());
         return ResponseEntity.ok().build();
 
     }
@@ -74,18 +70,15 @@ public class CameraController {
             summary = "카메라 상태 체크 조회",
             description = "회원과 연결되지 않은 경우 QR 노출",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", schema = @Schema(implementation = CameraIsPairedResponse.class)))
+                    @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", schema = @Schema(implementation = CameraIsConnectedResponse.class)))
             }
     )
-    public ResponseEntity<CameraIsPairedResponse> getCameraQRStatus(
-            @Parameter(hidden = true) Device device
-    ) {
-
-        boolean isPaired = cameraService.checkCameraQRStatus(device);
-
+    public ResponseEntity<CameraIsConnectedResponse> getCameraQRStatus(
+            @Parameter(hidden = true) Device device) {
+        boolean isConnected = cameraService.isConnected(device);
         return ResponseEntity.ok()
                 .body(
-                        new CameraIsPairedResponse(isPaired)
+                        new CameraIsConnectedResponse(isConnected)
                 );
     }
 
@@ -98,9 +91,7 @@ public class CameraController {
             }
     )
     public ResponseEntity<CameraDeviceSettingResponse> getCameraSettings(
-            @Parameter(hidden = true) Device device
-    ) {
-
+            @Parameter(hidden = true) Device device) {
         return ResponseEntity.ok()
                 .body(
                         new CameraDeviceSettingResponse(device.getSensitivity().toString(), device.getCameraMode().toString())
