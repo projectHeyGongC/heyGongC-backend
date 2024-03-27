@@ -141,13 +141,13 @@ public class CameraServiceTest extends ServiceTest {
         // given
         User 구글테스트계정 = saveGoogleUser();
         Device 디바이스 = saveDevice(구글테스트계정);
-        List<Notification> before알림 = notificationRepository.findAllNotificationByUserSeq(구글테스트계정.getUserSeq());
+        List<Notification> before알림 = notificationRepository.findAllNotificationByUser(구글테스트계정);
 
         // when
         cameraService.alertSoundAlarm(디바이스, 구글테스트계정);
 
         // then
-        List<Notification> after알림 = notificationRepository.findAllNotificationByUserSeq(구글테스트계정.getUserSeq());
+        List<Notification> after알림 = notificationRepository.findAllNotificationByUser(구글테스트계정);
 
         Assertions.assertThat(before알림).isEmpty();
         Assertions.assertThat(after알림).isNotEmpty();

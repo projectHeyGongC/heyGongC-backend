@@ -25,12 +25,12 @@ public class AnalysisService {
 
     public List<Notification> getNotifications(String requestAt, User user) throws ParseException {
 
-        return notificationRepository.findAllByUserSeqAndCreatedAt(user.getSeq(), requestAt);
+        return notificationRepository.findAllByUserSeqAndCreatedAt(user.getUserSeq(), requestAt);
     }
 
     public Optional<Video> getVideo(String requestAt, User user) throws ParseException {
 
-        return videoRepository.findOneByUserSeqAndCreatedAt(user.getSeq(), requestAt);
+        return videoRepository.findOneByUserSeqAndCreatedAt(user.getUserSeq(), requestAt);
     }
 
     public AnalysisDetailResponse getAnalysisDetail(String requestAt, String deviceId, User user) {
