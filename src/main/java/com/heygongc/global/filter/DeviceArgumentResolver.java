@@ -18,7 +18,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import java.util.Objects;
 
 @Component
-public class PairDeviceArgumentResolver implements HandlerMethodArgumentResolver {
+public class DeviceArgumentResolver implements HandlerMethodArgumentResolver {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private static final String AUTHORIZATION = "Authorization";
@@ -27,8 +27,7 @@ public class PairDeviceArgumentResolver implements HandlerMethodArgumentResolver
     private final JwtUtil jwtUtil;
     private final DeviceRepository deviceRepository;
 
-
-    public PairDeviceArgumentResolver(JwtUtil jwtUtil, DeviceRepository deviceRepository) {
+    public DeviceArgumentResolver(JwtUtil jwtUtil, DeviceRepository deviceRepository) {
         this.jwtUtil = jwtUtil;
         this.deviceRepository = deviceRepository;
     }
@@ -47,7 +46,7 @@ public class PairDeviceArgumentResolver implements HandlerMethodArgumentResolver
         }
 
         // 유효하지 않은 토큰이면 로그인 페이지로 리디렉션
-        jwtUtil.DeviceCheckedValidTokenOrThrowException(accessToken);
+        jwtUtil.checkedValidTokenOrThrowException(accessToken);
 
         Long deviceSeq = Long.parseLong(jwtUtil.extractSubject(accessToken));
         String deviceId = jwtUtil.extractAudience(accessToken);

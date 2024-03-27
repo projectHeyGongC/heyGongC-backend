@@ -2,7 +2,7 @@ package com.heygongc.user.application.apple;
 
 import com.heygongc.user.application.oauth.OauthUser;
 import com.heygongc.user.application.oauth.apple.*;
-import com.heygongc.user.exception.InvalidUserTokenException;
+import com.heygongc.global.error.exception.InvalidTokenException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.jupiter.api.DisplayName;
@@ -107,6 +107,6 @@ class AppleOauthUserProviderTest {
                 .parseClaimsJws(identityToken)
                 .getBody());
 
-        assertThrows(InvalidUserTokenException.class, () -> appleOAuthUserProvider.getOAuthUserInfo(identityToken));
+        assertThrows(InvalidTokenException.class, () -> appleOAuthUserProvider.getOAuthUserInfo(identityToken));
     }
 }
