@@ -32,7 +32,7 @@ public class DeviceSetup {
                 .build();
 
         device.changeDeviceName("거실");
-        device.setDeviceOwner(user.getSeq());
+        device.setDeviceOwner(user.getUserSeq());
         device.connectDevice();
 
         return deviceRepository.save(device);
