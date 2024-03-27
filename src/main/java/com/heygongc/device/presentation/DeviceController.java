@@ -105,7 +105,6 @@ public class DeviceController {
     public ResponseEntity<Void> disconnectDevice(
             @Parameter(name = "DeviceIdsRequest", description = "연동 해제할 카메라 기기 목록", required = true) @RequestBody DeviceIdsRequest request,
             @Parameter(hidden = true) User user) {
-        request.validate();
         deviceService.disconnectDevice(request.deviceIds(), user);
 
         return ResponseEntity.ok().build();
@@ -125,7 +124,6 @@ public class DeviceController {
             @Parameter(description = "기기 아이디", required = true, in = ParameterIn.PATH) @PathVariable(name = "deviceId") String deviceId,
             @Parameter(name = "ControlTypeRequest", description = "명령 내릴 컨트롤 타입", required = true) @RequestBody ControlTypeRequest request,
             @Parameter(hidden = true) User user){
-        request.validate();
         deviceService.controlDevice(deviceId, request.controlType(), user);
 
         return ResponseEntity.ok().build();
@@ -144,7 +142,6 @@ public class DeviceController {
             @Parameter(description = "기기 아이디", required = true, in = ParameterIn.PATH) @PathVariable(name = "deviceId") String deviceId,
             @Parameter(name = "CameraDeviceSettingRequest", description = "명령 내릴 컨트롤 타입", required = true) @RequestBody CameraDeviceSettingRequest request,
             @Parameter(hidden = true) User user){
-        request.validate();
         deviceService.changeDeviceSetting(deviceId, request.sensitivity(), request.cameraMode(), user);
 
         return ResponseEntity.ok().build();

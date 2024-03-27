@@ -38,7 +38,6 @@ public class CameraController {
     )
     public ResponseEntity<CameraSubscribeResponse> subscribeCamera(
             @Parameter(name = "CameraSubscribeRequest", description = "카메라 등록 요청 정보", required = true) @RequestBody CameraSubscribeRequest request) {
-        request.validate();
         String accessToken = cameraService.subscribeCamera(request);
         return ResponseEntity.ok()
                 .body(
