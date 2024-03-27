@@ -22,7 +22,7 @@ public class CustomNotificationRepositoryImpl implements CustomNotificationRepos
         QNotification qNotification = QNotification.notification;
 
         return queryFactory.selectFrom(qNotification)
-                .where(qNotification.user.seq.eq(userSeq))
+                .where(qNotification.user.userSeq.eq(userSeq))
                 .orderBy(qNotification.created_at.desc())
                 .fetch();
     }

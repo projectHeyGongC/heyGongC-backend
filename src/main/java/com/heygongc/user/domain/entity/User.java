@@ -22,7 +22,7 @@ public class User extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_seq")
-    private Long seq;
+    private Long userSeq;
 
     @Column(name = "sns_type", nullable = false)
     @Enumerated(EnumType.STRING)

@@ -31,11 +31,48 @@ class NotificationServiceTest extends ServiceTest {
         Notification 알림 = saveNotification(구글테스트계정, 디바이스);
 
         // when
-        List<Notification> notifications = notificationService.getAllNotifications(구글테스트계정.getSeq());
+        List<Notification> notifications = notificationService.getAllNotifications(구글테스트계정.getUserSeq());
 
         // then
         Assertions.assertThat(notifications).isNotNull();
         Assertions.assertThat(notifications.size()).isGreaterThan(0);
         Assertions.assertThat(notifications.get(0).getNotiSeq()).isNotNull();
+    }
+
+    private User 사용자_등록() {
+        return userRepository.save(User.createUser()
+                .deviceId("1111")
+                .snsId("123456789")
+                .snsType(SnsType.GOOGLE)
+                .deviceOs(OsType.AOS)
+                .email("test@test.com")
+                .alarm(true)
+                .ads(true)
+                .build());
+    }
+
+    private Device 디바이스_등록(User user) {
+
+        Device device = Device.createDevice()
+                .deviceId("123123")
+                .modelName("IPHONE14")
+                .deviceOs(OsType.AOS)
+                .fcmToken("4712478v")
+                .build();
+
+        device.changeDeviceName("거실");
+        device.setDeviceOwner(user.getUserSeq());
+        device.pairDevice();
+
+
+        return deviceRepository.save(device);
+    }
+
+    private Notification 알림_등록(User user, Device device) {
+        return notificationRepository.save(Notification.createNotification()
+                .type(NotificationType.SOUND)
+                .user(user)
+                .device(device)
+                .build());
     }
 }
