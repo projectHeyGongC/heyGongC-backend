@@ -145,7 +145,7 @@ public class CameraServiceTest extends ServiceTest {
         List<Notification> before알림 = notificationRepository.findAllNotificationByUserSeq(구글테스트계정.getSeq());
 
         // when
-        cameraService.alertSoundAlarm(디바이스);
+        cameraService.alertSoundAlarm(디바이스, 구글테스트계정);
 
         // then
         List<Notification> after알림 = notificationRepository.findAllNotificationByUserSeq(구글테스트계정.getSeq());
@@ -162,7 +162,7 @@ public class CameraServiceTest extends ServiceTest {
         Device 디바이스 = saveDevice();
 
         // then
-        Assertions.assertThatThrownBy(() -> cameraService.alertSoundAlarm(디바이스))
+        Assertions.assertThatThrownBy(() -> cameraService.alertSoundAlarm(디바이스, User.createUser().build()))
                 .isInstanceOf(UserNotFoundException.class);
     }
 
