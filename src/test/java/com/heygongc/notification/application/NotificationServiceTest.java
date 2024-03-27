@@ -2,8 +2,14 @@ package com.heygongc.notification.application;
 
 import com.heygongc.common.ServiceTest;
 import com.heygongc.device.domain.entity.Device;
+import com.heygongc.device.domain.repository.DeviceRepository;
+import com.heygongc.global.type.OsType;
 import com.heygongc.notification.domain.entity.Notification;
+import com.heygongc.notification.domain.repository.NotificationRepository;
+import com.heygongc.notification.domain.type.NotificationType;
 import com.heygongc.user.domain.entity.User;
+import com.heygongc.user.domain.repository.UserRepository;
+import com.heygongc.user.domain.type.SnsType;
 import org.assertj.core.api.Assertions;
 import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.DisplayName;
@@ -21,6 +27,12 @@ class NotificationServiceTest extends ServiceTest {
 
     @Autowired
     private NotificationService notificationService;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private DeviceRepository deviceRepository;
+    @Autowired
+    private NotificationRepository notificationRepository;
 
     @Test
     @DisplayName("사용자의 알림 목록을 조회한다")
@@ -62,7 +74,7 @@ class NotificationServiceTest extends ServiceTest {
 
         device.changeDeviceName("거실");
         device.setDeviceOwner(user.getUserSeq());
-        device.pairDevice();
+        device.connectDevice();
 
 
         return deviceRepository.save(device);
