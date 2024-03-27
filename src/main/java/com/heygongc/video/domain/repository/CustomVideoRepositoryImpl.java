@@ -32,7 +32,7 @@ public class CustomVideoRepositoryImpl implements CustomVideoRepository {
         LocalDateTime endOfDay = startOfDay.plusDays(1);
 
         Video video = queryFactory.selectFrom(qVideo)
-                .where(qVideo.user.seq.eq(userSeq)
+                .where(qVideo.user.userSeq.eq(userSeq)
                         .and(qVideo.created_at.between(startOfDay, endOfDay)))
                 .orderBy(qVideo.created_at.desc())
                 .fetchOne();

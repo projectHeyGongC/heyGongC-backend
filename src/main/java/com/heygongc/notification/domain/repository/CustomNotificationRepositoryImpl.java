@@ -44,7 +44,7 @@ public class CustomNotificationRepositoryImpl implements CustomNotificationRepos
         LocalDateTime endOfDay = startOfDay.plusDays(1);
 
         List<Notification> notifications = queryFactory.selectFrom(qNotification)
-                .where(qNotification.user.seq.eq(userSeq)
+                .where(qNotification.user.userSeq.eq(userSeq)
                         .and(qNotification.created_at.between(startOfDay, endOfDay)))
                 .fetch();
 
