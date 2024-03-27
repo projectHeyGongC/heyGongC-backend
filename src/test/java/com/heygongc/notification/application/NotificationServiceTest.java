@@ -41,7 +41,7 @@ class NotificationServiceTest extends ServiceTest {
         Notification notification = 알림_등록(user, device);
 
         // when
-        List<Notification> notifications = notificationService.getAllNotifications(user.getSeq());
+        List<Notification> notifications = notificationService.getAllNotifications(user.getUserSeq());
 
         // then
         Assertions.assertThat(notifications).isNotNull();
@@ -71,7 +71,7 @@ class NotificationServiceTest extends ServiceTest {
                 .build();
 
         device.changeDeviceName("거실");
-        device.setDeviceOwner(user.getSeq());
+        device.setDeviceOwner(user.getUserSeq());
         device.pairDevice();
 
 

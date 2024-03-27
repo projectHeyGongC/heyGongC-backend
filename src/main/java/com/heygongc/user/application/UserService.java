@@ -41,10 +41,10 @@ public class UserService {
         user.provideFcmToken(request.fcmToken());
 
         // jwt 토큰 발급
-        AuthToken authToken = generateAuthToken(user.getSeq(), user.getDeviceId());
+        AuthToken authToken = generateAuthToken(user.getUserSeq(), user.getDeviceId());
 
         // 토큰 저장
-        saveRefreshToken(user.getSeq(), authToken.getRefreshToken());
+        saveRefreshToken(user.getUserSeq(), authToken.getRefreshToken());
 
 
         return authToken;
@@ -69,10 +69,10 @@ public class UserService {
 
 
         // jwt 토큰 발급
-        AuthToken authToken = generateAuthToken(user.getSeq(), user.getDeviceId());
+        AuthToken authToken = generateAuthToken(user.getUserSeq(), user.getDeviceId());
 
         // 토큰 저장
-        saveRefreshToken(user.getSeq(), authToken.getRefreshToken());
+        saveRefreshToken(user.getUserSeq(), authToken.getRefreshToken());
 
         return authToken;
     }
@@ -98,10 +98,10 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException("미가입 사용자입니다."));
 
         // jwt 토큰 발급
-        AuthToken authToken = generateAuthToken(user.getSeq(), user.getDeviceId());
+        AuthToken authToken = generateAuthToken(user.getUserSeq(), user.getDeviceId());
 
         // 토큰 저장
-        saveRefreshToken(user.getSeq(), authToken.getRefreshToken());
+        saveRefreshToken(user.getUserSeq(), authToken.getRefreshToken());
         return authToken;
     }
 

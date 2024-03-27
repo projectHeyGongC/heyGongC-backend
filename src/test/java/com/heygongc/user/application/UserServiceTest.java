@@ -69,7 +69,7 @@ class UserServiceTest extends ServiceTest {
 
         // when
         userService.unRegister(구글테스트계정);
-        User 삭제된계정 = userRepository.findById(구글테스트계정.getSeq()).get();
+        User 삭제된계정 = userRepository.findById(구글테스트계정.getUserSeq()).get();
 
         // then
         Assertions.assertThat(삭제된계정.getUserId()).isEqualTo("*****");
@@ -85,7 +85,7 @@ class UserServiceTest extends ServiceTest {
     }
 
     private RegisterRequest userRegisterRequest() {
-        return new RegisterRequest("1111", "AOS", true, "google", "token");
+        return new RegisterRequest("1111", "AOS", true, "google", "token", "fcmToken");
     }
 
     private User 구글_테스트_계정_등록() {

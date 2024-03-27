@@ -39,7 +39,7 @@ public class NotificationController {
             }
     )
     public ResponseEntity<List<NotificationResponse>> getAllNotifications(@Parameter(hidden = true) User user) {
-        List<Notification> notifications = notificationService.getAllNotifications(user.getSeq());
+        List<Notification> notifications = notificationService.getAllNotifications(user.getUserSeq());
 
         String retunrMsg = "%s에서 소리가 감지되었습니다.";
         List<NotificationResponse> response = notifications.stream()

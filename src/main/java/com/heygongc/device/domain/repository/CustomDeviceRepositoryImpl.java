@@ -23,7 +23,7 @@ public class CustomDeviceRepositoryImpl implements CustomDeviceRepository {
 
         Device device = queryFactory.selectFrom(qDevice)
                 .where(qDevice.deviceId.eq(deviceId)
-                        .and(qDevice.userSeq.eq(user.getSeq())))
+                        .and(qDevice.userSeq.eq(user.getUserSeq())))
                 .fetchOne();
 
         return Optional.ofNullable(device);
@@ -36,7 +36,7 @@ public class CustomDeviceRepositoryImpl implements CustomDeviceRepository {
         // 조건에 맞는 Device 엔티티 리스트 조회
         List<Device> devices = queryFactory.selectFrom(qDevice)
                 .where(qDevice.deviceId.in(deviceIds)
-                        .and(qDevice.userSeq.eq(user.getSeq())))
+                        .and(qDevice.userSeq.eq(user.getUserSeq())))
                 .fetch();
 
 

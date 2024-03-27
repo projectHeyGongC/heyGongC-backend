@@ -44,7 +44,7 @@ public class DeviceController {
             }
     )
     public ResponseEntity<List<DeviceResponse>> getAllDevices(@Parameter(hidden = true) User user){
-        Long userSeq = user.getSeq();
+        Long userSeq = user.getUserSeq();
         List<Device> devices = deviceService.getAllDevices(userSeq);
 
         List<DeviceResponse> deviceResponses = devices.stream()
