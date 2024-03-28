@@ -47,6 +47,11 @@ dependencies {
 
     // fcm
     implementation 'com.google.firebase:firebase-admin:9.2.0'
+
+    //flyway
+//    implementation 'org.flywaydb:flyway-core'
+
+
     // 로컬 h2
     runtimeOnly('com.h2database:h2')
     runtimeOnly 'org.postgresql:postgresql'
