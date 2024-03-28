@@ -29,6 +29,13 @@ jobs:
           echo "${{ secrets.APPLICATION_PROD }}" > ./application-prod.yml
         shell: bash
 
+      # Firebase config 설정
+      - name: Setup Firebase Config
+        run: |
+          mkdir -p ./src/main/resources/firebase
+          echo "${{ secrets.FIREBASE_CONFIG }}" > ./src/main/resources/firebase/heygongc-firebase-sdk.json
+        shell: bash
+
       # 속도 개선을 위한 Gradle 캐싱
       - name: Cache Gradle packages
         uses: actions/cache@v3
