@@ -9,4 +9,5 @@ public interface CustomNotificationRepository {
 
     List<Notification> findAllByUserSeq(Long userSeq);
     List<Notification> findAllByUserSeqAndCreatedAt(Long userSeq, String requestAt) throws ParseException;
+    List<Notification> findAllByUserSeqAndDeviceIdAndCreatedAt(Long userSeq, String deviceId, String requestAt) throws ParseException;
 }

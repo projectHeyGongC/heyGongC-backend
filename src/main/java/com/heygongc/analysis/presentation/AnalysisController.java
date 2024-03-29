@@ -3,6 +3,8 @@ package com.heygongc.analysis.presentation;
 import com.heygongc.analysis.application.AnalysisService;
 import com.heygongc.analysis.presentation.response.AnalysisDetailResponse;
 import com.heygongc.analysis.presentation.response.AnalysisMainResponse;
+import com.heygongc.device.application.device.DeviceService;
+import com.heygongc.device.domain.entity.Device;
 import com.heygongc.notification.domain.entity.Notification;
 import com.heygongc.user.domain.entity.User;
 import com.heygongc.video.domain.entity.Video;
@@ -22,9 +24,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.text.ParseException;
-import java.util.AbstractMap;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Tag(name = "Analysis API", description = "분석 API")
@@ -34,9 +36,11 @@ public class AnalysisController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final AnalysisService analysisService;
+    private final DeviceService deviceService;
 
-    public AnalysisController(AnalysisService analysisService) {
+    public AnalysisController(AnalysisService analysisService, DeviceService deviceService) {
         this.analysisService = analysisService;
+        this.deviceService = deviceService;
     }
 
     @GetMapping
@@ -48,11 +52,11 @@ public class AnalysisController {
             }
     )
     public ResponseEntity<AnalysisMainResponse> getAnalysisMain(
-            @Parameter(description = "조회일자", required = true, in = ParameterIn.QUERY) @RequestParam(name = "requestAt") String requestAt,
-            @Parameter(hidden = true) User user
+            @Parameter(hidden = true) User user,
+            @Parameter(description = "조회일자", required = true, in = ParameterIn.QUERY) @RequestParam(name = "requestAt") String requestAt
     ) throws ParseException {
 
-        List<Notification> notifications = analysisService.getNotifications(requestAt, user);
+        List<Notification> notifications = analysisService.getNotifications(user, requestAt);
         String retunrMsg = "오늘 소리가 %d번 감지되었습니다.";
         List<AnalysisMainResponse.Notifications> responseNotifications = notifications.stream()
                 .collect(Collectors.groupingBy(
@@ -61,17 +65,13 @@ public class AnalysisController {
                                 n.getDevice().getDeviceName()),
                         Collectors.counting()))
                 .entrySet().stream()
-                .map(e -> new AnalysisMainResponse.Notifications(
-                        e.getKey().getKey(),
-                        e.getKey().getValue(),
-                        String.format(retunrMsg, e.getValue())))
+                .map(n -> new AnalysisMainResponse.Notifications(
+                        n.getKey().getKey(),
+                        n.getKey().getValue(),
+                        String.format(retunrMsg, n.getValue())))
                 .toList();
 
-        responseNotifications.forEach(
-                n -> logger.debug(n.toString())
-        );
-
-        Optional<Video> video = analysisService.getVideo(requestAt, user);
+        Optional<Video> video = analysisService.getVideo(user, requestAt);
         String videoUrl = video.map(Video::getUrl).orElse(null);
 
         return ResponseEntity.ok()
@@ -92,15 +92,45 @@ public class AnalysisController {
             }
     )
     public ResponseEntity<AnalysisDetailResponse> getAnalysisDetail(
-            @Parameter(description = "조회일자", required = true, in = ParameterIn.QUERY) @RequestParam(name = "requestAt") String requestAt,
+            @Parameter(hidden = true) User user,
             @Parameter(description = "기기 아이디", required = true, in = ParameterIn.QUERY) @RequestParam(name = "deviceId") String deviceId,
-            @Parameter(hidden = true) User user
-    ) {
-        AnalysisDetailResponse response = analysisService.getAnalysisDetail(requestAt, deviceId, user);
+            @Parameter(description = "조회일자", required = true, in = ParameterIn.QUERY) @RequestParam(name = "requestAt") String requestAt
+    ) throws ParseException {
+        List<Notification> notifications = analysisService.getNotifications(user, requestAt, deviceId);
+        Device device = deviceService.getDevice(deviceId);
+
+        // 5분 간격으로 정규화 + count
+        LinkedHashMap<LocalDateTime, Long> groupdNotifications = new LinkedHashMap<>();
+        for (Notification n : notifications) {
+            LocalDateTime createdAt = n.getCreated_at();
+            LocalDateTime roundedCreatedAt = roundToNext5Minutes(createdAt);
+            groupdNotifications.merge(roundedCreatedAt, 1L, Long::sum);
+        }
+
+        // 결과 추출, graph에 추가
+        List<AnalysisDetailResponse.Graph> graph = new ArrayList<>();
+        for (var entry : groupdNotifications.entrySet()) {
+            String time = entry.getKey().format(DateTimeFormatter.ofPattern("HH:mm"));
+            Long count = entry.getValue();
+            graph.add(new AnalysisDetailResponse.Graph(time, count));
+        }
+
         return ResponseEntity.ok()
                 .body(
-                        response
+                        new AnalysisDetailResponse(
+                                device.getDeviceId(),
+                                device.getDeviceName(),
+                                requestAt,
+                                (long) notifications.size(),
+                                graph
+                        )
                 );
+    }
+
+    private LocalDateTime roundToNext5Minutes(LocalDateTime time) {
+        int minute = time.getMinute();
+        int addMinute = (5 - (minute % 5)) % 5;
+        return time.plusMinutes(addMinute).withSecond(0).withNano(0);
     }
 
 }
