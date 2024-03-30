@@ -6,6 +6,7 @@ import com.heygongc.user.application.OauthService;
 import com.heygongc.user.application.UserService;
 import com.heygongc.user.application.oauth.OauthUser;
 import com.heygongc.user.domain.entity.User;
+import com.heygongc.user.exception.UserNotFoundException;
 import com.heygongc.user.presentation.request.RefreshTokenRequest;
 import com.heygongc.user.presentation.request.UserLoginRequest;
 import com.heygongc.user.presentation.request.RegisterRequest;
@@ -20,6 +21,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,14 +49,21 @@ public class UserController {
                     @ApiResponse(responseCode = "201", description = "USER_NOT_FOUND(회원가입 필요)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
             }
     )
-    public ResponseEntity<TokenResponse> login(
+    public ResponseEntity<?> login(
             @Parameter(name = "UserLoginRequest", description = "로그인 요청 정보", required = true) @RequestBody UserLoginRequest request) {
-        OauthUser oAuthUser = oauthService.getOAuthUser(request.snsType(), request.accessToken());
-        AuthToken authToken = userService.login(oAuthUser, request);
-        return ResponseEntity.ok()
-                .body(
-                        new TokenResponse(authToken.getAccessToken(), authToken.getRefreshToken())
-                );
+
+        try {
+            OauthUser oAuthUser = oauthService.getOAuthUser(request.snsType(), request.accessToken());
+            AuthToken authToken = userService.login(oAuthUser, request);
+            return ResponseEntity.ok()
+                    .body(
+                            new TokenResponse(authToken.getAccessToken(), authToken.getRefreshToken())
+                    );
+        }
+        catch (UserNotFoundException e){
+            return ResponseEntity.status(HttpStatus.CREATED).body(new ErrorResponse("USER_NOT_FOUND", "회원가입 필요"));
+
+        }
     }
 
     @PostMapping("/register")
