@@ -46,24 +46,18 @@ public class UserController {
             description = "구글/애플 액세스 토큰을 이용해 사용자를 조회하여 로그인합니다.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK(로그인 성공)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TokenResponse.class))),
-                    @ApiResponse(responseCode = "201", description = "USER_NOT_FOUND(회원가입 필요)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+                    @ApiResponse(responseCode = "400", description = "USER_NOT_FOUND(회원가입 필요)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
             }
     )
     public ResponseEntity<?> login(
             @Parameter(name = "UserLoginRequest", description = "로그인 요청 정보", required = true) @RequestBody UserLoginRequest request) {
 
-        try {
-            OauthUser oAuthUser = oauthService.getOAuthUser(request.snsType(), request.accessToken());
-            AuthToken authToken = userService.login(oAuthUser, request);
-            return ResponseEntity.ok()
-                    .body(
-                            new TokenResponse(authToken.getAccessToken(), authToken.getRefreshToken())
-                    );
-        }
-        catch (UserNotFoundException e){
-            return ResponseEntity.status(HttpStatus.CREATED).body(new ErrorResponse("USER_NOT_FOUND", "회원가입 필요"));
-
-        }
+        OauthUser oAuthUser = oauthService.getOAuthUser(request.snsType(), request.accessToken());
+        AuthToken authToken = userService.login(oAuthUser, request);
+        return ResponseEntity.ok()
+                .body(
+                        new TokenResponse(authToken.getAccessToken(), authToken.getRefreshToken())
+                );
     }
 
     @PostMapping("/register")
