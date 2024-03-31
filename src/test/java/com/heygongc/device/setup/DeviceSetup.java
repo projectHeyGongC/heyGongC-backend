@@ -13,10 +13,10 @@ public class DeviceSetup {
     public static Device saveDevice() {
 
         Device device = Device.createDevice()
-                .deviceId("123123")
-                .modelName("IPHONE14")
+                .deviceId("deviceId" + ((int) (Math.random() * 9999) + 1))
+                .modelName("IPHONE" + ((int) (Math.random() * 99) + 1))
                 .deviceOs(OsType.AOS)
-                .fcmToken("4712478v")
+                .fcmToken("4712478v" + ((int) (Math.random() * 9999) + 1))
                 .build();
 
         return deviceRepository.save(device);
@@ -25,13 +25,13 @@ public class DeviceSetup {
     public static Device saveDevice(User user) {
 
         Device device = Device.createDevice()
-                .deviceId("123123")
-                .modelName("IPHONE14")
+                .deviceId("deviceId" + ((int) (Math.random() * 9999) + 1))
+                .modelName("IPHONE" + ((int) (Math.random() * 99) + 1))
                 .deviceOs(OsType.AOS)
-                .fcmToken("4712478v")
+                .fcmToken("4712478v" + ((int) (Math.random() * 9999) + 1))
                 .build();
 
-        device.changeDeviceName("거실");
+        device.changeDeviceName("거실" + ((int) (Math.random() * 9) + 1));
         device.setDeviceOwner(user.getUserSeq());
         device.connectDevice();
 
