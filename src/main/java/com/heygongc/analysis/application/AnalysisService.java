@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -17,7 +16,7 @@ public class AnalysisService {
     public List<AnalysisMainResponse.Notifications> makeAnalysisMainResponse(List<Notification> notifications) {
 
         // 1. Map 만들어서 count 계산
-        HashMap<List<String>, Long> map = new HashMap<>();
+        LinkedHashMap<List<String>, Long> map = new LinkedHashMap<>();
         for (Notification n : notifications) {
             List<String> key = List.of(n.getDevice().getDeviceId(), n.getDevice().getDeviceName());
             if (!map.containsKey(key)) {
