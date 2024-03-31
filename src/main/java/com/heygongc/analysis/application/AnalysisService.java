@@ -1,40 +1,89 @@
 package com.heygongc.analysis.application;
 
 import com.heygongc.analysis.presentation.response.AnalysisDetailResponse;
+import com.heygongc.analysis.presentation.response.AnalysisMainResponse;
 import com.heygongc.notification.domain.entity.Notification;
-import com.heygongc.notification.domain.repository.NotificationRepository;
-import com.heygongc.user.domain.entity.User;
-import com.heygongc.video.domain.entity.Video;
-import com.heygongc.video.domain.repository.VideoRepository;
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class AnalysisService {
 
-    private final NotificationRepository notificationRepository;
-    private final VideoRepository videoRepository;
+    public List<AnalysisMainResponse.Notifications> makeAnalysisMainResponse(List<Notification> notifications) {
 
-    public AnalysisService(NotificationRepository notificationRepository, VideoRepository videoRepository) {
-        this.notificationRepository = notificationRepository;
-        this.videoRepository = videoRepository;
+        // 1. Map 만들어서 count 계산
+        HashMap<List<String>, Long> map = new HashMap<>();
+        for (Notification n : notifications) {
+            List<String> key = List.of(n.getDevice().getDeviceId(), n.getDevice().getDeviceName());
+            if (!map.containsKey(key)) {
+                map.put(key, 1L);
+            } else {
+                Long count = map.get(key) + 1;
+                map.put(key, count);
+            }
+        }
+
+        // 2. response 생성
+        List<AnalysisMainResponse.Notifications> responseNotifications = new ArrayList<>();
+        String returnMsg = "오늘 소리가 %d번 감지되었습니다.";
+        for (List<String> keys : map.keySet()) {
+            String deviceId = keys.get(0);
+            String deviceName = keys.get(1);
+            Long count = map.get(keys);
+            String contents = String.format(returnMsg, count);
+
+            responseNotifications.add(
+                    new AnalysisMainResponse.Notifications(
+                            deviceId,
+                            deviceName,
+                            contents
+                    )
+            );
+        }
+
+        return responseNotifications;
     }
 
-    public List<Notification> getNotifications(User user, String requestAt) throws ParseException {
+    public List<AnalysisDetailResponse.Graph> makeAnalysisGraph(List<Notification> notifications) {
 
-        return notificationRepository.findAllByUserSeqAndCreatedAt(user.getUserSeq(), requestAt);
-    }
+        // 1. 00:00 ~ 23:55까지 5분 단위로 Map 생성
+        LinkedHashMap<String, Long> dateList = new LinkedHashMap<>();
+        for (int i = 0; i < 24; i++) {
+            for (int j = 0; j < 60; j = j + 5) {
+                String hour = String.valueOf(i);
+                String minute = String.valueOf(j);
+                String key = hour + ":" + minute;
+                dateList.put(key, 0L);
+            }
+        }
 
-    public List<Notification> getNotifications(User user, String deviceId, String requestAt) throws ParseException {
+        // 2. Map에 count 저장
+        for (Notification n : notifications) {
+            LocalDateTime createdAt = n.getCreated_at();
+            String hour = String.valueOf(createdAt.getHour());
+            int intMinute = createdAt.getMinute() / 5; // 5분 단위로 나눠서
+            String minute = String.valueOf(intMinute);
+            String key = hour + ":" + minute;
 
-        return notificationRepository.findAllByUserSeqAndDeviceIdAndCreatedAt(user.getUserSeq(), deviceId, requestAt);
-    }
+            dateList.put(key, dateList.get(key) + 1); // 1씩 증가
+        }
 
-    public Optional<Video> getVideo(User user, String requestAt) throws ParseException {
+        // 3. graph 생성
+        List<AnalysisDetailResponse.Graph> graph = new ArrayList<>();
+        for (String key : dateList.keySet()) {
+            graph.add(
+                    new AnalysisDetailResponse.Graph(
+                            key,
+                            dateList.get(key)
+                    )
+            );
+        }
 
-        return videoRepository.findOneByUserSeqAndCreatedAt(user.getUserSeq(), requestAt);
+        return graph;
     }
 }
