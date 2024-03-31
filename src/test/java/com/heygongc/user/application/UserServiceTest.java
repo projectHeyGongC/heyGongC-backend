@@ -1,6 +1,7 @@
 package com.heygongc.user.application;
 
 import com.heygongc.common.ServiceTest;
+import com.heygongc.user.application.oauth.OauthUser;
 import com.heygongc.user.domain.entity.User;
 import com.heygongc.user.domain.repository.UserRepository;
 import com.heygongc.user.exception.UserNotFoundException;
@@ -30,10 +31,11 @@ class UserServiceTest extends ServiceTest {
     @DisplayName("가입한 사용자가 로그인 시 토큰을 발급한다")
     public void login() {
         // given
-        saveGoogleUser();
+        User 구글테스트계정 = saveGoogleUser();
+        OauthUser Oauth구글테스트계정 = testGoogleUser(구글테스트계정.getSnsId());
 
         // when
-        AuthToken token = userService.login(testGoogleUser(), userLoginRequest());
+        AuthToken token = userService.login(Oauth구글테스트계정, userLoginRequest());
 
         // then
         Assertions.assertThat(token).isNotNull();

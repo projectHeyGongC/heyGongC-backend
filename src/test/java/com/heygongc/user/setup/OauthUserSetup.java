@@ -10,4 +10,9 @@ public class OauthUserSetup {
                 "id" + ((int) (Math.random() * 9999) + 1),
                 "test" + ((int) (Math.random() * 9999) + 1) + "@test.com");
     }
+    public static OauthUser testGoogleUser(String id) {
+        return new OauthUser(SnsType.GOOGLE,
+                id,
+                "test" + ((int) (Math.random() * 9999) + 1) + "@test.com");
+    }
 }
