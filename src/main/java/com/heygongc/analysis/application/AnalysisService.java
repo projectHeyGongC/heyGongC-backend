@@ -23,17 +23,18 @@ public class AnalysisService {
         this.videoRepository = videoRepository;
     }
 
-    public List<Notification> getNotifications(String requestAt, User user) throws ParseException {
+    public List<Notification> getNotifications(User user, String requestAt) throws ParseException {
 
         return notificationRepository.findAllByUserSeqAndCreatedAt(user.getUserSeq(), requestAt);
     }
 
-    public Optional<Video> getVideo(String requestAt, User user) throws ParseException {
+    public List<Notification> getNotifications(User user, String deviceId, String requestAt) throws ParseException {
 
-        return videoRepository.findOneByUserSeqAndCreatedAt(user.getUserSeq(), requestAt);
+        return notificationRepository.findAllByUserSeqAndDeviceIdAndCreatedAt(user.getUserSeq(), deviceId, requestAt);
     }
 
-    public AnalysisDetailResponse getAnalysisDetail(String requestAt, String deviceId, User user) {
-        return null;
+    public Optional<Video> getVideo(User user, String requestAt) throws ParseException {
+
+        return videoRepository.findOneByUserSeqAndCreatedAt(user.getUserSeq(), requestAt);
     }
 }

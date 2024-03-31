@@ -50,4 +50,25 @@ public class CustomNotificationRepositoryImpl implements CustomNotificationRepos
 
         return notifications;
     }
+
+    @Override
+    public List<Notification> findAllByUserSeqAndDeviceIdAndCreatedAt(Long userSeq, String deviceId, String requestAt) throws ParseException {
+        QNotification qNotification = QNotification.notification;
+
+        Date date = DateUtils.parseDate(requestAt, "yyyy-MM-dd");
+        LocalDateTime startOfDay = date.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate()
+                .atStartOfDay();
+        LocalDateTime endOfDay = startOfDay.plusDays(1);
+
+        List<Notification> notifications = queryFactory.selectFrom(qNotification)
+                .where(qNotification.user.userSeq.eq(userSeq)
+                        .and(qNotification.device.deviceId.eq(deviceId))
+                        .and(qNotification.created_at.between(startOfDay, endOfDay)))
+                .orderBy(qNotification.created_at.asc())
+                .fetch();
+
+        return notifications;
+    }
 }
