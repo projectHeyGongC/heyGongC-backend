@@ -12,11 +12,11 @@ public class UserSetup {
 
     public static User saveGoogleUser() {
         return userRepository.save(User.createUser()
-                .deviceId("1111")
-                .snsId("123456789")
+                .deviceId("deviceId" + ((int) (Math.random() * 9999) + 1))
+                .snsId("snsId" + ((int) (Math.random() * 9999) + 1))
                 .snsType(SnsType.GOOGLE)
                 .deviceOs(OsType.valueOf("AOS"))
-                .email("test@test.com")
+                .email("test" + ((int) (Math.random() * 9999) + 1) + "@test.com")
                 .alarm(true)
                 .ads(true)
                 .build());
@@ -24,11 +24,11 @@ public class UserSetup {
 
     public static User saveAppleUser() {
         return userRepository.save(User.createUser()
-                .deviceId("1111")
-                .snsId("123456789")
+                .deviceId("deviceId" + ((int) (Math.random() * 9999) + 1))
+                .snsId("snsId" + ((int) (Math.random() * 9999) + 1))
                 .snsType(SnsType.APPLE)
                 .deviceOs(OsType.valueOf("AOS"))
-                .email("test@test.com")
+                .email("test" + ((int) (Math.random() * 9999) + 1) + "@test.com")
                 .alarm(true)
                 .ads(true)
                 .build());
