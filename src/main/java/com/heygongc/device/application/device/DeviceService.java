@@ -77,6 +77,7 @@ public class DeviceService{
             firebaseCloudMessaging.sendMessage(tokens, "QR 코드 보이기", data);
         }
     }
+    //
     @Transactional
     public void changeDeviceSetting(String deviceId, String sensitivity, String cameraMode, User user){
         Device device = deviceRepository.findMyDevice(deviceId, user)
