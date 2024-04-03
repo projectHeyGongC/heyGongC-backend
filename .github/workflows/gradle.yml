@@ -33,7 +33,7 @@ jobs:
       - name: Setup Firebase Config
         run: |
           mkdir -p ./src/main/resources/firebase
-          echo "${{ secrets.FIREBASE_CONFIG }}" | base64 -d > ./src/main/resources/firebase/heygongc-firebase-sdk.json
+          echo "${{ secrets.FIREBASE_CONFIG }}" > ./src/main/resources/firebase/heygongc-firebase-sdk.json
         shell: bash
 
       # 속도 개선을 위한 Gradle 캐싱
