@@ -44,6 +44,7 @@ public class DeviceService{
         return deviceRepository.findAllByUserSeq(userSeq);
     }
 
+    @Transactional
     public void subscribeDevice(DeviceInfoRequest request, User user) {
         Device device = deviceRepository.findByDeviceId(request.deviceId())
                 .orElseThrow(DeviceNotFoundException::new);
@@ -54,8 +55,6 @@ public class DeviceService{
         HashMap<String, String> data = new HashMap<>();
         data.put("action", "1");
         firebaseCloudMessaging.sendMessage(device.getFcmToken(), "QR 코드 숨기기", data);
-        log.info("Fcm Token is: {}", device.getFcmToken());
-
     }
 
     @Transactional
