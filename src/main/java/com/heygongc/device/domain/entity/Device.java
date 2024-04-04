@@ -141,4 +141,8 @@ public class Device extends BaseTimeEntity {
         this.battery = battery;
         this.temperature = temperature;
     }
+
+    public void changeFcmToken(String fcmToken){
+        this.fcmToken = fcmToken;
+    }
 }

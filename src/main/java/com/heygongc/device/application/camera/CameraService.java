@@ -14,6 +14,8 @@ import com.heygongc.user.exception.UserNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @Service
 public class CameraService {
 
@@ -36,22 +38,29 @@ public class CameraService {
 
     @Transactional
     public String subscribeCamera(CameraSubscribeRequest request) {
-
         Device device = deviceRepository.findByDeviceId(request.deviceId())
-                .orElseGet(() -> deviceRepository.save(
-                        Device.createDevice()
-                                .deviceId(request.deviceId())
-                                .modelName(request.modelName())
-                                .deviceOs(OsType.valueOf(request.deviceOs()))
-                                .fcmToken(request.fcmToken())
-                                .build()
-        ));
+                .map(existingDevice -> {
+                    if (!Objects.equals(existingDevice.getFcmToken(), request.fcmToken())) {
+                        existingDevice.changeFcmToken(request.fcmToken());
+                        deviceRepository.save(existingDevice);
+                    }
+                    return existingDevice;
+                })
+                .orElseGet(() -> {
+                    return deviceRepository.save(
+                            Device.createDevice()
+                                    .deviceId(request.deviceId())
+                                    .modelName(request.modelName())
+                                    .deviceOs(OsType.valueOf(request.deviceOs()))
+                                    .fcmToken(request.fcmToken())
+                                    .build()
+                    );
+                });
 
         String accessToken = jwtUtil.generateCameraAccessToken(String.valueOf(device.getDeviceSeq()), device.getDeviceId());
 
         return accessToken;
     }
-
     @Transactional
     public void changeCameraDeviceStatus(Device device, int battery, int temperature) {
         device.changeCameraDeviceStatus(battery, temperature);
