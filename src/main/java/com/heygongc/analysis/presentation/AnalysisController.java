@@ -97,7 +97,7 @@ public class AnalysisController {
             @Parameter(description = "조회일자", required = true, in = ParameterIn.QUERY) @RequestParam(name = "requestAt") String requestAt
     ) throws ParseException {
         List<Notification> notifications = analysisService.getNotifications(user, requestAt, deviceId);
-        Device device = deviceService.getDevice(deviceId);
+        Device device = deviceService.getDevice(deviceId, user);
 
         // 5분 간격으로 정규화 + count
         LinkedHashMap<LocalDateTime, Long> groupdNotifications = new LinkedHashMap<>();
