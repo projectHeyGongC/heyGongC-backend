@@ -3,36 +3,26 @@ package com.heygongc.device.application.device;
 import com.heygongc.device.domain.entity.Device;
 import com.heygongc.device.domain.repository.DeviceRepository;
 import com.heygongc.device.domain.type.CameraModeType;
-import com.heygongc.device.domain.type.ControlType;
 import com.heygongc.device.domain.type.SensitivityType;
 import com.heygongc.device.exception.DeviceNotFoundException;
 import com.heygongc.device.presentation.request.device.DeviceInfoRequest;
-import com.heygongc.global.infra.FirebaseCloudMessaging;
 import com.heygongc.global.utils.EnumUtils;
 import com.heygongc.user.domain.entity.User;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class DeviceService{
 
-    private static final Logger log = LoggerFactory.getLogger(DeviceService.class);
-
-
     private final DeviceRepository deviceRepository;
-    private final FirebaseCloudMessaging firebaseCloudMessaging;
 
 
-    public DeviceService(DeviceRepository deviceRepository, FirebaseCloudMessaging firebaseCloudMessaging){
+    public DeviceService(DeviceRepository deviceRepository){
         this.deviceRepository = deviceRepository;
-        this.firebaseCloudMessaging = firebaseCloudMessaging;
 
     }
 
@@ -51,10 +41,6 @@ public class DeviceService{
         device.changeDeviceName(request.deviceName());
         device.connectDevice();
         device.setDeviceOwner(user.getUserSeq());
-
-        HashMap<String, String> data = new HashMap<>();
-        data.put("action", "1");
-        firebaseCloudMessaging.sendMessage(device.getFcmToken(), "QR 코드 숨기기", data);
     }
 
     @Transactional
@@ -67,21 +53,15 @@ public class DeviceService{
     }
 
     @Transactional
-    public void disconnectDevice(List<String> deviceIds, User user) {
+    public List<String> disconnectDevice(List<String> deviceIds, User user) {
         List<Device> devices = deviceRepository.findAllDevices(deviceIds, user);
         List<String> tokens = devices.stream()
                 .map(Device::getFcmToken)
                 .collect(Collectors.toList());
 
-        HashMap<String, String> data = new HashMap<>();
-        data.put("action", "2");
-
         devices.forEach(Device::disConnectDevice);
-        deviceRepository.saveAll(devices);
 
-        if (!tokens.isEmpty()) {
-            firebaseCloudMessaging.sendMessage(tokens, "QR 코드 보이기", data);
-        }
+        return tokens;
     }
 
     @Transactional
@@ -95,37 +75,12 @@ public class DeviceService{
     }
 
     @Transactional
-    public void controlDevice(String deviceId, String controlType, User user){
+    public Device controlDevice(String deviceId, User user){
 
-        Device device = deviceRepository.findMyDevice(deviceId, user)
+        return deviceRepository.findMyDevice(deviceId, user)
                 .orElseThrow(DeviceNotFoundException::new);
 
-        ControlType type = EnumUtils.getEnumConstant(ControlType.class, controlType);
 
-        HashMap<String, String> data = new HashMap<>();
-
-
-        switch (type) {
-
-            case SOUNDON:
-                device.soundModeOn();
-                data.put("action", "3");
-                firebaseCloudMessaging.sendMessage(device.getFcmToken(), "소리 감지 모드 ON", data);
-                break;
-            case SOUNDOFF:
-                device.soundModeOff();
-                data.put("action", "4");
-                firebaseCloudMessaging.sendMessage(device.getFcmToken(), "소리 감지 모드 OFF", data);
-                break;
-            case STREAMON:
-                device.startStreaming();
-                break;
-            case STREAMOFF:
-                device.stopStreaming();
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid control type: " + controlType);
-        }
 
     }
 
