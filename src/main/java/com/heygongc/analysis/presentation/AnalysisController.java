@@ -88,8 +88,8 @@ public class AnalysisController {
             @Parameter(description = "조회일자", required = true, in = ParameterIn.QUERY) @RequestParam(name = "requestAt") String requestAt
     ) throws ParseException {
         List<Notification> notifications = notificationService.getNotifications(user, requestAt, deviceId);
-        Device device = deviceService.getDevice(deviceId);
         List<AnalysisDetailResponse.Graph> graph = analysisService.makeAnalysisGraph(notifications);
+        Device device = deviceService.getDevice(deviceId);
 
         return ResponseEntity.ok()
                 .body(

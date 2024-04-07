@@ -50,35 +50,31 @@ public class AnalysisService {
 
     public List<AnalysisDetailResponse.Graph> makeAnalysisGraph(List<Notification> notifications) {
 
-        // 1. 00:00 ~ 23:55까지 5분 단위로 Map 생성
-        LinkedHashMap<String, Long> dateList = new LinkedHashMap<>();
-        for (int i = 0; i < 24; i++) {
-            for (int j = 0; j < 60; j = j + 5) {
-                String hour = String.valueOf(i);
-                String minute = String.valueOf(j);
-                String key = hour + ":" + minute;
-                dateList.put(key, 0L);
-            }
+        // 1. 0 ~ 1440 5분 단위로 Map 생성
+        LinkedHashMap<Short, Long> dateList = new LinkedHashMap<>();
+        for (short s = 0; s < 1440; s += 5) {
+            dateList.put(s, 0L);
         }
 
         // 2. Map에 count 저장
         for (Notification n : notifications) {
             LocalDateTime createdAt = n.getCreated_at();
-            String hour = String.valueOf(createdAt.getHour());
-            int intMinute = createdAt.getMinute() / 5; // 5분 단위로 나눠서
-            String minute = String.valueOf(intMinute);
-            String key = hour + ":" + minute;
-
-            dateList.put(key, dateList.get(key) + 1); // 1씩 증가
+            int hour = createdAt.getHour();
+            int minute = createdAt.getMinute();
+            short totalMinute = (short) ((hour * 60) + (minute % 5) * 5); // 5분 단위로 나눠서 분 단위로 변경
+            dateList.put(totalMinute, dateList.get(totalMinute) + 1);
         }
 
         // 3. graph 생성
         List<AnalysisDetailResponse.Graph> graph = new ArrayList<>();
-        for (String key : dateList.keySet()) {
+        for (Short totalMinute : dateList.keySet()) {
+            String hour = String.valueOf(totalMinute / 60);
+            String minute = String.valueOf(totalMinute % 60);
+            String time = hour + ":" + minute;
             graph.add(
                     new AnalysisDetailResponse.Graph(
-                            key,
-                            dateList.get(key)
+                            time,
+                            dateList.get(totalMinute)
                     )
             );
         }
