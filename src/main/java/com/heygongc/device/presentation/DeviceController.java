@@ -1,5 +1,6 @@
 package com.heygongc.device.presentation;
 
+import com.heygongc.device.application.device.DevicePushService;
 import com.heygongc.device.application.device.DeviceService;
 import com.heygongc.device.domain.entity.Device;
 import com.heygongc.device.presentation.request.camera.CameraDeviceSettingRequest;
@@ -31,8 +32,11 @@ public class DeviceController {
 
     private final DeviceService deviceService;
 
-    public DeviceController(DeviceService deviceService) {
+    private final DevicePushService devicePushService;
+
+    public DeviceController(DeviceService deviceService, DevicePushService devicePushService) {
         this.deviceService = deviceService;
+        this.devicePushService = devicePushService;
     }
 
     @GetMapping
@@ -71,6 +75,10 @@ public class DeviceController {
             @Parameter(name = "DeviceInfoRequest", description = "카메라 기기 정보", required = true) @RequestBody DeviceInfoRequest request,
             @Parameter(hidden = true) User user){
         deviceService.subscribeDevice(request, user);
+
+        String fcmToken = user.getFcmToken();
+        devicePushService.hideQRCode(fcmToken);
+
         return ResponseEntity.ok().build();
     }
 
@@ -105,8 +113,8 @@ public class DeviceController {
     public ResponseEntity<Void> disconnectDevice(
             @Parameter(name = "DeviceIdsRequest", description = "연동 해제할 카메라 기기 목록", required = true) @RequestBody DeviceIdsRequest request,
             @Parameter(hidden = true) User user) {
-        deviceService.disconnectDevice(request.deviceIds(), user);
-
+        List<String> fcmTokens = deviceService.disconnectDevice(request.deviceIds(), user);
+        devicePushService.showQRCode(fcmTokens);
         return ResponseEntity.ok().build();
     }
 
@@ -124,7 +132,9 @@ public class DeviceController {
             @Parameter(description = "기기 아이디", required = true, in = ParameterIn.PATH) @PathVariable(name = "deviceId") String deviceId,
             @Parameter(name = "ControlTypeRequest", description = "명령 내릴 컨트롤 타입", required = true) @RequestBody ControlTypeRequest request,
             @Parameter(hidden = true) User user){
-        deviceService.controlDevice(deviceId, request.controlType(), user);
+        Device device = deviceService.controlDevice(deviceId, user);
+
+        devicePushService.controlDevice(request.controlType(), device);
 
         return ResponseEntity.ok().build();
     }
