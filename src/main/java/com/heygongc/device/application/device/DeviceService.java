@@ -17,14 +17,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class DeviceService{
-
-    private static final Logger log = LoggerFactory.getLogger(DeviceService.class);
-
 
     private final DeviceRepository deviceRepository;
     private final FirebaseCloudMessaging firebaseCloudMessaging;
@@ -36,8 +32,9 @@ public class DeviceService{
 
     }
 
-    public Device getDevice(String deviceId) {
-        return deviceRepository.findByDeviceId(deviceId).orElseThrow(DeviceNotFoundException::new);
+    public Device getDevice(String deviceId, User user) {
+        return deviceRepository.findMyDevice(deviceId, user)
+                .orElseThrow(DeviceNotFoundException::new);
     }
 
     public List<Device> getAllDevices(Long userSeq) {
