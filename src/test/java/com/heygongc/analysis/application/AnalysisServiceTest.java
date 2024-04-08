@@ -1,5 +1,6 @@
 package com.heygongc.analysis.application;
 
+import com.heygongc.analysis.presentation.response.AnalysisDetailResponse;
 import com.heygongc.analysis.presentation.response.AnalysisMainResponse;
 import com.heygongc.common.ServiceTest;
 import com.heygongc.device.domain.entity.Device;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -113,5 +115,48 @@ public class AnalysisServiceTest extends ServiceTest {
         Assertions.assertThat(response.get(1).deviceId()).isEqualTo(디바이스2.getDeviceId());
         Assertions.assertThat(response.get(1).deviceName()).isEqualTo(디바이스2.getDeviceName());
         Assertions.assertThat(response.get(1).contents()).isEqualTo(returnMsg2);
+    }
+
+    @Test
+    @DisplayName("graph 생성")
+    void makeAnalysisGraph() {
+        // given
+        User 구글테스트계정 = saveGoogleUser();
+        Device 디바이스 = saveDevice(구글테스트계정);
+        List<Notification> notifications = new ArrayList<>();
+
+        while (true) {
+            LocalDateTime now = LocalDateTime.now();
+            // 4분 50초 ~ 5분 사이에 저장될 경우 리스트 데이터가 달라지기 때문에 대기
+            if (now.getMinute() % 5 == 4 && now.getSecond() > 50) {
+                try {
+                    // 1초 대기
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {}
+            } else {
+                break;
+            }
+        }
+        LocalDateTime now = LocalDateTime.now();
+        short totalMinute = (short) ((now.getHour() * 60) + (now.getMinute() % 5) * 5); // 5분 단위로 나눠서 분 단위로 변경
+        int index = totalMinute / 5;
+        String hour = String.valueOf(totalMinute / 60);
+        String minute = String.valueOf(totalMinute % 60);
+        String time = hour + ":" + minute;
+
+        notifications.add(saveNotification(구글테스트계정, 디바이스));
+        notifications.add(saveNotification(구글테스트계정, 디바이스));
+        notifications.add(saveNotification(구글테스트계정, 디바이스));
+        notifications.add(saveNotification(구글테스트계정, 디바이스));
+        notifications.add(saveNotification(구글테스트계정, 디바이스));
+
+        // when
+        List<AnalysisDetailResponse.Graph> graph = analysisService.makeAnalysisGraph(notifications);
+
+        // then
+        Assertions.assertThat(graph).isNotNull();
+        Assertions.assertThat(graph).isNotEmpty();
+        Assertions.assertThat(graph.get(index).x()).isEqualTo(time);
+        Assertions.assertThat(graph.get(index).y()).isEqualTo(5);
     }
 }
