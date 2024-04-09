@@ -196,5 +196,4 @@ public class DeviceServiceTest extends ServiceTest {
     private DeviceInfoRequest deviceInfoRequest(String deviceId, String deviceName) {
         return new DeviceInfoRequest(deviceId, deviceName);
     }
-
 }
