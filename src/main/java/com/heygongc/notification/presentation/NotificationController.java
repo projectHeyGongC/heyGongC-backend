@@ -46,7 +46,7 @@ public class NotificationController {
         List<NotificationResponse> response = notifications.stream()
                 .map(notification -> new NotificationResponse(
                         String.format(returnMsg, notification.getDevice().getDeviceName()),
-                        notification.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-ddTHH:mm:ss")))
+                        notification.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")))
                 )
                 .collect(Collectors.toList());
 
