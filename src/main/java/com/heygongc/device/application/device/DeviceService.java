@@ -74,11 +74,8 @@ public class DeviceService{
     public void controlDevice(String deviceId, User user, String controlType) {
         Device device = getDevice(deviceId, user);
         ControlType type = EnumUtils.getEnumConstant(ControlType.class, controlType);
-        if (type == null) {
-            throw new IllegalArgumentException("Invalid control type: " + controlType);
-        }
 
-        switch (type) {
+        switch (type != null ? type : ControlType.NULL) {
             case SOUNDON:
                 device.soundModeOn();
                 break;

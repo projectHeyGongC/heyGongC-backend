@@ -49,14 +49,13 @@ public class FirebaseCloudMessaging {
     /**
      * 단일 푸시 메세지 발송
      * @param token 푸시토큰
-     * @param body 푸시 메세지
-     * @param data 추가 데이터
+     * @param data 푸시 메세지 + 추가 데이터
      */
-    public void sendMessage(String token, String body, HashMap<String, String> data) {
-        log.info("Push Payload Checked: {}", data);
+    public void sendMessage(String token, FirebaseData data) {
+        log.info("Push Payload Checked: {}", data.getData());
 
         try {
-            Message message = createMessage(token, body, data);
+            Message message = createMessage(token, data.getBody(), data.getData());
             FirebaseMessaging.getInstance().send(message);
             log.info("Firebase Cloud Messaging Success");
         } catch (Exception e) {
@@ -67,17 +66,16 @@ public class FirebaseCloudMessaging {
     /**
      * 멀티 푸시 메세지 발송
      * @param tokens 푸시토큰 리스트
-     * @param body 푸시 메세지
-     * @param data 추가 데이터
+     * @param data 푸시 메세지 + 추가 데이터
      */
-    public void sendMessage(List<String> tokens, String body, HashMap<String, String> data) {
-        log.info("Push Payload Checked: {}", data);
+    public void sendMessage(List<String> tokens, FirebaseData data) {
+        log.info("Push Payload Checked: {}", data.getData());
 
         try {
             List<Message> messages = new ArrayList<>();
 
             for (String token : tokens) {
-                Message message = createMessage(token, body, data);
+                Message message = createMessage(token, data.getBody(), data.getData());
                 messages.add(message);
                 log.info("Firebase Cloud Messaging Success");
             }
