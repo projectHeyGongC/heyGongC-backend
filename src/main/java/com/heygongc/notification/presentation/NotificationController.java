@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,7 +46,7 @@ public class NotificationController {
         List<NotificationResponse> response = notifications.stream()
                 .map(notification -> new NotificationResponse(
                         String.format(returnMsg, notification.getDevice().getDeviceName()),
-                        notification.getCreated_at())
+                        notification.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-ddTHH:mm:ss")))
                 )
                 .collect(Collectors.toList());
 
