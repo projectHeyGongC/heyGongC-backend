@@ -89,7 +89,7 @@ public class AnalysisController {
     ) throws ParseException {
         List<Notification> notifications = notificationService.getNotifications(user, requestAt, deviceId);
         List<AnalysisDetailResponse.Graph> graph = analysisService.makeAnalysisGraph(notifications);
-        Device device = deviceService.getDevice(deviceId);
+        Device device = deviceService.getDevice(deviceId, user);
 
         return ResponseEntity.ok()
                 .body(

@@ -47,7 +47,7 @@ public class DeviceServiceTest extends ServiceTest {
         Device 내디바이스 = saveDevice(구글테스트계정);
 
         // when
-        List<Device> 디바이스목록 = deviceService.getAllDevices(구글테스트계정);
+        List<Device> 디바이스목록 = deviceService.getDevices(구글테스트계정);
 
         // then
         Assertions.assertThat(디바이스목록).isNotNull();

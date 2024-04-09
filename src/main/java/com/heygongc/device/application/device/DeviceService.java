@@ -10,14 +10,13 @@ import com.heygongc.global.utils.EnumUtils;
 import com.heygongc.user.domain.entity.User;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class DeviceService{
 
     private final DeviceRepository deviceRepository;
-
 
     public DeviceService(DeviceRepository deviceRepository){
         this.deviceRepository = deviceRepository;
@@ -29,7 +28,11 @@ public class DeviceService{
                 .orElseThrow(DeviceNotFoundException::new);
     }
 
-    public List<Device> getAllDevices(User user) {
+    public List<Device> getDevices(List<String> deviceIds, User user) {
+        return deviceRepository.findAllDevices(deviceIds, user);
+    }
+
+    public List<Device> getDevices(User user) {
         return deviceRepository.findAllByUserSeq(user.getUserSeq());
     }
 
@@ -48,11 +51,6 @@ public class DeviceService{
                 .orElseThrow(DeviceNotFoundException::new);
 
         device.changeDeviceName(deviceName);
-
-    }
-
-    public List<Device> getDevices(List<String> deviceIds, User user) {
-        return deviceRepository.findAllDevices(deviceIds, user);
     }
 
     @Transactional
@@ -67,6 +65,5 @@ public class DeviceService{
 
         device.changeDeviceSetting(EnumUtils.getEnumConstant(SensitivityType.class, sensitivity),
                 EnumUtils.getEnumConstant(CameraModeType.class, cameraMode));
-        
     }
 }

@@ -48,7 +48,7 @@ public class DeviceController {
             }
     )
     public ResponseEntity<List<DeviceResponse>> getAllDevices(@Parameter(hidden = true) User user){
-        List<Device> devices = deviceService.getAllDevices(user);
+        List<Device> devices = deviceService.getDevices(user);
 
         List<DeviceResponse> deviceResponses = devices.stream()
                 .map(device -> new DeviceResponse(
@@ -128,7 +128,6 @@ public class DeviceController {
             summary = "기기 제어하기",
             description = "메인 앱에서 카메라 앱 기기를 제어합니다. 어떤 명령을 카메라 앱 기기에 내릴 건지 정합니다." +
                     "소리 감지를 키거나 끄거나 원격 스트리밍을 요청할 때 해당 api를 사용합니다.",
-
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK", content = @Content)
             }
@@ -138,7 +137,6 @@ public class DeviceController {
             @Parameter(name = "ControlTypeRequest", description = "명령 내릴 컨트롤 타입", required = true) @RequestBody ControlTypeRequest request,
             @Parameter(hidden = true) User user){
         Device device = deviceService.getDevice(deviceId, user);
-
         devicePushService.controlDevice(request.controlType(), device);
 
         return ResponseEntity.ok().build();
