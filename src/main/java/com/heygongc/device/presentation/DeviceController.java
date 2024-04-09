@@ -47,9 +47,8 @@ public class DeviceController {
                     @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = DeviceResponse.class))))
             }
     )
-    public ResponseEntity<List<DeviceResponse>> getAllDevices(@Parameter(hidden = true) User user){
-        Long userSeq = user.getUserSeq();
-        List<Device> devices = deviceService.getAllDevices(userSeq);
+    public ResponseEntity<List<DeviceResponse>> getAllDevices(@Parameter(hidden = true) User user) {
+        List<Device> devices = deviceService.getDevices(user);
 
         List<DeviceResponse> deviceResponses = devices.stream()
                 .map(device -> new DeviceResponse(
@@ -73,7 +72,7 @@ public class DeviceController {
     )
     public ResponseEntity<Void> subscribeDevice(
             @Parameter(name = "DeviceInfoRequest", description = "카메라 기기 정보", required = true) @RequestBody DeviceInfoRequest request,
-            @Parameter(hidden = true) User user){
+            @Parameter(hidden = true) User user) {
         deviceService.subscribeDevice(request, user);
 
         String fcmToken = user.getFcmToken();
@@ -113,8 +112,14 @@ public class DeviceController {
     public ResponseEntity<Void> disconnectDevice(
             @Parameter(name = "DeviceIdsRequest", description = "연동 해제할 카메라 기기 목록", required = true) @RequestBody DeviceIdsRequest request,
             @Parameter(hidden = true) User user) {
-        List<String> fcmTokens = deviceService.disconnectDevice(request.deviceIds(), user);
-        devicePushService.showQRCode(fcmTokens);
+        List<Device> devices = deviceService.getDevices(request.deviceIds(), user);
+        List<String> tokens = devices.stream()
+                .map(Device::getFcmToken)
+                .toList();
+
+        deviceService.disconnectDevices(devices);
+        devicePushService.showQRCode(tokens);
+
         return ResponseEntity.ok().build();
     }
 
@@ -123,7 +128,6 @@ public class DeviceController {
             summary = "기기 제어하기",
             description = "메인 앱에서 카메라 앱 기기를 제어합니다. 어떤 명령을 카메라 앱 기기에 내릴 건지 정합니다." +
                     "소리 감지를 키거나 끄거나 원격 스트리밍을 요청할 때 해당 api를 사용합니다.",
-
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK", content = @Content)
             }
@@ -131,10 +135,10 @@ public class DeviceController {
     public ResponseEntity<Void> controlDevice(
             @Parameter(description = "기기 아이디", required = true, in = ParameterIn.PATH) @PathVariable(name = "deviceId") String deviceId,
             @Parameter(name = "ControlTypeRequest", description = "명령 내릴 컨트롤 타입", required = true) @RequestBody ControlTypeRequest request,
-            @Parameter(hidden = true) User user){
-        Device device = deviceService.controlDevice(deviceId, user);
-
-        devicePushService.controlDevice(request.controlType(), device);
+            @Parameter(hidden = true) User user) {
+        deviceService.controlDevice(deviceId, user, request.controlType());
+        Device device = deviceService.getDevice(deviceId, user);
+        devicePushService.controlDevice(request.controlType(), device.getFcmToken());
 
         return ResponseEntity.ok().build();
     }
@@ -151,7 +155,7 @@ public class DeviceController {
     public ResponseEntity<Void> changeDeviceSetting(
             @Parameter(description = "기기 아이디", required = true, in = ParameterIn.PATH) @PathVariable(name = "deviceId") String deviceId,
             @Parameter(name = "CameraDeviceSettingRequest", description = "명령 내릴 컨트롤 타입", required = true) @RequestBody CameraDeviceSettingRequest request,
-            @Parameter(hidden = true) User user){
+            @Parameter(hidden = true) User user) {
         deviceService.changeDeviceSetting(deviceId, request.sensitivity(), request.cameraMode(), user);
 
         return ResponseEntity.ok().build();

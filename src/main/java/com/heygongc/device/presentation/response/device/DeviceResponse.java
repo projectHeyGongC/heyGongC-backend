@@ -6,6 +6,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public record DeviceResponse (@Schema(description = "디바이스 ID") String deviceId,
                               @Schema(description = "디바이스 이름") String deviceName,
                               @Schema(description = "디바이스 배터리 잔량") int battery,
-                              @Schema(description = "디바이스 온도") int temperature){
+                              @Schema(description = "디바이스 온도") int temperature) {
 }
 

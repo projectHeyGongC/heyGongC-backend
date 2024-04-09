@@ -5,6 +5,7 @@ import com.heygongc.device.application.device.DeviceService;
 import com.heygongc.device.domain.entity.Device;
 import com.heygongc.device.domain.repository.DeviceRepository;
 import com.heygongc.device.domain.type.CameraModeType;
+import com.heygongc.device.domain.type.ControlType;
 import com.heygongc.device.domain.type.SensitivityType;
 import com.heygongc.device.presentation.request.device.DeviceInfoRequest;
 import com.heygongc.user.domain.entity.User;
@@ -13,30 +14,31 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static com.heygongc.device.setup.DeviceSetup.saveDevice;
-import static com.heygongc.device.setup.DeviceSetup.saveSpecificDevice;
 import static com.heygongc.user.setup.UserSetup.saveGoogleUser;
 public class DeviceServiceTest extends ServiceTest {
 
     @Autowired
     private DeviceService deviceService;
+    @Autowired
+    private DeviceRepository deviceRepository;
 
     @Test
     @DisplayName("디바이스 정보 가져오기")
     void getDevice() {
         // given
-        Device 내디바이스 = saveDevice();
         User 구글테스트계정 = saveGoogleUser();
+        Device 내디바이스 = saveDevice(구글테스트계정);
 
         // when
         Device 저장된디바이스 = deviceService.getDevice(내디바이스.getDeviceId(), 구글테스트계정);
 
         // then
-        Assertions.assertThat(내디바이스.getUserSeq()).isEqualTo(저장된디바이스.getUserSeq());
-
+        Assertions.assertThat(저장된디바이스.getUserSeq()).isEqualTo(구글테스트계정.getUserSeq());
     }
 
     @Test
@@ -47,13 +49,13 @@ public class DeviceServiceTest extends ServiceTest {
         Device 내디바이스 = saveDevice(구글테스트계정);
 
         // when
-        List<Device> 디바이스목록 = deviceService.getAllDevices(구글테스트계정.getUserSeq());
+        List<Device> 디바이스목록 = deviceService.getDevices(구글테스트계정);
 
         // then
         Assertions.assertThat(디바이스목록).isNotNull();
         Assertions.assertThat(디바이스목록.size()).isGreaterThan(0);
         Assertions.assertThat(디바이스목록.get(0).getDeviceSeq()).isEqualTo(내디바이스.getDeviceSeq());
-
+        Assertions.assertThat(디바이스목록.get(0).getUserSeq()).isEqualTo(구글테스트계정.getUserSeq());
     }
 
     @Test
@@ -61,18 +63,20 @@ public class DeviceServiceTest extends ServiceTest {
     void SubscribeDevice() {
         // given
         User 구글테스트계정 = saveGoogleUser();
-        Device 내디바이스 = saveSpecificDevice(구글테스트계정);
-
+        Device 내디바이스 = saveDevice();
+        String 새로운디바이스명 = "newDeviceName";
 
         // when
-        deviceService.subscribeDevice(deviceInfoRequest(), 구글테스트계정);
+        deviceService.subscribeDevice(
+                deviceInfoRequest(내디바이스.getDeviceId(), 새로운디바이스명),
+                구글테스트계정);
 
         // then
-        Assertions.assertThat(내디바이스.getDeviceName()).isEqualTo("myDevice");
+        내디바이스 = deviceRepository.findMyDevice(내디바이스.getDeviceId(), 구글테스트계정).get();
+
+        Assertions.assertThat(내디바이스.getDeviceName()).isEqualTo(새로운디바이스명);
         Assertions.assertThat(내디바이스.getUserSeq()).isEqualTo(구글테스트계정.getUserSeq());
-        Assertions.assertThat(내디바이스.isConnected()).isEqualTo(true);
-
-
+        Assertions.assertThat(내디바이스.isConnected()).isTrue();
     }
 
     @Test
@@ -80,14 +84,34 @@ public class DeviceServiceTest extends ServiceTest {
     void updateDevice() {
         // given
         User 구글테스트계정 = saveGoogleUser();
-        Device 내디바이스 = saveSpecificDevice(구글테스트계정);
+        Device 내디바이스 = saveDevice(구글테스트계정);
+        String 새로운디바이스명 = "newDeviceName";
 
         // when
-        deviceService.updateDevice(내디바이스.getDeviceId(), "newName", 구글테스트계정);
+        deviceService.updateDevice(내디바이스.getDeviceId(), 새로운디바이스명, 구글테스트계정);
 
         // then
-        Assertions.assertThat(내디바이스.getDeviceName()).isEqualTo("newName");
+        내디바이스 = deviceRepository.findMyDevice(내디바이스.getDeviceId(), 구글테스트계정).get();
 
+        Assertions.assertThat(내디바이스.getDeviceName()).isEqualTo(새로운디바이스명);
+    }
+
+    @Test
+    @DisplayName("디바이스 목록 가져오기2")
+    void getDevices() {
+        // given
+        User 구글테스트계정 = saveGoogleUser();
+        Device 내디바이스 = saveDevice(구글테스트계정);
+
+        List<String> 기기아이디목록 = Arrays.asList(내디바이스.getDeviceId());
+
+        // when
+        List<Device> 디바이스목록 = deviceService.getDevices(기기아이디목록, 구글테스트계정);
+
+        // then
+        Assertions.assertThat(디바이스목록).isNotNull();
+        Assertions.assertThat(디바이스목록.size()).isOne();
+        Assertions.assertThat(디바이스목록.get(0).getDeviceId()).isEqualTo(내디바이스.getDeviceId());
     }
 
     @Test
@@ -97,14 +121,15 @@ public class DeviceServiceTest extends ServiceTest {
         User 구글테스트계정 = saveGoogleUser();
         Device 내디바이스 = saveDevice(구글테스트계정);
 
-        List<String> 기기아이디목록 =Arrays.asList(내디바이스.getDeviceId());
+        List<Device> 디바이스목록 = Arrays.asList(내디바이스);
 
         // when
-        deviceService.disconnectDevice(기기아이디목록, 구글테스트계정);
+        deviceService.disconnectDevices(디바이스목록);
 
         // then
-        Assertions.assertThat(내디바이스.isConnected()).isEqualTo(false);
-
+        Assertions.assertThat(내디바이스.getUserSeq()).isNull();
+        Assertions.assertThat(내디바이스.getFcmToken()).isNull();
+        Assertions.assertThat(내디바이스.isConnected()).isFalse();
     }
 
     @Test
@@ -112,35 +137,64 @@ public class DeviceServiceTest extends ServiceTest {
     void changeDeviceSetting() {
         // given
         User 구글테스트계정 = saveGoogleUser();
-        Device 내디바이스 = saveDevice(구글테스트계정);
+        Device before디바이스 = saveDevice(구글테스트계정);
+        String before민감도 = SensitivityType.MEDIUM.toString();
+        String before카메라모드 = CameraModeType.FRONT.toString();
+        String after민감도 = SensitivityType.HIGH.toString();
+        String after카메라모드 = CameraModeType.BACK.toString();
 
         // when
-        deviceService.changeDeviceSetting(내디바이스.getDeviceId(), "HIGH", "BACK", 구글테스트계정);
+        deviceService.changeDeviceSetting(before디바이스.getDeviceId(), after민감도, after카메라모드, 구글테스트계정);
 
         // then
-        Assertions.assertThat(내디바이스.getSensitivity()).isEqualTo(SensitivityType.HIGH);
-        Assertions.assertThat(내디바이스.getCameraMode()).isEqualTo(CameraModeType.BACK);
+        Device after디바이스 = deviceRepository.findMyDevice(before디바이스.getDeviceId(), 구글테스트계정).get();
 
+        Assertions.assertThat(before디바이스.getSensitivity().toString()).isEqualTo(before민감도);
+        Assertions.assertThat(before디바이스.getCameraMode().toString()).isEqualTo(before카메라모드);
+        Assertions.assertThat(after디바이스.getSensitivity().toString()).isEqualTo(after민감도);
+        Assertions.assertThat(after디바이스.getCameraMode().toString()).isEqualTo(after카메라모드);
     }
 
     @Test
-    @DisplayName("디바이스 명령 내리기")
+    @DisplayName("디바이스 제어하기")
     void controlDevice() {
         // given
         User 구글테스트계정 = saveGoogleUser();
         Device 내디바이스 = saveDevice(구글테스트계정);
+        List<ControlType> 컨트롤목록 = new ArrayList<>();
+        컨트롤목록.add(ControlType.SOUNDON);
+        컨트롤목록.add(ControlType.SOUNDOFF);
+        컨트롤목록.add(ControlType.STREAMON);
+        컨트롤목록.add(ControlType.STREAMOFF);
 
-        // when
-        deviceService.controlDevice(내디바이스.getDeviceId(), "STREAMON", 구글테스트계정);
+        for (ControlType type : 컨트롤목록) {
+            // when
+            deviceService.controlDevice(내디바이스.getDeviceId(), 구글테스트계정, type.toString());
 
-        // then
-        Assertions.assertThat(내디바이스.isStreamActive()).isEqualTo(true);
+            // then
+            내디바이스 = deviceRepository.findMyDevice(내디바이스.getDeviceId(), 구글테스트계정).get();
 
+            switch (type) {
+                case SOUNDON:
+                    Assertions.assertThat(내디바이스.isSoundMode()).isTrue();
+                    break;
+                case SOUNDOFF:
+                    Assertions.assertThat(내디바이스.isSoundMode()).isFalse();
+                    break;
+                case STREAMON:
+                    Assertions.assertThat(내디바이스.isStreamActive()).isTrue();
+                    break;
+                case STREAMOFF:
+                    Assertions.assertThat(내디바이스.isStreamActive()).isFalse();
+                    break;
+                default:
+                    Assertions.assertThat(true).isFalse();
+            }
+        }
     }
 
-
-    private DeviceInfoRequest deviceInfoRequest() {
-        return new DeviceInfoRequest("1234", "myDevice");
+    private DeviceInfoRequest deviceInfoRequest(String deviceId, String deviceName) {
+        return new DeviceInfoRequest(deviceId, deviceName);
     }
 
 }
