@@ -48,8 +48,7 @@ public class DeviceController {
             }
     )
     public ResponseEntity<List<DeviceResponse>> getAllDevices(@Parameter(hidden = true) User user){
-        Long userSeq = user.getUserSeq();
-        List<Device> devices = deviceService.getAllDevices(userSeq);
+        List<Device> devices = deviceService.getAllDevices(user);
 
         List<DeviceResponse> deviceResponses = devices.stream()
                 .map(device -> new DeviceResponse(
@@ -113,8 +112,14 @@ public class DeviceController {
     public ResponseEntity<Void> disconnectDevice(
             @Parameter(name = "DeviceIdsRequest", description = "연동 해제할 카메라 기기 목록", required = true) @RequestBody DeviceIdsRequest request,
             @Parameter(hidden = true) User user) {
-        List<String> fcmTokens = deviceService.disconnectDevice(request.deviceIds(), user);
-        devicePushService.showQRCode(fcmTokens);
+        List<Device> devices = deviceService.getDevices(request.deviceIds(), user);
+        List<String> tokens = devices.stream()
+                .map(Device::getFcmToken)
+                .toList();
+
+        deviceService.disconnectDevices(devices);
+        devicePushService.showQRCode(tokens);
+
         return ResponseEntity.ok().build();
     }
 
@@ -132,7 +137,7 @@ public class DeviceController {
             @Parameter(description = "기기 아이디", required = true, in = ParameterIn.PATH) @PathVariable(name = "deviceId") String deviceId,
             @Parameter(name = "ControlTypeRequest", description = "명령 내릴 컨트롤 타입", required = true) @RequestBody ControlTypeRequest request,
             @Parameter(hidden = true) User user){
-        Device device = deviceService.controlDevice(deviceId, user);
+        Device device = deviceService.getDevice(deviceId, user);
 
         devicePushService.controlDevice(request.controlType(), device);
 

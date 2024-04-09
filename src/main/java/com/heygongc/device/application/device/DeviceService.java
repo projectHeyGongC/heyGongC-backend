@@ -9,8 +9,6 @@ import com.heygongc.device.presentation.request.device.DeviceInfoRequest;
 import com.heygongc.global.utils.EnumUtils;
 import com.heygongc.user.domain.entity.User;
 import jakarta.transaction.Transactional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,8 +29,8 @@ public class DeviceService{
                 .orElseThrow(DeviceNotFoundException::new);
     }
 
-    public List<Device> getAllDevices(Long userSeq) {
-        return deviceRepository.findAllByUserSeq(userSeq);
+    public List<Device> getAllDevices(User user) {
+        return deviceRepository.findAllByUserSeq(user.getUserSeq());
     }
 
     @Transactional
@@ -53,16 +51,13 @@ public class DeviceService{
 
     }
 
+    public List<Device> getDevices(List<String> deviceIds, User user) {
+        return deviceRepository.findAllDevices(deviceIds, user);
+    }
+
     @Transactional
-    public List<String> disconnectDevice(List<String> deviceIds, User user) {
-        List<Device> devices = deviceRepository.findAllDevices(deviceIds, user);
-        List<String> tokens = devices.stream()
-                .map(Device::getFcmToken)
-                .collect(Collectors.toList());
-
+    public void disconnectDevices(List<Device> devices) {
         devices.forEach(Device::disConnectDevice);
-
-        return tokens;
     }
 
     @Transactional
@@ -74,15 +69,4 @@ public class DeviceService{
                 EnumUtils.getEnumConstant(CameraModeType.class, cameraMode));
         
     }
-
-    @Transactional
-    public Device controlDevice(String deviceId, User user){
-
-        return deviceRepository.findMyDevice(deviceId, user)
-                .orElseThrow(DeviceNotFoundException::new);
-
-
-
-    }
-
 }

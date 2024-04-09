@@ -37,20 +37,4 @@ public class DeviceSetup {
 
         return deviceRepository.save(device);
     }
-
-    public static Device saveSpecificDevice(User user) {
-
-        Device device = Device.createDevice()
-                .deviceId("1234")
-                .modelName("IPHONE" + ((int) (Math.random() * 99) + 1))
-                .deviceOs(OsType.AOS)
-                .fcmToken("4712478v" + ((int) (Math.random() * 9999) + 1))
-                .build();
-
-        device.changeDeviceName("거실" + ((int) (Math.random() * 9) + 1));
-        device.setDeviceOwner(user.getUserSeq());
-        device.connectDevice();
-
-        return deviceRepository.save(device);
-    }
 }
