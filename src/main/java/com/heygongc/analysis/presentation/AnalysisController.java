@@ -87,7 +87,7 @@ public class AnalysisController {
             @Parameter(description = "기기 아이디", required = true, in = ParameterIn.QUERY) @RequestParam(name = "deviceId") String deviceId,
             @Parameter(description = "조회일자", required = true, in = ParameterIn.QUERY) @RequestParam(name = "requestAt") String requestAt
     ) throws ParseException {
-        List<Notification> notifications = notificationService.getNotifications(user, requestAt, deviceId);
+        List<Notification> notifications = notificationService.getNotifications(user, deviceId, requestAt);
         List<AnalysisDetailResponse.Graph> graph = analysisService.makeAnalysisGraph(notifications);
         Device device = deviceService.getDevice(deviceId, user);
 

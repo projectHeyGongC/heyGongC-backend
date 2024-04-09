@@ -33,8 +33,8 @@ public class CustomVideoRepositoryImpl implements CustomVideoRepository {
 
         Video video = queryFactory.selectFrom(qVideo)
                 .where(qVideo.user.userSeq.eq(userSeq)
-                        .and(qVideo.created_at.between(startOfDay, endOfDay)))
-                .orderBy(qVideo.created_at.desc())
+                        .and(qVideo.createdAt.between(startOfDay, endOfDay)))
+                .orderBy(qVideo.createdAt.desc())
                 .fetchOne();
 
         return Optional.ofNullable(video);

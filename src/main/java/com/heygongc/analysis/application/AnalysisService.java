@@ -57,10 +57,11 @@ public class AnalysisService {
         }
 
         // 2. Map에 count 저장
+        // TODO: 로직 확인 필요
         for (Notification n : notifications) {
-            LocalDateTime createdAt = n.getCreated_at();
-            int hour = createdAt.getHour();
-            int minute = createdAt.getMinute();
+            LocalDateTime notificationAt = n.getNotificationAt();
+            int hour = notificationAt.getHour();
+            int minute = notificationAt.getMinute();
             short totalMinute = (short) ((hour * 60) + (minute % 5) * 5); // 5분 단위로 나눠서 분 단위로 변경
             dateList.put(totalMinute, dateList.get(totalMinute) + 1);
         }

@@ -9,6 +9,6 @@ public record NotificationResponse (
         @Schema(description = "알림 내용")
         String content,
         @Schema(description = "발생 일시", allowableValues = {"true", "false"})
-        LocalDateTime issuedAt
-) {
+        String issuedAt
+){
 }

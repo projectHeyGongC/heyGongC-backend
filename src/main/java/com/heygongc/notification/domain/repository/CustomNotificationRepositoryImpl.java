@@ -28,7 +28,7 @@ public class CustomNotificationRepositoryImpl implements CustomNotificationRepos
 
         return queryFactory.selectFrom(qNotification)
                 .where(qNotification.user.userSeq.eq(userSeq))
-                .orderBy(qNotification.created_at.desc())
+                .orderBy(qNotification.createdAt.desc())
                 .fetch();
     }
 
@@ -45,7 +45,7 @@ public class CustomNotificationRepositoryImpl implements CustomNotificationRepos
 
         List<Notification> notifications = queryFactory.selectFrom(qNotification)
                 .where(qNotification.user.userSeq.eq(userSeq)
-                        .and(qNotification.created_at.between(startOfDay, endOfDay)))
+                        .and(qNotification.createdAt.between(startOfDay, endOfDay)))
                 .fetch();
 
         return notifications;
@@ -65,8 +65,8 @@ public class CustomNotificationRepositoryImpl implements CustomNotificationRepos
         List<Notification> notifications = queryFactory.selectFrom(qNotification)
                 .where(qNotification.user.userSeq.eq(userSeq)
                         .and(qNotification.device.deviceId.eq(deviceId))
-                        .and(qNotification.created_at.between(startOfDay, endOfDay)))
-                .orderBy(qNotification.created_at.asc())
+                        .and(qNotification.createdAt.between(startOfDay, endOfDay)))
+                .orderBy(qNotification.createdAt.asc())
                 .fetch();
 
         return notifications;
