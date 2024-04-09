@@ -8,6 +8,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 
+import java.time.LocalDateTime;
+
 import static lombok.AccessLevel.PROTECTED;
 
 @Entity
@@ -29,7 +31,9 @@ public class Notification extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private NotificationType type;
 
-
+    @Column(name = "notification_at", nullable = false)
+    @Builder.Default
+    private LocalDateTime notificationAt = LocalDateTime.now();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_seq")
@@ -44,5 +48,7 @@ public class Notification extends BaseTimeEntity {
         this.type = type;
         this.user = user;
         this.device = device;
+        // TODO: 이 부분 저장이 되지 않음. 왜 그럴까?
+//        this.notificationAt = LocalDateTime.now();
     }
 }
