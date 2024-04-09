@@ -5,6 +5,7 @@ import com.heygongc.device.application.device.DeviceService;
 import com.heygongc.device.domain.entity.Device;
 import com.heygongc.device.domain.repository.DeviceRepository;
 import com.heygongc.device.domain.type.CameraModeType;
+import com.heygongc.device.domain.type.ControlType;
 import com.heygongc.device.domain.type.SensitivityType;
 import com.heygongc.device.presentation.request.device.DeviceInfoRequest;
 import com.heygongc.user.domain.entity.User;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -153,10 +155,46 @@ public class DeviceServiceTest extends ServiceTest {
         Assertions.assertThat(after디바이스.getCameraMode().toString()).isEqualTo(after카메라모드);
     }
 
+    @Test
+    @DisplayName("디바이스 제어하기")
+    void controlDevice() {
+        // given
+        User 구글테스트계정 = saveGoogleUser();
+        Device 내디바이스 = saveDevice(구글테스트계정);
+        List<ControlType> 컨트롤목록 = new ArrayList<>();
+        컨트롤목록.add(ControlType.SOUNDON);
+        컨트롤목록.add(ControlType.SOUNDOFF);
+        컨트롤목록.add(ControlType.STREAMON);
+        컨트롤목록.add(ControlType.STREAMOFF);
+
+        for (ControlType type : 컨트롤목록) {
+            // when
+            deviceService.controlDevice(내디바이스.getDeviceId(), 구글테스트계정, type.toString());
+
+            // then
+            내디바이스 = deviceRepository.findMyDevice(내디바이스.getDeviceId(), 구글테스트계정).get();
+
+            switch (type) {
+                case SOUNDON:
+                    Assertions.assertThat(내디바이스.isSoundMode()).isTrue();
+                    break;
+                case SOUNDOFF:
+                    Assertions.assertThat(내디바이스.isSoundMode()).isFalse();
+                    break;
+                case STREAMON:
+                    Assertions.assertThat(내디바이스.isStreamActive()).isTrue();
+                    break;
+                case STREAMOFF:
+                    Assertions.assertThat(내디바이스.isStreamActive()).isFalse();
+                    break;
+                default:
+                    Assertions.assertThat(true).isFalse();
+            }
+        }
+    }
 
     private DeviceInfoRequest deviceInfoRequest(String deviceId, String deviceName) {
-        return new DeviceInfoRequest(deviceId, deviceName
-        );
+        return new DeviceInfoRequest(deviceId, deviceName);
     }
 
 }

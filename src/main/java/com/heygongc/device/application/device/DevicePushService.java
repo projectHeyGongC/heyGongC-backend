@@ -1,6 +1,5 @@
 package com.heygongc.device.application.device;
 
-import com.heygongc.device.domain.entity.Device;
 import com.heygongc.device.domain.type.ControlType;
 import com.heygongc.global.infra.FirebaseCloudMessaging;
 import com.heygongc.global.type.MessageType;
@@ -19,13 +18,13 @@ public class DevicePushService {
         this.firebaseCloudMessaging = firebaseCloudMessaging;
     }
 
-    public void hideQRCode(String fcmToken){
+    public void hideQRCode(String fcmToken) {
         HashMap<String, String> data = new HashMap<>();
         data.put("action", String.valueOf(MessageType.HIDEQR));
         firebaseCloudMessaging.sendMessage(fcmToken, "QR 코드 숨기기", data);
     }
 
-    public void showQRCode(List<String> fcmTokens){
+    public void showQRCode(List<String> fcmTokens) {
         HashMap<String, String> data = new HashMap<>();
         data.put("action", String.valueOf(MessageType.SHOWQR));
         if(!fcmTokens.isEmpty()) {
@@ -33,29 +32,29 @@ public class DevicePushService {
         }
     }
 
-    public void controlDevice(String controlType, Device device){
+    public void controlDevice(String controlType, String fcmToken) {
         ControlType type = EnumUtils.getEnumConstant(ControlType.class, controlType);
+        if (type == null) {
+            throw new IllegalArgumentException("Invalid control type: " + controlType);
+        }
 
         HashMap<String, String> data = new HashMap<>();
-
-
         switch (type) {
-
             case SOUNDON:
-                device.soundModeOn();
                 data.put("action", String.valueOf(MessageType.SOUNDMODEON));
-                firebaseCloudMessaging.sendMessage(device.getFcmToken(), "소리 감지 모드 ON", data);
+                firebaseCloudMessaging.sendMessage(fcmToken, "소리 감지 모드 ON", data);
                 break;
             case SOUNDOFF:
-                device.soundModeOff();
                 data.put("action", String.valueOf(MessageType.SOUNDMODEOFF));
-                firebaseCloudMessaging.sendMessage(device.getFcmToken(), "소리 감지 모드 OFF", data);
+                firebaseCloudMessaging.sendMessage(fcmToken, "소리 감지 모드 OFF", data);
                 break;
             case STREAMON:
-                device.startStreaming();
+                data.put("action", String.valueOf(MessageType.STREAMON));
+                firebaseCloudMessaging.sendMessage(fcmToken, "스트리밍 모드 ON", data);
                 break;
             case STREAMOFF:
-                device.stopStreaming();
+                data.put("action", String.valueOf(MessageType.STREAMOFF));
+                firebaseCloudMessaging.sendMessage(fcmToken, "스트리밍 모드 OFF", data);
                 break;
             default:
                 throw new IllegalArgumentException("Invalid control type: " + controlType);

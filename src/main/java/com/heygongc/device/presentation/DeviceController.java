@@ -47,7 +47,7 @@ public class DeviceController {
                     @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = DeviceResponse.class))))
             }
     )
-    public ResponseEntity<List<DeviceResponse>> getAllDevices(@Parameter(hidden = true) User user){
+    public ResponseEntity<List<DeviceResponse>> getAllDevices(@Parameter(hidden = true) User user) {
         List<Device> devices = deviceService.getDevices(user);
 
         List<DeviceResponse> deviceResponses = devices.stream()
@@ -72,7 +72,7 @@ public class DeviceController {
     )
     public ResponseEntity<Void> subscribeDevice(
             @Parameter(name = "DeviceInfoRequest", description = "카메라 기기 정보", required = true) @RequestBody DeviceInfoRequest request,
-            @Parameter(hidden = true) User user){
+            @Parameter(hidden = true) User user) {
         deviceService.subscribeDevice(request, user);
 
         String fcmToken = user.getFcmToken();
@@ -135,9 +135,10 @@ public class DeviceController {
     public ResponseEntity<Void> controlDevice(
             @Parameter(description = "기기 아이디", required = true, in = ParameterIn.PATH) @PathVariable(name = "deviceId") String deviceId,
             @Parameter(name = "ControlTypeRequest", description = "명령 내릴 컨트롤 타입", required = true) @RequestBody ControlTypeRequest request,
-            @Parameter(hidden = true) User user){
+            @Parameter(hidden = true) User user) {
+        deviceService.controlDevice(deviceId, user, request.controlType());
         Device device = deviceService.getDevice(deviceId, user);
-        devicePushService.controlDevice(request.controlType(), device);
+        devicePushService.controlDevice(request.controlType(), device.getFcmToken());
 
         return ResponseEntity.ok().build();
     }
@@ -154,7 +155,7 @@ public class DeviceController {
     public ResponseEntity<Void> changeDeviceSetting(
             @Parameter(description = "기기 아이디", required = true, in = ParameterIn.PATH) @PathVariable(name = "deviceId") String deviceId,
             @Parameter(name = "CameraDeviceSettingRequest", description = "명령 내릴 컨트롤 타입", required = true) @RequestBody CameraDeviceSettingRequest request,
-            @Parameter(hidden = true) User user){
+            @Parameter(hidden = true) User user) {
         deviceService.changeDeviceSetting(deviceId, request.sensitivity(), request.cameraMode(), user);
 
         return ResponseEntity.ok().build();

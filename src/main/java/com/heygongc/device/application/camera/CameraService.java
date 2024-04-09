@@ -66,7 +66,7 @@ public class CameraService {
         device.changeCameraDeviceStatus(battery, temperature);
     }
 
-    public boolean isConnected(Device device){
+    public boolean isConnected(Device device) {
         return device.isConnected();
     }
 

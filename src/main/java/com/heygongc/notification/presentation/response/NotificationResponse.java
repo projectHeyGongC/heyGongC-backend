@@ -10,5 +10,5 @@ public record NotificationResponse (
         String content,
         @Schema(description = "발생 일시", allowableValues = {"true", "false"})
         LocalDateTime issuedAt
-){
+) {
 }
