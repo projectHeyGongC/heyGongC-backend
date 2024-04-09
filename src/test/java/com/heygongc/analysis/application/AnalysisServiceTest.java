@@ -15,7 +15,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.heygongc.device.setup.DeviceSetup.saveDevice;
 import static com.heygongc.notification.setup.NotificationSetup.saveNotification;
@@ -203,44 +205,34 @@ public class AnalysisServiceTest extends ServiceTest {
 
         List<Notification> notifications = new ArrayList<>();
 
-        // 10개
-        for (int i = 0; i < 10; i++) {
-            LocalDateTime dt = LocalDateTime.of(today, LocalTime.of(0, i));
-            Notification n = saveNotification(구글테스트계정, 디바이스);
-            n.setNotificationAt(dt);
-            notifications.add(n);
-        }
+        Map<String, Integer> map = new HashMap<>();
+        map.put("00:00", 1);
+        map.put("00:01", 1);
+        map.put("00:02", 1);
+        map.put("00:03", 1);
+        map.put("00:04", 1);
+        map.put("00:05", 1);
+        map.put("00:06", 1);
+        map.put("00:07", 1);
+        map.put("00:08", 1);
+        map.put("00:09", 1);
+        map.put("01:00", 3);
+        map.put("01:05", 1);
+        map.put("01:06", 2);
+        map.put("01:10", 1);
+        map.put("01:14", 1);
+        map.put("01:22", 1);
 
-        // 3개
-        for (int i = 0; i < 3; i++) {
-            LocalDateTime dt = LocalDateTime.of(today, LocalTime.of(1, i));
-            Notification n = saveNotification(구글테스트계정, 디바이스);
-            n.setNotificationAt(dt);
-            notifications.add(n);
-        }
-
-        // 3개
-        for (int i = 5; i < 8; i++) {
-            LocalDateTime dt = LocalDateTime.of(today, LocalTime.of(1, i));
-            Notification n = saveNotification(구글테스트계정, 디바이스);
-            n.setNotificationAt(dt);
-            notifications.add(n);
-        }
-
-        // 2개
-        for (int i = 10; i < 12; i++) {
-            LocalDateTime dt = LocalDateTime.of(today, LocalTime.of(1, i));
-            Notification n = saveNotification(구글테스트계정, 디바이스);
-            n.setNotificationAt(dt);
-            notifications.add(n);
-        }
-
-        // 2개
-        for (int i = 23; i < 24; i++) {
-            LocalDateTime dt = LocalDateTime.of(today, LocalTime.of(1, i));
-            Notification n = saveNotification(구글테스트계정, 디바이스);
-            n.setNotificationAt(dt);
-            notifications.add(n);
+        for (String key : map.keySet()) {
+            int count = map.get(key);
+            for (int i = 0; i < count; i++) {
+                int hour = Integer.parseInt(key.substring(0, 2));
+                int minute = Integer.parseInt(key.substring(3, 5));
+                LocalDateTime dt = LocalDateTime.of(today, LocalTime.of(hour, minute));
+                Notification n = saveNotification(구글테스트계정, 디바이스);
+                n.setNotificationAt(dt);
+                notifications.add(n);
+            }
         }
 
         // when
@@ -255,7 +247,6 @@ public class AnalysisServiceTest extends ServiceTest {
         Assertions.assertThat(graph.get(1).y()).isEqualTo(5);
         Assertions.assertThat(graph.get(2).x()).isEqualTo("00:10");
         Assertions.assertThat(graph.get(2).y()).isEqualTo(0);
-
         Assertions.assertThat(graph.get(12).x()).isEqualTo("01:00");
         Assertions.assertThat(graph.get(12).y()).isEqualTo(3);
         Assertions.assertThat(graph.get(13).x()).isEqualTo("01:05");
