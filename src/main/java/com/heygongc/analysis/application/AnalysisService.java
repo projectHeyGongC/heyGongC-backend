@@ -62,15 +62,15 @@ public class AnalysisService {
             LocalDateTime notificationAt = n.getNotificationAt();
             int hour = notificationAt.getHour();
             int minute = notificationAt.getMinute();
-            short totalMinute = (short) ((hour * 60) + (minute % 5) * 5); // 5분 단위로 나눠서 분 단위로 변경
+            short totalMinute = (short) ((hour * 60) + (minute / 5 * 5)); // 5분 단위로 나눠서 분 단위로 변경
             dateList.put(totalMinute, dateList.get(totalMinute) + 1);
         }
 
         // 3. graph 생성
         List<AnalysisDetailResponse.Graph> graph = new ArrayList<>();
         for (Short totalMinute : dateList.keySet()) {
-            String hour = String.valueOf(totalMinute / 60);
-            String minute = String.valueOf(totalMinute % 60);
+            String hour = String.format("%02d", totalMinute / 60);
+            String minute = String.format("%02d", totalMinute % 60);
             String time = hour + ":" + minute;
             graph.add(
                     new AnalysisDetailResponse.Graph(
