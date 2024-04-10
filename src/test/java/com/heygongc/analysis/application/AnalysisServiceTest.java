@@ -11,9 +11,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.heygongc.device.setup.DeviceSetup.saveDevice;
 import static com.heygongc.notification.setup.NotificationSetup.saveNotification;
@@ -125,23 +129,11 @@ public class AnalysisServiceTest extends ServiceTest {
         Device 디바이스 = saveDevice(구글테스트계정);
         List<Notification> notifications = new ArrayList<>();
 
-        while (true) {
-            LocalDateTime now = LocalDateTime.now();
-            // 4분 50초 ~ 5분 사이에 저장될 경우 리스트 데이터가 달라지기 때문에 대기
-            if (now.getMinute() % 5 == 4 && now.getSecond() > 50) {
-                try {
-                    // 1초 대기
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {}
-            } else {
-                break;
-            }
-        }
         LocalDateTime now = LocalDateTime.now();
-        short totalMinute = (short) ((now.getHour() * 60) + (now.getMinute() % 5) * 5); // 5분 단위로 나눠서 분 단위로 변경
+        short totalMinute = (short) ((now.getHour() * 60) + (now.getMinute() / 5 * 5)); // 5분 단위로 나눠서 분 단위로 변경
         int index = totalMinute / 5;
-        String hour = String.valueOf(totalMinute / 60);
-        String minute = String.valueOf(totalMinute % 60);
+        String hour = String.format("%02d", totalMinute / 60);
+        String minute = String.format("%02d", totalMinute % 60);
         String time = hour + ":" + minute;
 
         notifications.add(saveNotification(구글테스트계정, 디바이스));
@@ -149,6 +141,8 @@ public class AnalysisServiceTest extends ServiceTest {
         notifications.add(saveNotification(구글테스트계정, 디바이스));
         notifications.add(saveNotification(구글테스트계정, 디바이스));
         notifications.add(saveNotification(구글테스트계정, 디바이스));
+
+        notifications.forEach(n -> n.setNotificationAt(now));
 
         // when
         List<AnalysisDetailResponse.Graph> graph = analysisService.makeAnalysisGraph(notifications);
@@ -158,5 +152,110 @@ public class AnalysisServiceTest extends ServiceTest {
         Assertions.assertThat(graph).isNotEmpty();
         Assertions.assertThat(graph.get(index).x()).isEqualTo(time);
         Assertions.assertThat(graph.get(index).y()).isEqualTo(5);
+    }
+
+    @Test
+    @DisplayName("graph 생성 - 자정과 정오")
+    void makeAnalysisGraphWithMidnightAndNoon() {
+        // given
+        User 구글테스트계정 = saveGoogleUser();
+        Device 디바이스 = saveDevice(구글테스트계정);
+
+        LocalDate today = LocalDate.now();
+        LocalTime midnight = LocalTime.MIDNIGHT;
+        LocalTime noon = LocalTime.NOON;
+        LocalDateTime todayMidnight = LocalDateTime.of(today, midnight); // 00:00
+        LocalDateTime todayNoon = LocalDateTime.of(today, noon); // 12:00
+
+        List<Notification> notifications1 = new ArrayList<>();
+        notifications1.add(saveNotification(구글테스트계정, 디바이스));
+        notifications1.add(saveNotification(구글테스트계정, 디바이스));
+        notifications1.add(saveNotification(구글테스트계정, 디바이스));
+        notifications1.forEach(n -> n.setNotificationAt(todayMidnight));
+
+        List<Notification> notifications2 = new ArrayList<>();
+        notifications2.add(saveNotification(구글테스트계정, 디바이스));
+        notifications2.add(saveNotification(구글테스트계정, 디바이스));
+        notifications2.forEach(n -> n.setNotificationAt(todayNoon));
+
+        List<Notification> notifications = new ArrayList<>();
+        notifications.addAll(notifications1);
+        notifications.addAll(notifications2);
+
+        // when
+        List<AnalysisDetailResponse.Graph> graph = analysisService.makeAnalysisGraph(notifications);
+
+        // then
+        Assertions.assertThat(graph).isNotNull();
+        Assertions.assertThat(graph).isNotEmpty();
+        Assertions.assertThat(graph.get(0).x()).isEqualTo("00:00");
+        Assertions.assertThat(graph.get(0).y()).isEqualTo(3);
+        Assertions.assertThat(graph.get(144).x()).isEqualTo("12:00");
+        Assertions.assertThat(graph.get(144).y()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("graph 생성 - 다양한 데이터")
+    void makeAnalysisGraphWithVariousData() {
+        // given
+        User 구글테스트계정 = saveGoogleUser();
+        Device 디바이스 = saveDevice(구글테스트계정);
+
+        LocalDate today = LocalDate.now();
+
+        List<Notification> notifications = new ArrayList<>();
+
+        Map<String, Integer> map = new HashMap<>();
+        map.put("00:00", 1);
+        map.put("00:01", 1);
+        map.put("00:02", 1);
+        map.put("00:03", 1);
+        map.put("00:04", 1);
+        map.put("00:05", 1);
+        map.put("00:06", 1);
+        map.put("00:07", 1);
+        map.put("00:08", 1);
+        map.put("00:09", 1);
+        map.put("01:00", 3);
+        map.put("01:05", 1);
+        map.put("01:06", 2);
+        map.put("01:10", 1);
+        map.put("01:14", 1);
+        map.put("01:22", 1);
+
+        for (String key : map.keySet()) {
+            int count = map.get(key);
+            for (int i = 0; i < count; i++) {
+                int hour = Integer.parseInt(key.substring(0, 2));
+                int minute = Integer.parseInt(key.substring(3, 5));
+                LocalDateTime dt = LocalDateTime.of(today, LocalTime.of(hour, minute));
+                Notification n = saveNotification(구글테스트계정, 디바이스);
+                n.setNotificationAt(dt);
+                notifications.add(n);
+            }
+        }
+
+        // when
+        List<AnalysisDetailResponse.Graph> graph = analysisService.makeAnalysisGraph(notifications);
+
+        // then
+        Assertions.assertThat(graph).isNotNull();
+        Assertions.assertThat(graph).isNotEmpty();
+        Assertions.assertThat(graph.get(0).x()).isEqualTo("00:00");
+        Assertions.assertThat(graph.get(0).y()).isEqualTo(5);
+        Assertions.assertThat(graph.get(1).x()).isEqualTo("00:05");
+        Assertions.assertThat(graph.get(1).y()).isEqualTo(5);
+        Assertions.assertThat(graph.get(2).x()).isEqualTo("00:10");
+        Assertions.assertThat(graph.get(2).y()).isEqualTo(0);
+        Assertions.assertThat(graph.get(12).x()).isEqualTo("01:00");
+        Assertions.assertThat(graph.get(12).y()).isEqualTo(3);
+        Assertions.assertThat(graph.get(13).x()).isEqualTo("01:05");
+        Assertions.assertThat(graph.get(13).y()).isEqualTo(3);
+        Assertions.assertThat(graph.get(14).x()).isEqualTo("01:10");
+        Assertions.assertThat(graph.get(14).y()).isEqualTo(2);
+        Assertions.assertThat(graph.get(15).x()).isEqualTo("01:15");
+        Assertions.assertThat(graph.get(15).y()).isEqualTo(0);
+        Assertions.assertThat(graph.get(16).x()).isEqualTo("01:20");
+        Assertions.assertThat(graph.get(16).y()).isEqualTo(1);
     }
 }
