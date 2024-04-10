@@ -8,7 +8,7 @@ import com.heygongc.device.domain.repository.DeviceRepository;
 import com.heygongc.device.domain.type.CameraModeType;
 import com.heygongc.device.domain.type.ControlType;
 import com.heygongc.device.domain.type.SensitivityType;
-import com.heygongc.device.presentation.request.device.DeviceInfoRequest;
+import com.heygongc.device.presentation.request.device.DeviceSubscribeRequest;
 import com.heygongc.user.domain.entity.User;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -76,7 +76,7 @@ public class DeviceServiceTest extends ServiceTest {
         User 구글테스트계정 = saveGoogleUser();
         Device 내디바이스 = saveDevice();
         String 새로운디바이스명 = "newDeviceName";
-        DeviceInfoRequest request = deviceInfoRequest(내디바이스.getDeviceId(), 새로운디바이스명);
+        DeviceSubscribeRequest request = deviceSubscribeRequest(내디바이스.getDeviceId(), 새로운디바이스명);
         doNothing().when(devicePushService).hideQRCode(any());
 
         // when
@@ -214,7 +214,7 @@ public class DeviceServiceTest extends ServiceTest {
         }
     }
 
-    private DeviceInfoRequest deviceInfoRequest(String deviceId, String deviceName) {
-        return new DeviceInfoRequest(deviceId, deviceName);
+    private DeviceSubscribeRequest deviceSubscribeRequest(String deviceId, String deviceName) {
+        return new DeviceSubscribeRequest(deviceId, deviceName);
     }
 }
