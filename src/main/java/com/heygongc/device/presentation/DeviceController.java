@@ -62,7 +62,7 @@ public class DeviceController {
             }
     )
     public ResponseEntity<Void> subscribeDevice(
-            @Parameter(name = "DeviceInfoRequest", description = "기기 연동 요청 정보", required = true) @RequestBody DeviceSubscribeRequest request,
+            @Parameter(name = "DeviceSubscribeRequest", description = "기기 연동 요청 정보", required = true) @RequestBody DeviceSubscribeRequest request,
             @Parameter(hidden = true) User user) throws Exception {
         deviceService.subscribeDevice(request.deviceId(), request.deviceName(), user);
         return ResponseEntity.ok().build();
@@ -78,7 +78,7 @@ public class DeviceController {
     )
     public ResponseEntity<Void> changeDeviceName(
             @Parameter(description = "기기 아이디", required = true, in = ParameterIn.PATH) @PathVariable(name = "deviceId") String deviceId,
-            @Parameter(name = "DeviceChangeNameRequest", description = "기기 정보 수정 요청 정보", required = true) @RequestBody DeviceNameRequest request,
+            @Parameter(name = "DeviceNameRequest", description = "기기 정보 수정 요청 정보", required = true) @RequestBody DeviceNameRequest request,
             @Parameter(hidden = true) User user) {
         deviceService.changeDeviceName(deviceId, request.deviceName(), user);
         return ResponseEntity.ok().build();
@@ -93,7 +93,7 @@ public class DeviceController {
             }
     )
     public ResponseEntity<Void> disconnectDevice(
-            @Parameter(name = "DeviceIdsRequest", description = "기기 연동 해제 요청 정보", required = true) @RequestBody DeviceDisconnectRequest request,
+            @Parameter(name = "DeviceDisconnectRequest", description = "기기 연동 해제 요청 정보", required = true) @RequestBody DeviceDisconnectRequest request,
             @Parameter(hidden = true) User user) throws Exception {
         deviceService.disconnectDevices(request.deviceIds(), user);
         return ResponseEntity.ok().build();
@@ -110,7 +110,7 @@ public class DeviceController {
     )
     public ResponseEntity<Void> controlDevice(
             @Parameter(description = "기기 아이디", required = true, in = ParameterIn.PATH) @PathVariable(name = "deviceId") String deviceId,
-            @Parameter(name = "ControlTypeRequest", description = "기기 제어 요청 정보", required = true) @RequestBody DeviceControlRequest request,
+            @Parameter(name = "DeviceControlRequest", description = "기기 제어 요청 정보", required = true) @RequestBody DeviceControlRequest request,
             @Parameter(hidden = true) User user) throws Exception {
         deviceService.controlDevice(deviceId, user, request.controlType());
 
@@ -127,7 +127,7 @@ public class DeviceController {
     )
     public ResponseEntity<Void> changeDeviceSetting(
             @Parameter(description = "기기 아이디", required = true, in = ParameterIn.PATH) @PathVariable(name = "deviceId") String deviceId,
-            @Parameter(name = "CameraDeviceSettingRequest", description = "기기 설정 변경 요청 정보", required = true) @RequestBody DeviceSettingRequest request,
+            @Parameter(name = "DeviceSettingRequest", description = "기기 설정 변경 요청 정보", required = true) @RequestBody DeviceSettingRequest request,
             @Parameter(hidden = true) User user) {
         deviceService.changeDeviceSetting(deviceId, request.sensitivity(), request.cameraMode(), user);
         return ResponseEntity.ok().build();
