@@ -1,12 +1,9 @@
-package com.heygongc.global.filter;
+package com.heygongc.auth.presentation;
 
-import com.heygongc.global.error.exception.ForbiddenException;
+import com.heygongc.auth.application.TokenProvider;
 import com.heygongc.global.error.exception.UnauthenticatedException;
-import com.heygongc.user.application.JwtUtil;
 import com.heygongc.user.domain.entity.User;
-import com.heygongc.user.domain.repository.UserRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -14,21 +11,15 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-import java.util.Objects;
-
 @Component
 public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
     private static final String AUTHORIZATION = "Authorization";
     private static final String Bearer = "Bearer ";
 
-    private final JwtUtil jwtUtil;
-    private final UserRepository userRepository;
+    private final TokenProvider tokenProvider;
 
-    public LoginUserArgumentResolver(JwtUtil jwtUtil, UserRepository userRepository) {
-        this.jwtUtil = jwtUtil;
-        this.userRepository = userRepository;
+    public LoginUserArgumentResolver(@Qualifier("userProvider") TokenProvider tokenProvider) {
+        this.tokenProvider= tokenProvider;
     }
 
     @Override
@@ -44,21 +35,7 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
             throw new UnauthenticatedException();
         }
 
-        // 유효하지 않은 토큰이면 로그인 페이지로 리디렉션
-        jwtUtil.checkedValidTokenOrThrowException(accessToken);
-
-        Long userSeq = Long.parseLong(jwtUtil.extractSubject(accessToken));
-        String deviceId = jwtUtil.extractAudience(accessToken);
-        logger.info("userSeq({}), deviceId({})", userSeq, deviceId);
-
-        User user = userRepository.findById(userSeq)
-                .orElseThrow(UnauthenticatedException::new);
-
-        if (!Objects.equals(user.getDeviceId(), deviceId)) {
-            throw new ForbiddenException("새로운 로그인이 감지되었습니다.");
-        }
-
-        return user;
+        return tokenProvider.extract(accessToken);
     }
 
     private String extractTokenFromHeader(String header) {

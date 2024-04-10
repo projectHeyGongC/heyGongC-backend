@@ -17,8 +17,8 @@ public class NotificationService  {
         this.notificationRepository = notificationRepository;
     }
 
-    public List<Notification> getNotifications(Long userSeq) {
-        return notificationRepository.findAllByUserSeq(userSeq);
+    public List<Notification> getNotifications(User user) {
+        return notificationRepository.findAllByUserSeq(user.getUserSeq());
     }
 
     public List<Notification> getNotifications(User user, String requestAt) throws ParseException {

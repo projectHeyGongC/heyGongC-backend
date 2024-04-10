@@ -1,5 +1,6 @@
 package com.heygongc.user.application;
 
+import com.heygongc.auth.domain.AuthToken;
 import com.heygongc.common.ServiceTest;
 import com.heygongc.user.application.oauth.OauthUser;
 import com.heygongc.user.domain.entity.User;

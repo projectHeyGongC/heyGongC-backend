@@ -7,7 +7,6 @@ import com.heygongc.global.type.OsType;
 import com.heygongc.notification.domain.entity.Notification;
 import com.heygongc.notification.domain.repository.NotificationRepository;
 import com.heygongc.notification.domain.type.NotificationType;
-import com.heygongc.user.application.JwtUtil;
 import com.heygongc.user.domain.entity.User;
 import com.heygongc.user.domain.repository.UserRepository;
 import com.heygongc.user.exception.UserNotFoundException;
@@ -57,9 +56,7 @@ public class CameraService {
                     );
                 });
 
-        String accessToken = jwtUtil.generateCameraAccessToken(String.valueOf(device.getDeviceSeq()), device.getDeviceId());
-
-        return accessToken;
+        return jwtUtil.generateCameraAccessToken(device.getDeviceId());
     }
     @Transactional
     public void changeCameraDeviceStatus(Device device, int battery, int temperature) {

@@ -8,10 +8,22 @@ import com.heygongc.user.domain.type.SnsType;
 
 public class UserSetup {
 
-    private static final UserRepository userRepository = ApplicationContextProvider.getBean(UserRepository.class);
+//    private static final UserRepository userRepository = ApplicationContextProvider.getBean(UserRepository.class);
+
+    public static User mockUser() {
+        return User.createUser()
+                .deviceId("1")
+                .snsId("snsId" + ((int) (Math.random() * 9999) + 1))
+                .snsType(SnsType.GOOGLE)
+                .deviceOs(OsType.valueOf("AOS"))
+                .email("test" + ((int) (Math.random() * 9999) + 1) + "@test.com")
+                .alarm(true)
+                .ads(true)
+                .build();
+    }
 
     public static User saveGoogleUser() {
-        return userRepository.save(User.createUser()
+        return User.createUser()
                 .deviceId("deviceId" + ((int) (Math.random() * 9999) + 1))
                 .snsId("snsId" + ((int) (Math.random() * 9999) + 1))
                 .snsType(SnsType.GOOGLE)
@@ -19,11 +31,11 @@ public class UserSetup {
                 .email("test" + ((int) (Math.random() * 9999) + 1) + "@test.com")
                 .alarm(true)
                 .ads(true)
-                .build());
+                .build();
     }
 
     public static User saveAppleUser() {
-        return userRepository.save(User.createUser()
+        return User.createUser()
                 .deviceId("deviceId" + ((int) (Math.random() * 9999) + 1))
                 .snsId("snsId" + ((int) (Math.random() * 9999) + 1))
                 .snsType(SnsType.APPLE)
@@ -31,6 +43,31 @@ public class UserSetup {
                 .email("test" + ((int) (Math.random() * 9999) + 1) + "@test.com")
                 .alarm(true)
                 .ads(true)
-                .build());
+                .build();
     }
+
+
+//    public static User saveGoogleUser() {
+//        return userRepository.save(User.createUser()
+//                .deviceId("deviceId" + ((int) (Math.random() * 9999) + 1))
+//                .snsId("snsId" + ((int) (Math.random() * 9999) + 1))
+//                .snsType(SnsType.GOOGLE)
+//                .deviceOs(OsType.valueOf("AOS"))
+//                .email("test" + ((int) (Math.random() * 9999) + 1) + "@test.com")
+//                .alarm(true)
+//                .ads(true)
+//                .build());
+//    }
+//
+//    public static User saveAppleUser() {
+//        return userRepository.save(User.createUser()
+//                .deviceId("deviceId" + ((int) (Math.random() * 9999) + 1))
+//                .snsId("snsId" + ((int) (Math.random() * 9999) + 1))
+//                .snsType(SnsType.APPLE)
+//                .deviceOs(OsType.valueOf("AOS"))
+//                .email("test" + ((int) (Math.random() * 9999) + 1) + "@test.com")
+//                .alarm(true)
+//                .ads(true)
+//                .build());
+//    }
 }

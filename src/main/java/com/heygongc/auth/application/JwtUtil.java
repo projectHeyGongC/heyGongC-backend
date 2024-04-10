@@ -1,4 +1,4 @@
-package com.heygongc.user.application;
+package com.heygongc.auth.application;
 
 import com.heygongc.global.error.exception.ExpiredTokenException;
 import com.heygongc.global.error.exception.InvalidTokenException;
@@ -40,8 +40,8 @@ public class JwtUtil {
         return generateToken(subject, audience, REFRESH_EXP);
     }
 
-    public String generateCameraAccessToken(String subject, String audience) {
-        return generateToken(subject, audience, LONG_ACCESS_EXP);
+    public String generateCameraAccessToken(String subject) {
+        return generateToken(subject,null, LONG_ACCESS_EXP);
     }
 
     private String generateToken(String subject, String audience, Long exp) {

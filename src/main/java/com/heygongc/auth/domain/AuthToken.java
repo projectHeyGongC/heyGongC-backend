@@ -1,4 +1,4 @@
-package com.heygongc.user.application;
+package com.heygongc.auth.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

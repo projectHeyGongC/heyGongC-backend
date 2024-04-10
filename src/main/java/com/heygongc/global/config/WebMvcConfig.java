@@ -1,7 +1,7 @@
 package com.heygongc.global.config;
 
-import com.heygongc.global.filter.DeviceArgumentResolver;
-import com.heygongc.global.filter.LoginUserArgumentResolver;
+import com.heygongc.auth.presentation.DeviceArgumentResolver;
+import com.heygongc.auth.presentation.LoginUserArgumentResolver;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
