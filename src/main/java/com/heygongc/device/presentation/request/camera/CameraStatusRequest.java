@@ -4,6 +4,7 @@ import com.heygongc.global.common.request.RequestValidator;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.util.ObjectUtils;
 
+@Schema(description = "카메라 기기 상태정보 변경 요청")
 public record CameraStatusRequest (
     @Schema(description = "디바이스 배터리 잔량") int battery,
     @Schema(description = "디바이스 온도") int temperature

@@ -6,8 +6,8 @@ import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 
-@Schema(description = "메인 앱에서 카메라 앱 기기 정보 요청")
-public record DeviceIdsRequest(
+@Schema(description = "기기 연동 해제 요청")
+public record DeviceDisconnectRequest(
         @Schema(description = "디바이스 ID 목록") List<String> deviceIds
 ) implements RequestValidator {
 

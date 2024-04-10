@@ -1,6 +1,5 @@
 package com.heygongc.device.presentation;
 
-import com.heygongc.device.application.camera.CameraPushService;
 import com.heygongc.device.application.camera.CameraService;
 import com.heygongc.device.domain.entity.Device;
 import com.heygongc.device.presentation.request.camera.CameraStatusRequest;
@@ -8,7 +7,6 @@ import com.heygongc.device.presentation.request.camera.CameraSubscribeRequest;
 import com.heygongc.device.presentation.response.camera.CameraDeviceSettingResponse;
 import com.heygongc.device.presentation.response.camera.CameraIsConnectedResponse;
 import com.heygongc.device.presentation.response.camera.CameraSubscribeResponse;
-import com.heygongc.user.domain.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -55,7 +53,7 @@ public class CameraController {
             }
     )
     public ResponseEntity<Void> setCameraStatus(
-            @Parameter(name = "CameraStatusRequest", description = "카메라 등록 요청 정보", required = true) @RequestBody CameraStatusRequest request,
+            @Parameter(name = "CameraStatusRequest", description = "카메라 기기 상태정보 변경 요청 정보", required = true) @RequestBody CameraStatusRequest request,
             @Parameter(hidden = true) Device device) {
         cameraService.changeCameraDeviceStatus(device, request.battery(), request.temperature());
         return ResponseEntity.ok().build();

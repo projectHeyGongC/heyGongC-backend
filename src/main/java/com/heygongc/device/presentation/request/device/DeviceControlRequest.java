@@ -1,4 +1,4 @@
-package com.heygongc.device.presentation.request.camera;
+package com.heygongc.device.presentation.request.device;
 
 import com.heygongc.device.domain.type.ControlType;
 import com.heygongc.global.common.request.RequestValidator;
@@ -6,8 +6,8 @@ import com.heygongc.global.utils.EnumUtils;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.util.ObjectUtils;
 
-@Schema(description = "카메라 앱 제어 요청")
-public record ControlTypeRequest (
+@Schema(description = "기기 제어 요청")
+public record DeviceControlRequest(
     @Schema(description = "명령할 컨트롤 타입<br>" +
             "(SOUNDON:소리감지 모드 켜기,<br>" +
             "SOUNDOFF:소리 감지 모드 끄기,<br>" +

@@ -1,14 +1,9 @@
 package com.heygongc.device.presentation;
 
-import com.heygongc.device.application.device.DevicePushService;
 import com.heygongc.device.application.device.DeviceService;
 import com.heygongc.device.domain.entity.Device;
-import com.heygongc.device.presentation.request.camera.CameraDeviceSettingRequest;
-import com.heygongc.device.presentation.request.camera.ControlTypeRequest;
-import com.heygongc.device.presentation.request.device.DeviceIdsRequest;
-import com.heygongc.device.presentation.request.device.DeviceInfoRequest;
+import com.heygongc.device.presentation.request.device.*;
 import com.heygongc.device.presentation.response.device.DeviceResponse;
-import com.heygongc.global.error.ErrorResponse;
 import com.heygongc.user.domain.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -67,7 +62,7 @@ public class DeviceController {
             }
     )
     public ResponseEntity<Void> subscribeDevice(
-            @Parameter(name = "DeviceInfoRequest", description = "카메라 기기 정보", required = true) @RequestBody DeviceInfoRequest request,
+            @Parameter(name = "DeviceInfoRequest", description = "기기 연동 요청 정보", required = true) @RequestBody DeviceSubscribeRequest request,
             @Parameter(hidden = true) User user) throws Exception {
         deviceService.subscribeDevice(request.deviceId(), request.deviceName(), user);
         return ResponseEntity.ok().build();
@@ -83,9 +78,9 @@ public class DeviceController {
     )
     public ResponseEntity<Void> changeDeviceName(
             @Parameter(description = "기기 아이디", required = true, in = ParameterIn.PATH) @PathVariable(name = "deviceId") String deviceId,
-            @Parameter(name = "deviceName", description = "수정된 기기 이름", required = true) @RequestBody String deviceName,
+            @Parameter(name = "DeviceChangeNameRequest", description = "기기 정보 수정 요청 정보", required = true) @RequestBody DeviceNameRequest request,
             @Parameter(hidden = true) User user) {
-        deviceService.changeDeviceName(deviceId, deviceName, user);
+        deviceService.changeDeviceName(deviceId, request.deviceName(), user);
         return ResponseEntity.ok().build();
     }
 
@@ -98,7 +93,7 @@ public class DeviceController {
             }
     )
     public ResponseEntity<Void> disconnectDevice(
-            @Parameter(name = "DeviceIdsRequest", description = "연동 해제할 카메라 기기 목록", required = true) @RequestBody DeviceIdsRequest request,
+            @Parameter(name = "DeviceIdsRequest", description = "기기 연동 해제 요청 정보", required = true) @RequestBody DeviceDisconnectRequest request,
             @Parameter(hidden = true) User user) throws Exception {
         deviceService.disconnectDevices(request.deviceIds(), user);
         return ResponseEntity.ok().build();
@@ -115,7 +110,7 @@ public class DeviceController {
     )
     public ResponseEntity<Void> controlDevice(
             @Parameter(description = "기기 아이디", required = true, in = ParameterIn.PATH) @PathVariable(name = "deviceId") String deviceId,
-            @Parameter(name = "ControlTypeRequest", description = "명령 내릴 컨트롤 타입", required = true) @RequestBody ControlTypeRequest request,
+            @Parameter(name = "ControlTypeRequest", description = "기기 제어 요청 정보", required = true) @RequestBody DeviceControlRequest request,
             @Parameter(hidden = true) User user) throws Exception {
         deviceService.controlDevice(deviceId, user, request.controlType());
 
@@ -132,7 +127,7 @@ public class DeviceController {
     )
     public ResponseEntity<Void> changeDeviceSetting(
             @Parameter(description = "기기 아이디", required = true, in = ParameterIn.PATH) @PathVariable(name = "deviceId") String deviceId,
-            @Parameter(name = "CameraDeviceSettingRequest", description = "명령 내릴 컨트롤 타입", required = true) @RequestBody CameraDeviceSettingRequest request,
+            @Parameter(name = "CameraDeviceSettingRequest", description = "기기 설정 변경 요청 정보", required = true) @RequestBody DeviceSettingRequest request,
             @Parameter(hidden = true) User user) {
         deviceService.changeDeviceSetting(deviceId, request.sensitivity(), request.cameraMode(), user);
         return ResponseEntity.ok().build();
