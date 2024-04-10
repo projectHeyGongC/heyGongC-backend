@@ -1,5 +1,6 @@
 package com.heygongc.device.application.camera;
 
+import com.heygongc.auth.application.JwtUtil;
 import com.heygongc.device.domain.entity.Device;
 import com.heygongc.device.domain.repository.DeviceRepository;
 import com.heygongc.device.presentation.request.camera.CameraSubscribeRequest;
