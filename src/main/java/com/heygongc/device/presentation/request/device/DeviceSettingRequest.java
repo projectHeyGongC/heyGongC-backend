@@ -1,4 +1,4 @@
-package com.heygongc.device.presentation.request.camera;
+package com.heygongc.device.presentation.request.device;
 
 import com.heygongc.device.domain.type.CameraModeType;
 import com.heygongc.device.domain.type.SensitivityType;
@@ -7,7 +7,8 @@ import com.heygongc.global.utils.EnumUtils;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.util.ObjectUtils;
 
-public record CameraDeviceSettingRequest(
+@Schema(description = "기기 설정 변경 요청")
+public record DeviceSettingRequest(
         @Schema(description = "소리 감지 민감도 정도. 민감도가 높을수록 더 작은 소리에도 기기가 반응한다.<br>" +
                 "(VERYHIGH:매우 민감,<br>" +
                 "HIGH:민감,<br>" +
