@@ -18,14 +18,6 @@ public class FirebaseCloudMessaging {
 
     private static final Logger log = LoggerFactory.getLogger(FirebaseCloudMessaging.class);
 
-    private static class NotificationUtilHolder {
-        static FirebaseCloudMessaging instance = new FirebaseCloudMessaging();
-    }
-
-    public static FirebaseCloudMessaging getInstance() {
-        return NotificationUtilHolder.instance;
-    }
-
     @PostConstruct
     public void init() {
         try {
@@ -47,42 +39,46 @@ public class FirebaseCloudMessaging {
     }
 
     /**
-     * 단일 푸시 메세지 발송
-     * @param token 푸시토큰
-     * @param data 푸시 메세지 + 추가 데이터
+     * 푸시 메시지 발송
+     * @param data 푸시 데이터(토큰, 메시지, 데이터)
      */
-    public void sendMessage(String token, FirebaseData data) {
+    public void sendMessage(FirebaseData data) throws Exception {
         log.info("Push Payload Checked: {}", data.getData());
 
         try {
-            Message message = createMessage(token, data.getBody(), data.getData());
-            FirebaseMessaging.getInstance().send(message);
+            if (data.isSinglePush()) {
+                // 단일 푸시 메시지 발송
+                Message message;
+                if (data.isSilent()) {
+                    message = createSilentMessage(data.getToken(), data.getData());
+                } else {
+                    message = createMessage(data.getToken(), data.getBody(), data.getData());
+                }
+
+                FirebaseMessaging.getInstance().send(message);
+
+            } else if (data.isMultiPush()) {
+                // 멀티 푸시 메시지 발송
+                List<Message> messages = new ArrayList<>();
+                for (String token : data.getTokens()) {
+                    Message message;
+                    if (data.isSilent()) {
+                        message = createSilentMessage(token, data.getData());
+                    } else {
+                        message = createMessage(token, data.getBody(), data.getData());
+                    }
+                    messages.add(message);
+                }
+
+                FirebaseMessaging.getInstance().sendEach(messages);
+
+            } else {
+                throw new Exception("Invalid Fcm Token");
+            }
             log.info("Firebase Cloud Messaging Success");
         } catch (Exception e) {
             log.error(e.getMessage());
-        }
-    }
-
-    /**
-     * 멀티 푸시 메세지 발송
-     * @param tokens 푸시토큰 리스트
-     * @param data 푸시 메세지 + 추가 데이터
-     */
-    public void sendMessage(List<String> tokens, FirebaseData data) {
-        log.info("Push Payload Checked: {}", data.getData());
-
-        try {
-            List<Message> messages = new ArrayList<>();
-
-            for (String token : tokens) {
-                Message message = createMessage(token, data.getBody(), data.getData());
-                messages.add(message);
-                log.info("Firebase Cloud Messaging Success");
-            }
-
-            FirebaseMessaging.getInstance().sendEach(messages);
-        } catch (Exception e) {
-            log.error(e.getMessage());
+            throw new Exception("Firebase Cloud Messaging Failed");
         }
     }
 
@@ -100,6 +96,19 @@ public class FirebaseCloudMessaging {
                 .setToken(token)
                 .setApnsConfig(apnsConfig)
                 .setNotification(notification)
+                .putAllData(data)
+                .build();
+    }
+
+    private static Message createSilentMessage(String token, HashMap<String, String> data) {
+
+        Aps aps = Aps.builder().setContentAvailable(true).build();
+        ApnsConfig apnsConfig = ApnsConfig.builder()
+                .setAps(aps)
+                .build();
+        return Message.builder()
+                .setToken(token)
+                .setApnsConfig(apnsConfig)
                 .putAllData(data)
                 .build();
     }
