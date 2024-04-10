@@ -66,8 +66,7 @@ public class DeviceController {
             summary = "메인 앱에서 카메라 기기 연동하기",
             description = "메인 앱에서 카메라 앱 QR코드를 스캔 후 기기 이름 까지 입력되면 두 파라매터를 서버로 넘겨줍니다.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DeviceResponse.class))),
-
+                    @ApiResponse(responseCode = "200", description = "OK", content = @Content)
             }
     )
     public ResponseEntity<Void> subscribeDevice(
@@ -86,8 +85,7 @@ public class DeviceController {
             summary = "기기 정보 수정",
             description = "해당 기기의 이름을 수정합니다.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", schema = @Schema(implementation = DeviceResponse.class))),
-                    @ApiResponse(responseCode = "403", description = "Unauthorized Exception", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+                    @ApiResponse(responseCode = "200", description = "OK", content = @Content)
             }
     )
     public ResponseEntity<Void> updateDevice(
@@ -105,8 +103,7 @@ public class DeviceController {
             summary = "기기 연동 해제",
             description = "메인 앱과 연결되어 있는 하나 또는 모든 카메라 기기와의 연동을 해제합니다.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "OK", content = @Content),
-                    @ApiResponse(responseCode = "403", description = "Unauthorized Exception", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+                    @ApiResponse(responseCode = "200", description = "OK", content = @Content)
             }
     )
     public ResponseEntity<Void> disconnectDevice(
@@ -147,7 +144,6 @@ public class DeviceController {
     @Operation(
             summary = "기기 설정 변경하기",
             description = "소리 세기 민감도 조절 및 카메라 기기의 카메라 종류(전면 카메라 또는 후면 카메라) 를 바꿀 때 사용합니다.",
-
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK", content = @Content)
             }
