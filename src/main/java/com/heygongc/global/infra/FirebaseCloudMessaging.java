@@ -4,6 +4,7 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.messaging.*;
+import com.heygongc.global.type.OsType;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,35 +47,21 @@ public class FirebaseCloudMessaging {
         log.info("Push Payload Checked: {}", data.getData());
 
         try {
-            if (data.isSinglePush()) {
-                // 단일 푸시 메시지 발송
-                Message message;
+            List<Message> messages = new ArrayList<>();
+            for (String token : data.getTokens()) {
+                Message message = null;
                 if (data.isSilent()) {
-                    message = createSilentMessage(data.getToken(), data.getData());
-                } else {
-                    message = createMessage(data.getToken(), data.getBody(), data.getData());
-                }
-
-                FirebaseMessaging.getInstance().send(message);
-
-            } else if (data.isMultiPush()) {
-                // 멀티 푸시 메시지 발송
-                List<Message> messages = new ArrayList<>();
-                for (String token : data.getTokens()) {
-                    Message message;
-                    if (data.isSilent()) {
-                        message = createSilentMessage(token, data.getData());
-                    } else {
-                        message = createMessage(token, data.getBody(), data.getData());
+                    if (OsType.AOS.equals(data.getOsType())) {
+                        message = createSilentMessageByAos(token, data.getData());
+                    } else if (OsType.IOS.equals(data.getOsType())){
+                        message = createSilentMessageByIos(token, data.getBody(), data.getData());
                     }
-                    messages.add(message);
+                } else {
+                    message = createMessage(token, data.getBody(), data.getData());
                 }
-
-                FirebaseMessaging.getInstance().sendEach(messages);
-
-            } else {
-                throw new Exception("Invalid Fcm Token");
+                messages.add(message);
             }
+            FirebaseMessaging.getInstance().sendEach(messages);
             log.info("Firebase Cloud Messaging Success");
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -83,14 +70,48 @@ public class FirebaseCloudMessaging {
     }
 
     private static Message createMessage(String token, String body, HashMap<String, String> data) {
+        // 아이폰 소리지정
+        Aps aps = Aps.builder().setSound("default").build();
+        ApnsConfig apnsConfig = ApnsConfig.builder().setAps(aps).build();
+
+        // 안드로이드 우선순위 지정
+        AndroidConfig androidConfig = AndroidConfig.builder()
+                .setPriority(AndroidConfig.Priority.HIGH)
+                .build();
+
         Notification notification = Notification.builder()
                 .setTitle(null)
                 .setBody(body)
                 .build();
 
-        // 아이폰 소리지정 (안드로이드는 따로 설정 안함)
-        Aps aps = Aps.builder().setSound("default").build();
-        ApnsConfig apnsConfig = ApnsConfig.builder().setAps(aps).build();
+        return Message.builder()
+                .setToken(token)
+                .setAndroidConfig(androidConfig)
+                .setApnsConfig(apnsConfig)
+                .setNotification(notification)
+                .putAllData(data)
+                .build();
+    }
+
+    private static Message createSilentMessageByAos(String token, HashMap<String, String> data) {
+        return Message.builder()
+                .setToken(token)
+                .putAllData(data)
+                .build();
+    }
+
+    private static Message createSilentMessageByIos(String token, String body, HashMap<String, String> data) {
+        Aps aps = Aps.builder().setContentAvailable(true).build();
+        // iOS 13부터 priority, push-type 설정해야 background push 가능
+        ApnsConfig apnsConfig = ApnsConfig.builder().setAps(aps)
+                .putHeader("apns-priority", "5")
+                .putHeader("apns-push-type", "background")
+                .build();
+
+        Notification notification = Notification.builder()
+                .setTitle(null)
+                .setBody(body)
+                .build();
 
         return Message.builder()
                 .setToken(token)
@@ -99,18 +120,4 @@ public class FirebaseCloudMessaging {
                 .putAllData(data)
                 .build();
     }
-
-    private static Message createSilentMessage(String token, HashMap<String, String> data) {
-
-        Aps aps = Aps.builder().setContentAvailable(true).build();
-        ApnsConfig apnsConfig = ApnsConfig.builder()
-                .setAps(aps)
-                .build();
-        return Message.builder()
-                .setToken(token)
-                .setApnsConfig(apnsConfig)
-                .putAllData(data)
-                .build();
-    }
-
 }

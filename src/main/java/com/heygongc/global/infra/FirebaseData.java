@@ -1,32 +1,29 @@
 package com.heygongc.global.infra;
 
+import com.heygongc.global.type.OsType;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
 @Builder
 public class FirebaseData {
 
-    @Getter
     private String token;
-    @Getter
     private List<String> tokens;
-    @Getter
-    private String body; // 푸시 메시지
-    @Getter
-    private boolean isSilent;
-
+    @Getter private String body; // 푸시 메시지
+    @Getter private boolean isSilent;
+    @Getter private OsType osType;
     private String action;
     private String content;
 
-    public boolean isSinglePush() {
-        return getToken() != null;
-    }
-
-    public boolean isMultiPush() {
-        return getTokens() != null && getTokens().isEmpty();
+    public List<String> getTokens() {
+        if (tokens != null && !tokens.isEmpty()) {
+            return tokens;
+        }
+        return Arrays.asList(token);
     }
 
     public HashMap<String, String> getData() {
