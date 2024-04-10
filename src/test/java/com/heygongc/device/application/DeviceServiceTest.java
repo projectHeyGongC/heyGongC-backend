@@ -1,6 +1,7 @@
 package com.heygongc.device.application;
 
 import com.heygongc.common.ServiceTest;
+import com.heygongc.device.application.device.DevicePushService;
 import com.heygongc.device.application.device.DeviceService;
 import com.heygongc.device.domain.entity.Device;
 import com.heygongc.device.domain.repository.DeviceRepository;
@@ -12,7 +13,10 @@ import com.heygongc.user.domain.entity.User;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,10 +24,17 @@ import java.util.List;
 
 import static com.heygongc.device.setup.DeviceSetup.saveDevice;
 import static com.heygongc.user.setup.UserSetup.saveGoogleUser;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
+
+@ExtendWith(SpringExtension.class)
 public class DeviceServiceTest extends ServiceTest {
 
     @Autowired
     private DeviceService deviceService;
+    @MockBean
+    private DevicePushService devicePushService;
     @Autowired
     private DeviceRepository deviceRepository;
 
@@ -60,20 +71,21 @@ public class DeviceServiceTest extends ServiceTest {
 
     @Test
     @DisplayName("디바이스 연동하기")
-    void SubscribeDevice() {
+    void SubscribeDevice() throws Exception {
         // given
         User 구글테스트계정 = saveGoogleUser();
         Device 내디바이스 = saveDevice();
         String 새로운디바이스명 = "newDeviceName";
+        DeviceInfoRequest request = deviceInfoRequest(내디바이스.getDeviceId(), 새로운디바이스명);
+        doNothing().when(devicePushService).hideQRCode(any());
 
         // when
-        deviceService.subscribeDevice(
-                deviceInfoRequest(내디바이스.getDeviceId(), 새로운디바이스명),
-                구글테스트계정);
+        deviceService.subscribeDevice(request.deviceId(), request.deviceName(), 구글테스트계정);
 
         // then
-        내디바이스 = deviceRepository.findMyDevice(내디바이스.getDeviceId(), 구글테스트계정).get();
+        verify(devicePushService).hideQRCode(구글테스트계정.getFcmToken());
 
+        내디바이스 = deviceRepository.findMyDevice(내디바이스.getDeviceId(), 구글테스트계정).get();
         Assertions.assertThat(내디바이스.getDeviceName()).isEqualTo(새로운디바이스명);
         Assertions.assertThat(내디바이스.getUserSeq()).isEqualTo(구글테스트계정.getUserSeq());
         Assertions.assertThat(내디바이스.isConnected()).isTrue();
@@ -81,14 +93,14 @@ public class DeviceServiceTest extends ServiceTest {
 
     @Test
     @DisplayName("디바이스 이름 수정하기")
-    void updateDevice() {
+    void changeDeviceName() {
         // given
         User 구글테스트계정 = saveGoogleUser();
         Device 내디바이스 = saveDevice(구글테스트계정);
         String 새로운디바이스명 = "newDeviceName";
 
         // when
-        deviceService.updateDevice(내디바이스.getDeviceId(), 새로운디바이스명, 구글테스트계정);
+        deviceService.changeDeviceName(내디바이스.getDeviceId(), 새로운디바이스명, 구글테스트계정);
 
         // then
         내디바이스 = deviceRepository.findMyDevice(내디바이스.getDeviceId(), 구글테스트계정).get();
@@ -116,17 +128,22 @@ public class DeviceServiceTest extends ServiceTest {
 
     @Test
     @DisplayName("디바이스 연동 해제하기")
-    void disconnectDevice() {
+    void disconnectDevice() throws Exception {
         // given
         User 구글테스트계정 = saveGoogleUser();
         Device 내디바이스 = saveDevice(구글테스트계정);
 
-        List<Device> 디바이스목록 = Arrays.asList(내디바이스);
+        List<String> 디바이스ID목록 = Arrays.asList(내디바이스.getDeviceId());
+        List<String> 토큰목록 = Arrays.asList(내디바이스.getFcmToken());
+        doNothing().when(devicePushService).showQRCode(any());
 
         // when
-        deviceService.disconnectDevices(디바이스목록);
+        deviceService.disconnectDevices(디바이스ID목록, 구글테스트계정);
 
         // then
+        verify(devicePushService).showQRCode(토큰목록);
+
+        내디바이스 = deviceRepository.findByDeviceId(내디바이스.getDeviceId()).get();
         Assertions.assertThat(내디바이스.getUserSeq()).isNull();
         Assertions.assertThat(내디바이스.getFcmToken()).isNull();
         Assertions.assertThat(내디바이스.isConnected()).isFalse();
@@ -157,7 +174,7 @@ public class DeviceServiceTest extends ServiceTest {
 
     @Test
     @DisplayName("디바이스 제어하기")
-    void controlDevice() {
+    void controlDevice() throws Exception {
         // given
         User 구글테스트계정 = saveGoogleUser();
         Device 내디바이스 = saveDevice(구글테스트계정);
@@ -167,11 +184,15 @@ public class DeviceServiceTest extends ServiceTest {
         컨트롤목록.add(ControlType.STREAMON);
         컨트롤목록.add(ControlType.STREAMOFF);
 
+        doNothing().when(devicePushService).controlDevice(any(), any());
+
         for (ControlType type : 컨트롤목록) {
             // when
             deviceService.controlDevice(내디바이스.getDeviceId(), 구글테스트계정, type.toString());
 
             // then
+            verify(devicePushService).controlDevice(type.toString(), 내디바이스.getFcmToken());
+
             내디바이스 = deviceRepository.findMyDevice(내디바이스.getDeviceId(), 구글테스트계정).get();
 
             switch (type) {

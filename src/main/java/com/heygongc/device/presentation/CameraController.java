@@ -24,11 +24,9 @@ import org.springframework.web.bind.annotation.*;
 public class CameraController {
 
     private final CameraService cameraService;
-    private final CameraPushService cameraPushService;
 
-    public CameraController(CameraService cameraService, CameraPushService cameraPushService) {
+    public CameraController(CameraService cameraService) {
         this.cameraService = cameraService;
-        this.cameraPushService = cameraPushService;
     }
 
     @PostMapping("/subscribe")
@@ -106,12 +104,8 @@ public class CameraController {
             }
     )
     public ResponseEntity<Void> alertSoundAlarm(
-            @Parameter(hidden = true) Device device) {
-        User user = cameraService.getUserByDevice(device);
-        cameraService.alertSoundAlarm(device, user);
-
-        String fcmToken = user.getFcmToken();
-        cameraPushService.alertSoundAlarm(fcmToken);
+            @Parameter(hidden = true) Device device) throws Exception {
+        cameraService.alertSoundAlarm(device);
 
         return ResponseEntity.ok().build();
 

@@ -14,11 +14,12 @@ public class CameraPushService {
         this.firebaseCloudMessaging = firebaseCloudMessaging;
     }
 
-    public void alertSoundAlarm(String fcmToken) {
+    public void alertSoundAlarm(String fcmToken) throws Exception {
         FirebaseData data = FirebaseData.builder()
+                .token(fcmToken)
                 .body("소리 알람 보내기")
                 .action(MessageType.SOUNDALERT.toString())
                 .build();
-        firebaseCloudMessaging.sendMessage(fcmToken, data);
+        firebaseCloudMessaging.sendMessage(data);
     }
 }

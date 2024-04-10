@@ -18,47 +18,53 @@ public class DevicePushService {
         this.firebaseCloudMessaging = firebaseCloudMessaging;
     }
 
-    public void hideQRCode(String fcmToken) {
+    public void hideQRCode(String fcmToken) throws Exception {
         FirebaseData data = FirebaseData.builder()
+                .token(fcmToken)
                 .body("QR 코드 숨기기")
                 .action(MessageType.HIDEQR.toString())
                 .build();
-        firebaseCloudMessaging.sendMessage(fcmToken, data);
+        firebaseCloudMessaging.sendMessage(data);
     }
 
-    public void showQRCode(List<String> fcmTokens) {
+    public void showQRCode(List<String> fcmTokens) throws Exception {
         FirebaseData data = FirebaseData.builder()
+                .tokens(fcmTokens)
                 .body("QR 코드 보이기")
                 .action(MessageType.SHOWQR.toString())
                 .build();
-        firebaseCloudMessaging.sendMessage(fcmTokens, data);
+        firebaseCloudMessaging.sendMessage(data);
     }
 
-    public void controlDevice(String controlType, String fcmToken) {
+    public void controlDevice(String controlType, String fcmToken) throws Exception {
         ControlType type = EnumUtils.getEnumConstant(ControlType.class, controlType);
 
         FirebaseData data;
         switch (type != null ? type : ControlType.NULL) {
             case SOUNDON:
                 data = FirebaseData.builder()
+                        .token(fcmToken)
                         .body("소리 감지 모드 ON")
                         .action(MessageType.SOUNDMODEON.toString())
                         .build();
                 break;
             case SOUNDOFF:
                 data = FirebaseData.builder()
+                        .token(fcmToken)
                         .body("소리 감지 모드 OFF")
                         .action(MessageType.SOUNDMODEOFF.toString())
                         .build();
                 break;
             case STREAMON:
                 data = FirebaseData.builder()
+                        .token(fcmToken)
                         .body("스트리밍 모드 ON")
                         .action(MessageType.STREAMON.toString())
                         .build();
                 break;
             case STREAMOFF:
                 data = FirebaseData.builder()
+                        .token(fcmToken)
                         .body("스트리밍 모드 OFF")
                         .action(MessageType.STREAMOFF.toString())
                         .build();
@@ -67,6 +73,6 @@ public class DevicePushService {
                 throw new IllegalArgumentException("Invalid control type: " + controlType);
         }
 
-        firebaseCloudMessaging.sendMessage(fcmToken, data);
+        firebaseCloudMessaging.sendMessage(data);
     }
 }

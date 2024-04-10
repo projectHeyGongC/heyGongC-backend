@@ -19,12 +19,14 @@ import java.util.Objects;
 @Service
 public class CameraService {
 
+    private final CameraPushService cameraPushService;
     private final DeviceRepository deviceRepository;
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
     private final JwtUtil jwtUtil;
 
-    public CameraService(DeviceRepository deviceRepository, UserRepository userRepository, NotificationRepository notificationRepository, JwtUtil jwtUtil) {
+    public CameraService(CameraPushService cameraPushService, DeviceRepository deviceRepository, UserRepository userRepository, NotificationRepository notificationRepository, JwtUtil jwtUtil) {
+        this.cameraPushService = cameraPushService;
         this.deviceRepository = deviceRepository;
         this.userRepository = userRepository;
         this.notificationRepository = notificationRepository;
@@ -71,11 +73,16 @@ public class CameraService {
     }
 
     @Transactional
-    public void alertSoundAlarm(Device device, User user) {
+    public void alertSoundAlarm(Device device) throws Exception {
+        User user = getUserByDevice(device);
+
         notificationRepository.save(Notification.createNotification()
                 .type(NotificationType.SOUND)
                 .device(device)
                 .user(user)
                 .build());
+
+        String fcmToken = user.getFcmToken();
+        cameraPushService.alertSoundAlarm(fcmToken);
     }
 }
