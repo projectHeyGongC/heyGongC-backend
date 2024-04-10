@@ -6,7 +6,6 @@ import com.heygongc.device.domain.type.CameraModeType;
 import com.heygongc.device.domain.type.ControlType;
 import com.heygongc.device.domain.type.SensitivityType;
 import com.heygongc.device.exception.DeviceNotFoundException;
-import com.heygongc.device.presentation.request.device.DeviceInfoRequest;
 import com.heygongc.global.utils.EnumUtils;
 import com.heygongc.user.domain.entity.User;
 import jakarta.transaction.Transactional;
@@ -18,10 +17,11 @@ import java.util.List;
 public class DeviceService{
 
     private final DeviceRepository deviceRepository;
+    private final DevicePushService devicePushService;
 
-    public DeviceService(DeviceRepository deviceRepository) {
+    public DeviceService(DeviceRepository deviceRepository, DevicePushService devicePushService) {
         this.deviceRepository = deviceRepository;
-
+        this.devicePushService = devicePushService;
     }
 
     public Device getDevice(String deviceId) {
@@ -43,42 +43,36 @@ public class DeviceService{
     }
 
     @Transactional
-    public void subscribeDevice(DeviceInfoRequest request, User user) {
-        Device device = getDevice(request.deviceId());
-        device.changeDeviceName(request.deviceName());
+    public void subscribeDevice(String deviceId, String deviceName, User user) throws Exception {
+        Device device = getDevice(deviceId);
+        device.changeDeviceName(deviceName);
         device.connectDevice();
         device.setDeviceOwner(user.getUserSeq());
+        devicePushService.hideQRCode(user.getFcmToken());
     }
 
     @Transactional
-    public void updateDevice(String deviceId, String deviceName, User user) {
+    public void changeDeviceName(String deviceId, String deviceName, User user) {
         Device device = getDevice(deviceId, user);
-
         device.changeDeviceName(deviceName);
     }
 
     @Transactional
-    public void disconnectDevices(List<Device> devices) {
+    public void disconnectDevices(List<String> deviceIds, User user) throws Exception {
+        List<Device> devices = getDevices(deviceIds, user);
+        List<String> tokens = devices.stream()
+                .map(Device::getFcmToken)
+                .toList();
         devices.forEach(Device::disConnectDevice);
+        devicePushService.showQRCode(tokens);
     }
 
     @Transactional
-    public void changeDeviceSetting(String deviceId, String sensitivity, String cameraMode, User user) {
-        Device device = getDevice(deviceId, user);
-
-        device.changeDeviceSetting(EnumUtils.getEnumConstant(SensitivityType.class, sensitivity),
-                EnumUtils.getEnumConstant(CameraModeType.class, cameraMode));
-    }
-
-    @Transactional
-    public void controlDevice(String deviceId, User user, String controlType) {
+    public void controlDevice(String deviceId, User user, String controlType) throws Exception {
         Device device = getDevice(deviceId, user);
         ControlType type = EnumUtils.getEnumConstant(ControlType.class, controlType);
-        if (type == null) {
-            throw new IllegalArgumentException("Invalid control type: " + controlType);
-        }
 
-        switch (type) {
+        switch (type != null ? type : ControlType.NULL) {
             case SOUNDON:
                 device.soundModeOn();
                 break;
@@ -94,5 +88,14 @@ public class DeviceService{
             default:
                 throw new IllegalArgumentException("Invalid control type: " + controlType);
         }
+
+        devicePushService.controlDevice(controlType, device.getFcmToken());
+    }
+
+    @Transactional
+    public void changeDeviceSetting(String deviceId, String sensitivity, String cameraMode, User user) {
+        Device device = getDevice(deviceId, user);
+        device.changeDeviceSetting(EnumUtils.getEnumConstant(SensitivityType.class, sensitivity),
+                EnumUtils.getEnumConstant(CameraModeType.class, cameraMode));
     }
 }

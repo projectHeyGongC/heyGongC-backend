@@ -1,6 +1,7 @@
 package com.heygongc.device.application;
 
 import com.heygongc.common.ServiceTest;
+import com.heygongc.device.application.camera.CameraPushService;
 import com.heygongc.device.application.camera.CameraService;
 import com.heygongc.device.domain.entity.Device;
 import com.heygongc.device.domain.repository.DeviceRepository;
@@ -13,17 +14,23 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.List;
 
 import static com.heygongc.device.setup.DeviceSetup.saveDevice;
 import static com.heygongc.user.setup.UserSetup.saveGoogleUser;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
 
 @SuppressWarnings("NonAsciiCharacters")
 public class CameraServiceTest extends ServiceTest {
 
     @Autowired
     private CameraService cameraService;
+    @MockBean
+    private CameraPushService cameraPushService;
     @Autowired
     private DeviceRepository deviceRepository;
     @Autowired
@@ -137,18 +144,20 @@ public class CameraServiceTest extends ServiceTest {
 
     @Test
     @DisplayName("카메라 소리감지 발생 시 알림에 등록한다")
-    void alertSoundAlarm() {
+    void alertSoundAlarm() throws Exception {
         // given
         User 구글테스트계정 = saveGoogleUser();
         Device 디바이스 = saveDevice(구글테스트계정);
         List<Notification> before알림 = notificationRepository.findAllNotificationByUser(구글테스트계정);
+        doNothing().when(cameraPushService).alertSoundAlarm(any());
 
         // when
-        cameraService.alertSoundAlarm(디바이스, 구글테스트계정);
+        cameraService.alertSoundAlarm(디바이스);
 
         // then
-        List<Notification> after알림 = notificationRepository.findAllNotificationByUser(구글테스트계정);
+        verify(cameraPushService).alertSoundAlarm(구글테스트계정.getFcmToken());
 
+        List<Notification> after알림 = notificationRepository.findAllNotificationByUser(구글테스트계정);
         Assertions.assertThat(before알림).isEmpty();
         Assertions.assertThat(after알림).isNotEmpty();
         Assertions.assertThat(after알림.get(0).getDevice().getDeviceSeq()).isEqualTo(디바이스.getDeviceSeq());

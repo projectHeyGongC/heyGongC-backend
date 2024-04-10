@@ -65,6 +65,7 @@ public class UserService {
                         .deviceOs(OsType.valueOf(request.deviceOs()))
                         .alarm(true)
                         .ads(request.ads())
+                        .fcmToken(request.fcmToken())
                         .build());
 
 

@@ -2,11 +2,11 @@ package com.heygongc.device.application.device;
 
 import com.heygongc.device.domain.type.ControlType;
 import com.heygongc.global.infra.FirebaseCloudMessaging;
+import com.heygongc.global.infra.FirebaseData;
 import com.heygongc.global.type.MessageType;
 import com.heygongc.global.utils.EnumUtils;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
 import java.util.List;
 
 @Component
@@ -18,46 +18,61 @@ public class DevicePushService {
         this.firebaseCloudMessaging = firebaseCloudMessaging;
     }
 
-    public void hideQRCode(String fcmToken) {
-        HashMap<String, String> data = new HashMap<>();
-        data.put("action", String.valueOf(MessageType.HIDEQR));
-        firebaseCloudMessaging.sendMessage(fcmToken, "QR 코드 숨기기", data);
+    public void hideQRCode(String fcmToken) throws Exception {
+        FirebaseData data = FirebaseData.builder()
+                .token(fcmToken)
+                .body("QR 코드 숨기기")
+                .action(MessageType.HIDEQR.toString())
+                .build();
+        firebaseCloudMessaging.sendMessage(data);
     }
 
-    public void showQRCode(List<String> fcmTokens) {
-        HashMap<String, String> data = new HashMap<>();
-        data.put("action", String.valueOf(MessageType.SHOWQR));
-        if(!fcmTokens.isEmpty()) {
-            firebaseCloudMessaging.sendMessage(fcmTokens, "QR 코드 보이기", data);
-        }
+    public void showQRCode(List<String> fcmTokens) throws Exception {
+        FirebaseData data = FirebaseData.builder()
+                .tokens(fcmTokens)
+                .body("QR 코드 보이기")
+                .action(MessageType.SHOWQR.toString())
+                .build();
+        firebaseCloudMessaging.sendMessage(data);
     }
 
-    public void controlDevice(String controlType, String fcmToken) {
+    public void controlDevice(String controlType, String fcmToken) throws Exception {
         ControlType type = EnumUtils.getEnumConstant(ControlType.class, controlType);
-        if (type == null) {
-            throw new IllegalArgumentException("Invalid control type: " + controlType);
-        }
 
-        HashMap<String, String> data = new HashMap<>();
-        switch (type) {
+        FirebaseData data;
+        switch (type != null ? type : ControlType.NULL) {
             case SOUNDON:
-                data.put("action", String.valueOf(MessageType.SOUNDMODEON));
-                firebaseCloudMessaging.sendMessage(fcmToken, "소리 감지 모드 ON", data);
+                data = FirebaseData.builder()
+                        .token(fcmToken)
+                        .body("소리 감지 모드 ON")
+                        .action(MessageType.SOUNDMODEON.toString())
+                        .build();
                 break;
             case SOUNDOFF:
-                data.put("action", String.valueOf(MessageType.SOUNDMODEOFF));
-                firebaseCloudMessaging.sendMessage(fcmToken, "소리 감지 모드 OFF", data);
+                data = FirebaseData.builder()
+                        .token(fcmToken)
+                        .body("소리 감지 모드 OFF")
+                        .action(MessageType.SOUNDMODEOFF.toString())
+                        .build();
                 break;
             case STREAMON:
-                data.put("action", String.valueOf(MessageType.STREAMON));
-                firebaseCloudMessaging.sendMessage(fcmToken, "스트리밍 모드 ON", data);
+                data = FirebaseData.builder()
+                        .token(fcmToken)
+                        .body("스트리밍 모드 ON")
+                        .action(MessageType.STREAMON.toString())
+                        .build();
                 break;
             case STREAMOFF:
-                data.put("action", String.valueOf(MessageType.STREAMOFF));
-                firebaseCloudMessaging.sendMessage(fcmToken, "스트리밍 모드 OFF", data);
+                data = FirebaseData.builder()
+                        .token(fcmToken)
+                        .body("스트리밍 모드 OFF")
+                        .action(MessageType.STREAMOFF.toString())
+                        .build();
                 break;
             default:
                 throw new IllegalArgumentException("Invalid control type: " + controlType);
         }
+
+        firebaseCloudMessaging.sendMessage(data);
     }
 }

@@ -57,7 +57,7 @@ public class User extends BaseTimeEntity {
     private Boolean ads;
 
     @Builder(builderMethodName = "createUser")
-    public User(SnsType snsType, String snsId, String email, String deviceId, OsType deviceOs, Boolean alarm, Boolean ads) {
+    public User(SnsType snsType, String snsId, String email, String deviceId, OsType deviceOs, Boolean alarm, Boolean ads, String fcmToken) {
         this.snsType = snsType;
         this.snsId = snsId;
         this.email = email;
@@ -66,6 +66,7 @@ public class User extends BaseTimeEntity {
         this.deviceOs = deviceOs;
         this.alarm = alarm;
         this.ads = ads;
+        this.fcmToken = fcmToken;
     }
 
     private static String randomUserId() {

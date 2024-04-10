@@ -32,11 +32,8 @@ public class DeviceController {
 
     private final DeviceService deviceService;
 
-    private final DevicePushService devicePushService;
-
-    public DeviceController(DeviceService deviceService, DevicePushService devicePushService) {
+    public DeviceController(DeviceService deviceService) {
         this.deviceService = deviceService;
-        this.devicePushService = devicePushService;
     }
 
     @GetMapping
@@ -71,12 +68,8 @@ public class DeviceController {
     )
     public ResponseEntity<Void> subscribeDevice(
             @Parameter(name = "DeviceInfoRequest", description = "카메라 기기 정보", required = true) @RequestBody DeviceInfoRequest request,
-            @Parameter(hidden = true) User user) {
-        deviceService.subscribeDevice(request, user);
-
-        String fcmToken = user.getFcmToken();
-        devicePushService.hideQRCode(fcmToken);
-
+            @Parameter(hidden = true) User user) throws Exception {
+        deviceService.subscribeDevice(request.deviceId(), request.deviceName(), user);
         return ResponseEntity.ok().build();
     }
 
@@ -88,13 +81,11 @@ public class DeviceController {
                     @ApiResponse(responseCode = "200", description = "OK", content = @Content)
             }
     )
-    public ResponseEntity<Void> updateDevice(
+    public ResponseEntity<Void> changeDeviceName(
             @Parameter(description = "기기 아이디", required = true, in = ParameterIn.PATH) @PathVariable(name = "deviceId") String deviceId,
             @Parameter(name = "deviceName", description = "수정된 기기 이름", required = true) @RequestBody String deviceName,
             @Parameter(hidden = true) User user) {
-
-        deviceService.updateDevice(deviceId, deviceName, user);
-
+        deviceService.changeDeviceName(deviceId, deviceName, user);
         return ResponseEntity.ok().build();
     }
 
@@ -108,15 +99,8 @@ public class DeviceController {
     )
     public ResponseEntity<Void> disconnectDevice(
             @Parameter(name = "DeviceIdsRequest", description = "연동 해제할 카메라 기기 목록", required = true) @RequestBody DeviceIdsRequest request,
-            @Parameter(hidden = true) User user) {
-        List<Device> devices = deviceService.getDevices(request.deviceIds(), user);
-        List<String> tokens = devices.stream()
-                .map(Device::getFcmToken)
-                .toList();
-
-        deviceService.disconnectDevices(devices);
-        devicePushService.showQRCode(tokens);
-
+            @Parameter(hidden = true) User user) throws Exception {
+        deviceService.disconnectDevices(request.deviceIds(), user);
         return ResponseEntity.ok().build();
     }
 
@@ -132,10 +116,8 @@ public class DeviceController {
     public ResponseEntity<Void> controlDevice(
             @Parameter(description = "기기 아이디", required = true, in = ParameterIn.PATH) @PathVariable(name = "deviceId") String deviceId,
             @Parameter(name = "ControlTypeRequest", description = "명령 내릴 컨트롤 타입", required = true) @RequestBody ControlTypeRequest request,
-            @Parameter(hidden = true) User user) {
+            @Parameter(hidden = true) User user) throws Exception {
         deviceService.controlDevice(deviceId, user, request.controlType());
-        Device device = deviceService.getDevice(deviceId, user);
-        devicePushService.controlDevice(request.controlType(), device.getFcmToken());
 
         return ResponseEntity.ok().build();
     }
@@ -153,7 +135,6 @@ public class DeviceController {
             @Parameter(name = "CameraDeviceSettingRequest", description = "명령 내릴 컨트롤 타입", required = true) @RequestBody CameraDeviceSettingRequest request,
             @Parameter(hidden = true) User user) {
         deviceService.changeDeviceSetting(deviceId, request.sensitivity(), request.cameraMode(), user);
-
         return ResponseEntity.ok().build();
     }
 

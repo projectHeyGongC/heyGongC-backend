@@ -4,5 +4,6 @@ public enum ControlType {
     SOUNDON,
     SOUNDOFF,
     STREAMON,
-    STREAMOFF
+    STREAMOFF,
+    NULL
 }
