@@ -1,5 +1,6 @@
 package com.heygongc.user.application;
 
+import com.heygongc.auth.application.JwtUtil;
 import com.heygongc.global.error.exception.ExpiredTokenException;
 import com.heygongc.global.error.exception.InvalidTokenException;
 import org.junit.jupiter.api.BeforeAll;

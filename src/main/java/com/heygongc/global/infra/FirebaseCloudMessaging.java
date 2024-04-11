@@ -54,10 +54,10 @@ public class FirebaseCloudMessaging {
                     if (OsType.AOS.equals(data.getOsType())) {
                         message = createSilentMessageByAos(token, data.getData());
                     } else if (OsType.IOS.equals(data.getOsType())){
-                        message = createSilentMessageByIos(token, data.getBody(), data.getData());
+                        message = createSilentMessageByIos(token, data.getTitle(), data.getBody(), data.getData());
                     }
                 } else {
-                    message = createMessage(token, data.getBody(), data.getData());
+                    message = createMessage(token, data.getTitle(), data.getBody(), data.getData());
                 }
                 messages.add(message);
             }
@@ -69,7 +69,7 @@ public class FirebaseCloudMessaging {
         }
     }
 
-    private static Message createMessage(String token, String body, HashMap<String, String> data) {
+    private static Message createMessage(String token, String title, String body, HashMap<String, String> data) {
         // 아이폰 소리지정
         Aps aps = Aps.builder().setSound("default").build();
         ApnsConfig apnsConfig = ApnsConfig.builder().setAps(aps).build();
@@ -80,7 +80,7 @@ public class FirebaseCloudMessaging {
                 .build();
 
         Notification notification = Notification.builder()
-                .setTitle(null)
+                .setTitle(title)
                 .setBody(body)
                 .build();
 
@@ -100,7 +100,7 @@ public class FirebaseCloudMessaging {
                 .build();
     }
 
-    private static Message createSilentMessageByIos(String token, String body, HashMap<String, String> data) {
+    private static Message createSilentMessageByIos(String token, String title, String body, HashMap<String, String> data) {
         Aps aps = Aps.builder().setContentAvailable(true).build();
         // iOS 13부터 priority, push-type 설정해야 background push 가능
         ApnsConfig apnsConfig = ApnsConfig.builder().setAps(aps)
@@ -109,7 +109,7 @@ public class FirebaseCloudMessaging {
                 .build();
 
         Notification notification = Notification.builder()
-                .setTitle(null)
+                .setTitle(title)
                 .setBody(body)
                 .build();
 
