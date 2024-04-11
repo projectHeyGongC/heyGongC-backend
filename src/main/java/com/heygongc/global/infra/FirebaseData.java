@@ -13,6 +13,7 @@ public class FirebaseData {
 
     private String token;
     private List<String> tokens;
+    @Getter private String title; // 푸시 타이틀
     @Getter private String body; // 푸시 메시지
     @Getter private boolean isSilent;
     @Getter private OsType osType;
