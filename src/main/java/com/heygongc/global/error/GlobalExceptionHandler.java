@@ -50,6 +50,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public HttpEntity<ErrorResponse> handler(Exception e) {
         log.error(e.getMessage());
+        e.printStackTrace();
         return new HttpEntity<>(ErrorResponse.from(ErrorType.INTERNAL_SERVER_ERROR.name(), ErrorType.INTERNAL_SERVER_ERROR.getMessage()));
     }
 }

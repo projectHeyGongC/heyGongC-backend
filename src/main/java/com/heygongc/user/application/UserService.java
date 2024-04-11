@@ -1,5 +1,8 @@
 package com.heygongc.user.application;
 
+import com.heygongc.auth.application.JwtUtil;
+import com.heygongc.auth.domain.AuthToken;
+import com.heygongc.global.error.exception.InvalidTokenException;
 import com.heygongc.global.type.OsType;
 import com.heygongc.user.application.oauth.OauthUser;
 import com.heygongc.user.domain.entity.User;
@@ -7,7 +10,6 @@ import com.heygongc.user.domain.entity.UserToken;
 import com.heygongc.user.domain.repository.UserRepository;
 import com.heygongc.user.domain.repository.UserTokenRepository;
 import com.heygongc.user.exception.AlreadySignInException;
-import com.heygongc.global.error.exception.InvalidTokenException;
 import com.heygongc.user.exception.UserNotFoundException;
 import com.heygongc.user.presentation.request.RegisterRequest;
 import com.heygongc.user.presentation.request.UserLoginRequest;

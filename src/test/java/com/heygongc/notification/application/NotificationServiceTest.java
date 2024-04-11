@@ -3,11 +3,15 @@ package com.heygongc.notification.application;
 import com.heygongc.common.ServiceTest;
 import com.heygongc.device.domain.entity.Device;
 import com.heygongc.device.domain.repository.DeviceRepository;
+import com.heygongc.global.type.OsType;
 import com.heygongc.notification.domain.entity.Notification;
 import com.heygongc.notification.domain.repository.NotificationRepository;
+import com.heygongc.notification.domain.type.NotificationType;
 import com.heygongc.user.domain.entity.User;
 import com.heygongc.user.domain.repository.UserRepository;
+import com.heygongc.user.domain.type.SnsType;
 import org.assertj.core.api.Assertions;
+import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +43,7 @@ class NotificationServiceTest extends ServiceTest {
         Notification 알림 = saveNotification(구글테스트계정, 디바이스);
 
         // when
-        List<Notification> notifications = notificationService.getNotifications(구글테스트계정.getUserSeq());
+        List<Notification> notifications = notificationService.getNotifications(구글테스트계정);
 
         // then
         Assertions.assertThat(notifications).isNotNull();
