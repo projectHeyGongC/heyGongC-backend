@@ -9,8 +9,10 @@ import com.heygongc.device.presentation.request.camera.CameraSubscribeRequest;
 import com.heygongc.notification.domain.entity.Notification;
 import com.heygongc.notification.domain.repository.NotificationRepository;
 import com.heygongc.user.domain.entity.User;
+import com.heygongc.user.domain.repository.UserRepository;
 import com.heygongc.user.exception.UserNotFoundException;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,11 +38,22 @@ public class CameraServiceTest extends ServiceTest {
     @Autowired
     private NotificationRepository notificationRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    User 구글테스트계정;
+
+    @BeforeEach
+    void set구글테스트계정() {
+        구글테스트계정 = saveGoogleUser();
+        userRepository.save(구글테스트계정);
+    }
+
     @Test
     @DisplayName("Device 정보를 가지고 User 정보를 조회한다")
     void getUserByDevice() {
         // given
-        User 구글테스트계정 = saveGoogleUser();
+//        User 구글테스트계정 = saveGoogleUser();
         Device 디바이스 = saveDevice(구글테스트계정);
 
         // when
@@ -146,7 +159,7 @@ public class CameraServiceTest extends ServiceTest {
     @DisplayName("카메라 소리감지 발생 시 알림에 등록한다")
     void alertSoundAlarm() throws Exception {
         // given
-        User 구글테스트계정 = saveGoogleUser();
+//        User 구글테스트계정 = saveGoogleUser();
         Device 디바이스 = saveDevice(구글테스트계정);
         List<Notification> before알림 = notificationRepository.findAllNotificationByUser(구글테스트계정);
         doNothing().when(cameraPushService).alertSoundAlarm(any());

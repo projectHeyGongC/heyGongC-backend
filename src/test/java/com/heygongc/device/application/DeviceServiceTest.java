@@ -10,7 +10,9 @@ import com.heygongc.device.domain.type.ControlType;
 import com.heygongc.device.domain.type.SensitivityType;
 import com.heygongc.device.presentation.request.device.DeviceSubscribeRequest;
 import com.heygongc.user.domain.entity.User;
+import com.heygongc.user.domain.repository.UserRepository;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,11 +40,22 @@ public class DeviceServiceTest extends ServiceTest {
     @Autowired
     private DeviceRepository deviceRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    User 구글테스트계정;
+
+    @BeforeEach
+    void set구글테스트계정() {
+        구글테스트계정 = saveGoogleUser();
+        userRepository.save(구글테스트계정);
+    }
+
     @Test
     @DisplayName("디바이스 정보 가져오기")
     void getDevice() {
         // given
-        User 구글테스트계정 = saveGoogleUser();
+//        User 구글테스트계정 = saveGoogleUser();
         Device 내디바이스 = saveDevice(구글테스트계정);
 
         // when
@@ -56,7 +69,7 @@ public class DeviceServiceTest extends ServiceTest {
     @DisplayName("디바이스 목록 가져오기")
     void getAllDevices() {
         // given
-        User 구글테스트계정 = saveGoogleUser();
+//        User 구글테스트계정 = saveGoogleUser();
         Device 내디바이스 = saveDevice(구글테스트계정);
 
         // when
@@ -73,7 +86,7 @@ public class DeviceServiceTest extends ServiceTest {
     @DisplayName("디바이스 연동하기")
     void SubscribeDevice() throws Exception {
         // given
-        User 구글테스트계정 = saveGoogleUser();
+//        User 구글테스트계정 = saveGoogleUser();
         Device 내디바이스 = saveDevice();
         String 새로운디바이스명 = "newDeviceName";
         DeviceSubscribeRequest request = deviceSubscribeRequest(내디바이스.getDeviceId(), 새로운디바이스명);
@@ -95,7 +108,7 @@ public class DeviceServiceTest extends ServiceTest {
     @DisplayName("디바이스 이름 수정하기")
     void changeDeviceName() {
         // given
-        User 구글테스트계정 = saveGoogleUser();
+//        User 구글테스트계정 = saveGoogleUser();
         Device 내디바이스 = saveDevice(구글테스트계정);
         String 새로운디바이스명 = "newDeviceName";
 
@@ -112,7 +125,7 @@ public class DeviceServiceTest extends ServiceTest {
     @DisplayName("디바이스 목록 가져오기2")
     void getDevices() {
         // given
-        User 구글테스트계정 = saveGoogleUser();
+//        User 구글테스트계정 = saveGoogleUser();
         Device 내디바이스 = saveDevice(구글테스트계정);
 
         List<String> 기기아이디목록 = Arrays.asList(내디바이스.getDeviceId());
@@ -130,7 +143,7 @@ public class DeviceServiceTest extends ServiceTest {
     @DisplayName("디바이스 연동 해제하기")
     void disconnectDevice() throws Exception {
         // given
-        User 구글테스트계정 = saveGoogleUser();
+//        User 구글테스트계정 = saveGoogleUser();
         Device 내디바이스 = saveDevice(구글테스트계정);
 
         List<String> 디바이스ID목록 = Arrays.asList(내디바이스.getDeviceId());
@@ -153,7 +166,7 @@ public class DeviceServiceTest extends ServiceTest {
     @DisplayName("디바이스 세팅 변경하기")
     void changeDeviceSetting() {
         // given
-        User 구글테스트계정 = saveGoogleUser();
+//        User 구글테스트계정 = saveGoogleUser();
         Device before디바이스 = saveDevice(구글테스트계정);
         String before민감도 = SensitivityType.MEDIUM.toString();
         String before카메라모드 = CameraModeType.FRONT.toString();
@@ -176,7 +189,7 @@ public class DeviceServiceTest extends ServiceTest {
     @DisplayName("디바이스 제어하기")
     void controlDevice() throws Exception {
         // given
-        User 구글테스트계정 = saveGoogleUser();
+//        User 구글테스트계정 = saveGoogleUser();
         Device 내디바이스 = saveDevice(구글테스트계정);
         List<ControlType> 컨트롤목록 = new ArrayList<>();
         컨트롤목록.add(ControlType.SOUNDON);

@@ -2,8 +2,10 @@ package com.heygongc.video.application;
 
 import com.heygongc.common.ServiceTest;
 import com.heygongc.user.domain.entity.User;
+import com.heygongc.user.domain.repository.UserRepository;
 import com.heygongc.video.domain.entity.Video;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +23,22 @@ public class VideoServiceTest extends ServiceTest {
     @Autowired
     private VideoService videoService;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    User 구글테스트계정;
+
+    @BeforeEach
+    void set구글테스트계정() {
+        구글테스트계정 = saveGoogleUser();
+        userRepository.save(구글테스트계정);
+    }
+
     @Test
     @DisplayName("비디오를 조회한다")
     void getVideo() throws ParseException {
         // when
-        User 구글테스트계정 = saveGoogleUser();
+//        User 구글테스트계정 = saveGoogleUser();
         Video 비디오 = saveVideo(구글테스트계정);
 
         // when
