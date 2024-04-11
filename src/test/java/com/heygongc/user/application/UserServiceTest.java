@@ -9,6 +9,7 @@ import com.heygongc.user.exception.UserNotFoundException;
 import com.heygongc.user.presentation.request.RegisterRequest;
 import com.heygongc.user.presentation.request.UserLoginRequest;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,12 +28,20 @@ class UserServiceTest extends ServiceTest {
     @Autowired
     private UserRepository userRepository;
 
+    User 구글테스트계정;
+
+    @BeforeEach
+    void set구글테스트계정() {
+        구글테스트계정 = saveGoogleUser();
+        userRepository.save(구글테스트계정);
+    }
+
 
     @Test
     @DisplayName("가입한 사용자가 로그인 시 토큰을 발급한다")
     public void login() {
         // given
-        User 구글테스트계정 = saveGoogleUser();
+//        User 구글테스트계정 = saveGoogleUser();
         OauthUser Oauth구글테스트계정 = testGoogleUser(구글테스트계정.getSnsId());
 
         // when
@@ -67,7 +76,7 @@ class UserServiceTest extends ServiceTest {
     @Test
     public void 회원탈퇴() {
         // given
-        User 구글테스트계정 = saveGoogleUser();
+//        User 구글테스트계정 = saveGoogleUser();
 
         // when
         userService.unRegister(구글테스트계정);

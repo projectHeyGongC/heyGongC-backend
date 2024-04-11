@@ -6,7 +6,9 @@ import com.heygongc.common.ServiceTest;
 import com.heygongc.device.domain.entity.Device;
 import com.heygongc.notification.domain.entity.Notification;
 import com.heygongc.user.domain.entity.User;
+import com.heygongc.user.domain.repository.UserRepository;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +31,22 @@ public class AnalysisServiceTest extends ServiceTest {
     @Autowired
     private AnalysisService analysisService;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    User 구글테스트계정;
+
+    @BeforeEach
+    void set구글테스트계정() {
+        구글테스트계정 = saveGoogleUser();
+        userRepository.save(구글테스트계정);
+    }
+
     @Test
     @DisplayName("메인 response 생성 - 동일 디바이스")
     void makeAnalysisMainResponseWithSameDevice() {
         // given
-        User 구글테스트계정 = saveGoogleUser();
+//        User 구글테스트계정 = saveGoogleUser();
         Device 디바이스 = saveDevice(구글테스트계정);
         int count = 5;
         List<Notification> notifications = new ArrayList<>();
@@ -57,7 +70,7 @@ public class AnalysisServiceTest extends ServiceTest {
     @DisplayName("메인 response 생성 - 다른 디바이스")
     void makeAnalysisMainResponseWithDifferentDevice() {
         // given
-        User 구글테스트계정 = saveGoogleUser();
+//        User 구글테스트계정 = saveGoogleUser();
         Device 디바이스1 = saveDevice(구글테스트계정);
         Device 디바이스2 = saveDevice(구글테스트계정);
         int count1 = 3;
@@ -90,7 +103,7 @@ public class AnalysisServiceTest extends ServiceTest {
     @DisplayName("메인 response 생성 - 순서가 섞인 다른 디바이스")
     void makeAnalysisMainResponseWithShuffledDifferentDevice() {
         // given
-        User 구글테스트계정 = saveGoogleUser();
+//        User 구글테스트계정 = saveGoogleUser();
         Device 디바이스1 = saveDevice(구글테스트계정);
         Device 디바이스2 = saveDevice(구글테스트계정);
         int count1 = 3;
@@ -125,7 +138,7 @@ public class AnalysisServiceTest extends ServiceTest {
     @DisplayName("graph 생성")
     void makeAnalysisGraph() {
         // given
-        User 구글테스트계정 = saveGoogleUser();
+//        User 구글테스트계정 = saveGoogleUser();
         Device 디바이스 = saveDevice(구글테스트계정);
         List<Notification> notifications = new ArrayList<>();
 
@@ -158,7 +171,7 @@ public class AnalysisServiceTest extends ServiceTest {
     @DisplayName("graph 생성 - 자정과 정오")
     void makeAnalysisGraphWithMidnightAndNoon() {
         // given
-        User 구글테스트계정 = saveGoogleUser();
+//        User 구글테스트계정 = saveGoogleUser();
         Device 디바이스 = saveDevice(구글테스트계정);
 
         LocalDate today = LocalDate.now();
@@ -198,7 +211,7 @@ public class AnalysisServiceTest extends ServiceTest {
     @DisplayName("graph 생성 - 다양한 데이터")
     void makeAnalysisGraphWithVariousData() {
         // given
-        User 구글테스트계정 = saveGoogleUser();
+//        User 구글테스트계정 = saveGoogleUser();
         Device 디바이스 = saveDevice(구글테스트계정);
 
         LocalDate today = LocalDate.now();
