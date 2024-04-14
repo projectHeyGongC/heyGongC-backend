@@ -56,10 +56,6 @@ public class Device extends BaseTimeEntity {
     @ColumnDefault("'MEDIUM'")
     private SensitivityType sensitivity;
 
-    @Column(name = "sound_active", nullable = false)
-    @ColumnDefault("false")
-    private boolean soundActive;
-
     @Column(name = "stream_active", nullable = false)
     @ColumnDefault("false")
     private boolean streamActive;
@@ -89,7 +85,6 @@ public class Device extends BaseTimeEntity {
         this.isConnected = false;
         this.soundMode = false;
         this.sensitivity = SensitivityType.MEDIUM;
-        this.soundActive = false;
         this.streamActive = false;
         this.cameraMode = CameraModeType.FRONT;
         this.battery = 0;
@@ -106,7 +101,6 @@ public class Device extends BaseTimeEntity {
         this.isConnected = false;
         this.soundMode = false;
         this.sensitivity = SensitivityType.MEDIUM;
-        this.soundActive = false;
         this.streamActive = false;
         this.cameraMode = CameraModeType.FRONT;
         this.battery = 0;
@@ -144,5 +138,13 @@ public class Device extends BaseTimeEntity {
 
     public void changeFcmToken(String fcmToken){
         this.fcmToken = fcmToken;
+    }
+
+    public String getDeviceConnectStatus() {
+        return this.isConnected ? "CONNECTED" : "DISCONNECTED";
+    }
+
+    public String getSoundStatus() {
+        return this.soundMode ? "ON" : "OFF";
     }
 }
