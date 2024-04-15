@@ -2,7 +2,7 @@ package com.heygongc.device.presentation.response.device;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "기기 목록 응답")
+@Schema(description = "기기 상세 정보 조회 응답")
 public record DeviceInfoResponse(@Schema(description = "디바이스 ID") String deviceId,
                                  @Schema(description = "디바이스 이름") String deviceName,
                                  @Schema(description = "모델명") String modelName,

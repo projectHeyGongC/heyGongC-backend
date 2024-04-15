@@ -4,7 +4,7 @@ import com.heygongc.global.common.request.RequestValidator;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.util.ObjectUtils;
 
-@Schema(description = "기기 연동 요청")
+@Schema(description = "기기 추가 요청")
 public record DeviceSubscribeRequest(
         @Schema(description = "디바이스 ID") String deviceId,
         @Schema(description = "디바이스 이름") String deviceName
