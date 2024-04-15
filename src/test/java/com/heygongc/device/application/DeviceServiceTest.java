@@ -164,7 +164,7 @@ public class DeviceServiceTest extends ServiceTest {
 
     @Test
     @DisplayName("디바이스 세팅 변경하기")
-    void changeDeviceSetting() {
+    void changeDeviceSetting() throws Exception {
         // given
 //        User 구글테스트계정 = saveGoogleUser();
         Device before디바이스 = saveDevice(구글테스트계정);
@@ -172,6 +172,8 @@ public class DeviceServiceTest extends ServiceTest {
         String before카메라모드 = CameraModeType.FRONT.toString();
         String after민감도 = SensitivityType.HIGH.toString();
         String after카메라모드 = CameraModeType.BACK.toString();
+        doNothing().when(devicePushService).changeSensitivity(any(), any());
+        doNothing().when(devicePushService).changeCameraMode(any(), any());
 
         // when
         deviceService.changeDeviceSetting(before디바이스.getDeviceId(), after민감도, after카메라모드, 구글테스트계정);

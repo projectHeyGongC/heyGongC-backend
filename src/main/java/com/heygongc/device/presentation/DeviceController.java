@@ -138,7 +138,7 @@ public class DeviceController {
     public ResponseEntity<Void> changeDeviceSetting(
             @Parameter(description = "기기 아이디", required = true, in = ParameterIn.PATH) @PathVariable(name = "deviceId") String deviceId,
             @Parameter(name = "DeviceSettingRequest", description = "기기 설정 변경 요청 정보", required = true) @RequestBody DeviceSettingRequest request,
-            @Parameter(hidden = true) User user) {
+            @Parameter(hidden = true) User user) throws Exception {
         deviceService.changeDeviceSetting(deviceId, request.sensitivity(), request.cameraMode(), user);
         return ResponseEntity.ok().build();
     }

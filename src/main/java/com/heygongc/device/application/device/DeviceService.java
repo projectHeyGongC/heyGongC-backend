@@ -93,9 +93,11 @@ public class DeviceService{
     }
 
     @Transactional
-    public void changeDeviceSetting(String deviceId, String sensitivity, String cameraMode, User user) {
+    public void changeDeviceSetting(String deviceId, String sensitivity, String cameraMode, User user) throws Exception {
         Device device = getDevice(deviceId, user);
         device.changeDeviceSetting(EnumUtils.getEnumConstant(SensitivityType.class, sensitivity),
                 EnumUtils.getEnumConstant(CameraModeType.class, cameraMode));
+        devicePushService.changeSensitivity(sensitivity, device.getFcmToken());
+        devicePushService.changeCameraMode(cameraMode, device.getFcmToken());
     }
 }

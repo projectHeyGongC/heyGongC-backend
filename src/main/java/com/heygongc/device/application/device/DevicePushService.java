@@ -75,4 +75,22 @@ public class DevicePushService {
 
         firebaseCloudMessaging.sendMessage(data);
     }
+
+    public void changeSensitivity(String sensitivity, String fcmToken) throws Exception {
+        FirebaseData data = FirebaseData.builder()
+                .token(fcmToken)
+                .body("소리 민감도 변경하기")
+                .action(sensitivity)
+                .build();
+        firebaseCloudMessaging.sendMessage(data);
+    }
+
+    public void changeCameraMode(String cameraMode, String fcmToken) throws Exception {
+        FirebaseData data = FirebaseData.builder()
+                .token(fcmToken)
+                .body("카메라 전/후면 변경하기")
+                .action(cameraMode)
+                .build();
+        firebaseCloudMessaging.sendMessage(data);
+    }
 }
