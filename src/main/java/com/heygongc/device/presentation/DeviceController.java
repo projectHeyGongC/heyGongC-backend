@@ -89,8 +89,8 @@ public class DeviceController {
                             device.getDeviceId(),
                             device.getDeviceName(),
                             device.getModelName(),
-                            device.getSensitivity().toString(),
-                            device.getCameraMode().toString(),
+                            device.getSensitivity().name(),
+                            device.getCameraMode().name(),
                             device.getSoundStatus()
                     )
         );
@@ -157,7 +157,6 @@ public class DeviceController {
             @Parameter(name = "DeviceControlRequest", description = "기기 제어 요청 정보", required = true) @RequestBody DeviceControlRequest request,
             @Parameter(hidden = true) User user) throws Exception {
         deviceService.controlDevice(deviceId, user, request.controlType());
-
         return ResponseEntity.ok().build();
     }
 }

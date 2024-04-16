@@ -89,7 +89,7 @@ public class CameraController {
             @Parameter(hidden = true) Device device) {
         return ResponseEntity.ok()
                 .body(
-                        new CameraDeviceSettingResponse(device.getSensitivity().toString(), device.getCameraMode().toString())
+                        new CameraDeviceSettingResponse(device.getSensitivity().name(), device.getCameraMode().name())
                 );
     }
 

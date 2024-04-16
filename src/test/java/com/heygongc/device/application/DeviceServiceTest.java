@@ -168,10 +168,10 @@ public class DeviceServiceTest extends ServiceTest {
         // given
 //        User 구글테스트계정 = saveGoogleUser();
         Device before디바이스 = saveDevice(구글테스트계정);
-        String before민감도 = SensitivityType.MEDIUM.toString();
-        String before카메라모드 = CameraModeType.FRONT.toString();
-        String after민감도 = SensitivityType.HIGH.toString();
-        String after카메라모드 = CameraModeType.BACK.toString();
+        String before민감도 = SensitivityType.MEDIUM.name();
+        String before카메라모드 = CameraModeType.FRONT.name();
+        String after민감도 = SensitivityType.HIGH.name();
+        String after카메라모드 = CameraModeType.BACK.name();
         doNothing().when(devicePushService).changeSensitivity(any(), any());
         doNothing().when(devicePushService).changeCameraMode(any(), any());
 
@@ -181,10 +181,10 @@ public class DeviceServiceTest extends ServiceTest {
         // then
         Device after디바이스 = deviceRepository.findMyDevice(before디바이스.getDeviceId(), 구글테스트계정).get();
 
-        Assertions.assertThat(before디바이스.getSensitivity().toString()).isEqualTo(before민감도);
-        Assertions.assertThat(before디바이스.getCameraMode().toString()).isEqualTo(before카메라모드);
-        Assertions.assertThat(after디바이스.getSensitivity().toString()).isEqualTo(after민감도);
-        Assertions.assertThat(after디바이스.getCameraMode().toString()).isEqualTo(after카메라모드);
+        Assertions.assertThat(before디바이스.getSensitivity().name()).isEqualTo(before민감도);
+        Assertions.assertThat(before디바이스.getCameraMode().name()).isEqualTo(before카메라모드);
+        Assertions.assertThat(after디바이스.getSensitivity().name()).isEqualTo(after민감도);
+        Assertions.assertThat(after디바이스.getCameraMode().name()).isEqualTo(after카메라모드);
     }
 
     @Test
@@ -203,10 +203,10 @@ public class DeviceServiceTest extends ServiceTest {
 
         for (ControlType type : 컨트롤목록) {
             // when
-            deviceService.controlDevice(내디바이스.getDeviceId(), 구글테스트계정, type.toString());
+            deviceService.controlDevice(내디바이스.getDeviceId(), 구글테스트계정, type.name());
 
             // then
-            verify(devicePushService).controlDevice(type.toString(), 내디바이스.getFcmToken());
+            verify(devicePushService).controlDevice(type.name(), 내디바이스.getFcmToken());
 
             내디바이스 = deviceRepository.findMyDevice(내디바이스.getDeviceId(), 구글테스트계정).get();
 
