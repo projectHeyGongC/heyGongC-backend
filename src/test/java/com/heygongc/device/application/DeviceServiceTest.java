@@ -204,7 +204,7 @@ public class DeviceServiceTest extends ServiceTest {
             deviceService.controlDevice(내디바이스.getDeviceId(), 구글테스트계정, 컨트롤.name(), "ON");
 
             // then
-            verify(devicePushService).controlDevice(컨트롤.name(), "ON", 내디바이스.getFcmToken());
+            verify(devicePushService).controlDevice(컨트롤, "ON", 내디바이스.getFcmToken());
 
             내디바이스 = deviceRepository.findMyDevice(내디바이스.getDeviceId(), 구글테스트계정).get();
 
@@ -237,7 +237,7 @@ public class DeviceServiceTest extends ServiceTest {
             deviceService.controlDevice(내디바이스.getDeviceId(), 구글테스트계정, 컨트롤.name(), "OFF");
 
             // then
-            verify(devicePushService).controlDevice(컨트롤.name(), "OFF", 내디바이스.getFcmToken());
+            verify(devicePushService).controlDevice(컨트롤, "OFF", 내디바이스.getFcmToken());
 
             내디바이스 = deviceRepository.findMyDevice(내디바이스.getDeviceId(), 구글테스트계정).get();
 

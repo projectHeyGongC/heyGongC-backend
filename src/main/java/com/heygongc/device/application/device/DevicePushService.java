@@ -17,32 +17,17 @@ public class DevicePushService {
         this.firebaseCloudMessaging = firebaseCloudMessaging;
     }
 
-    public void showQRCode(List<String> fcmTokens) throws Exception {
+    public void controlDevices(FcmActionType type, String controlMode, List<String> fcmTokens) throws Exception {
         FirebaseData data = FirebaseData.builder()
                 .tokens(fcmTokens)
-                .body(FcmActionType.QR_CODE.body())
-                .action(FcmActionType.QR_CODE.name())
-                .content("ON")
+                .body(type.body())
+                .action(type.name())
+                .content(controlMode)
                 .build();
         firebaseCloudMessaging.sendMessage(data);
     }
 
-    public void hideQRCode(String fcmToken) throws Exception {
-        FirebaseData data = FirebaseData.builder()
-                .token(fcmToken)
-                .body(FcmActionType.QR_CODE.body())
-                .action(FcmActionType.QR_CODE.name())
-                .content("OFF")
-                .build();
-        firebaseCloudMessaging.sendMessage(data);
-    }
-
-    public void controlDevice(String controlType, String controlMode, String fcmToken) throws Exception {
-        FcmActionType type = EnumUtils.getEnumConstant(FcmActionType.class, controlType);
-        if (type == null) {
-            throw new IllegalArgumentException("Invalid control type: " + controlType);
-        }
-
+    public void controlDevice(FcmActionType type, String controlMode, String fcmToken) throws Exception {
         FirebaseData data = FirebaseData.builder()
                 .token(fcmToken)
                 .body(type.body())
@@ -52,23 +37,19 @@ public class DevicePushService {
         firebaseCloudMessaging.sendMessage(data);
     }
 
+    public void showQRCode(List<String> fcmTokens) throws Exception {
+        controlDevices(FcmActionType.QR_CODE, "OFF", fcmTokens);
+    }
+
+    public void hideQRCode(String fcmToken) throws Exception {
+        controlDevice(FcmActionType.QR_CODE, "OFF", fcmToken);
+    }
+
     public void changeSensitivity(String sensitivity, String fcmToken) throws Exception {
-        FirebaseData data = FirebaseData.builder()
-                .token(fcmToken)
-                .body(FcmActionType.SENSITIVITY.body())
-                .action(FcmActionType.SENSITIVITY.name())
-                .content(sensitivity)
-                .build();
-        firebaseCloudMessaging.sendMessage(data);
+        controlDevice(FcmActionType.SENSITIVITY, sensitivity, fcmToken);
     }
 
     public void changeCameraOrientation(String cameraOrientation, String fcmToken) throws Exception {
-        FirebaseData data = FirebaseData.builder()
-                .token(fcmToken)
-                .body(FcmActionType.CAMERA_ORIENTATION.body())
-                .action(FcmActionType.CAMERA_ORIENTATION.name())
-                .content(cameraOrientation)
-                .build();
-        firebaseCloudMessaging.sendMessage(data);
+        controlDevice(FcmActionType.CAMERA_ORIENTATION, cameraOrientation, fcmToken);
     }
 }

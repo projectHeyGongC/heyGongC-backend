@@ -84,7 +84,7 @@ public class DeviceService{
                 break;
         }
 
-        devicePushService.controlDevice(controlType, controlMode, device.getFcmToken());
+        devicePushService.controlDevice(type, controlMode, device.getFcmToken());
     }
 
     @Transactional
