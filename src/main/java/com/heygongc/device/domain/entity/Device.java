@@ -95,7 +95,11 @@ public class Device extends BaseTimeEntity {
     public void changeDeviceName(String deviceName) {
         this.deviceName = deviceName;
     }
-    public void connectDevice() { this.isConnected = true;}
+
+    public void connectDevice() {
+        this.isConnected = true;
+    }
+
     public void disConnectDevice() {
         this.userSeq = null;
         this.isConnected = false;
@@ -145,7 +149,9 @@ public class Device extends BaseTimeEntity {
         this.streamActive = false;
     }
 
-    public void setDeviceOwner(Long userSeq) { this.userSeq = userSeq; }
+    public void setDeviceOwner(Long userSeq) {
+        this.userSeq = userSeq;
+    }
 
     public void changeCameraDeviceStatus(int battery, int temperature){
         this.battery = battery;
@@ -156,11 +162,11 @@ public class Device extends BaseTimeEntity {
         this.fcmToken = fcmToken;
     }
 
-    public String getDeviceConnectStatus() {
+    public String getConnectStatus() {
         return this.isConnected ? "CONNECTED" : "DISCONNECTED";
     }
 
-    public String getSoundStatus() {
+    public String getSoundSensingStatus() {
         return this.soundSensing ? "ON" : "OFF";
     }
 }
