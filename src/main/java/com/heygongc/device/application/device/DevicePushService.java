@@ -1,6 +1,5 @@
 package com.heygongc.device.application.device;
 
-import com.heygongc.device.domain.type.ControlType;
 import com.heygongc.global.infra.FirebaseCloudMessaging;
 import com.heygongc.global.infra.FirebaseData;
 import com.heygongc.global.type.FcmActionType;
@@ -38,37 +37,18 @@ public class DevicePushService {
         firebaseCloudMessaging.sendMessage(data);
     }
 
-    public void controlDevice(String controlType, String fcmToken) throws Exception {
-        ControlType type = EnumUtils.getEnumConstant(ControlType.class, controlType);
+    public void controlDevice(String controlType, String controlMode, String fcmToken) throws Exception {
+        FcmActionType type = EnumUtils.getEnumConstant(FcmActionType.class, controlType);
+        if (type == null) {
+            throw new IllegalArgumentException("Invalid control type: " + controlType);
+        }
 
-        FirebaseData data = switch (type != null ? type : ControlType.NULL) {
-            case SOUNDON -> FirebaseData.builder()
-                    .token(fcmToken)
-                    .body(FcmActionType.SOUND_SENSING.body())
-                    .action(FcmActionType.SOUND_SENSING.name())
-                    .content("ON")
-                    .build();
-            case SOUNDOFF -> FirebaseData.builder()
-                    .token(fcmToken)
-                    .body(FcmActionType.SOUND_SENSING.body())
-                    .action(FcmActionType.SOUND_SENSING.name())
-                    .content("OFF")
-                    .build();
-            case STREAMON -> FirebaseData.builder()
-                    .token(fcmToken)
-                    .body(FcmActionType.STREAM.body())
-                    .action(FcmActionType.STREAM.name())
-                    .content("ON")
-                    .build();
-            case STREAMOFF -> FirebaseData.builder()
-                    .token(fcmToken)
-                    .body(FcmActionType.STREAM.body())
-                    .action(FcmActionType.STREAM.name())
-                    .content("OFF")
-                    .build();
-            default -> throw new IllegalArgumentException("Invalid control type: " + controlType);
-        };
-
+        FirebaseData data = FirebaseData.builder()
+                .token(fcmToken)
+                .body(type.body())
+                .action(type.name())
+                .content(controlMode)
+                .build();
         firebaseCloudMessaging.sendMessage(data);
     }
 
@@ -82,12 +62,12 @@ public class DevicePushService {
         firebaseCloudMessaging.sendMessage(data);
     }
 
-    public void changeCameraMode(String cameraMode, String fcmToken) throws Exception {
+    public void changeCameraOrientation(String cameraOrientation, String fcmToken) throws Exception {
         FirebaseData data = FirebaseData.builder()
                 .token(fcmToken)
                 .body(FcmActionType.CAMERA_ORIENTATION.body())
                 .action(FcmActionType.CAMERA_ORIENTATION.name())
-                .content(cameraMode)
+                .content(cameraOrientation)
                 .build();
         firebaseCloudMessaging.sendMessage(data);
     }

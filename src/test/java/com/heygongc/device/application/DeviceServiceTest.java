@@ -5,10 +5,10 @@ import com.heygongc.device.application.device.DevicePushService;
 import com.heygongc.device.application.device.DeviceService;
 import com.heygongc.device.domain.entity.Device;
 import com.heygongc.device.domain.repository.DeviceRepository;
-import com.heygongc.device.domain.type.CameraModeType;
-import com.heygongc.device.domain.type.ControlType;
+import com.heygongc.device.domain.type.CameraOrientationType;
 import com.heygongc.device.domain.type.SensitivityType;
 import com.heygongc.device.presentation.request.device.DeviceSubscribeRequest;
+import com.heygongc.global.type.FcmActionType;
 import com.heygongc.user.domain.entity.User;
 import com.heygongc.user.domain.repository.UserRepository;
 import org.assertj.core.api.Assertions;
@@ -20,11 +20,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static com.heygongc.device.setup.DeviceSetup.saveDevice;
+import static com.heygongc.global.type.FcmActionType.SOUND_SENSING;
+import static com.heygongc.global.type.FcmActionType.STREAM;
 import static com.heygongc.user.setup.UserSetup.saveGoogleUser;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
@@ -169,62 +169,86 @@ public class DeviceServiceTest extends ServiceTest {
 //        User 구글테스트계정 = saveGoogleUser();
         Device before디바이스 = saveDevice(구글테스트계정);
         String before민감도 = SensitivityType.MEDIUM.name();
-        String before카메라모드 = CameraModeType.FRONT.name();
+        String before카메라방향 = CameraOrientationType.FRONT.name();
         String after민감도 = SensitivityType.HIGH.name();
-        String after카메라모드 = CameraModeType.BACK.name();
+        String after카메라방향 = CameraOrientationType.BACK.name();
         doNothing().when(devicePushService).changeSensitivity(any(), any());
-        doNothing().when(devicePushService).changeCameraMode(any(), any());
+        doNothing().when(devicePushService).changeCameraOrientation(any(), any());
 
         // when
-        deviceService.changeDeviceSetting(before디바이스.getDeviceId(), after민감도, after카메라모드, 구글테스트계정);
+        deviceService.changeDeviceSetting(before디바이스.getDeviceId(), after민감도, after카메라방향, 구글테스트계정);
 
         // then
         Device after디바이스 = deviceRepository.findMyDevice(before디바이스.getDeviceId(), 구글테스트계정).get();
 
         Assertions.assertThat(before디바이스.getSensitivity().name()).isEqualTo(before민감도);
-        Assertions.assertThat(before디바이스.getCameraMode().name()).isEqualTo(before카메라모드);
+        Assertions.assertThat(before디바이스.getCameraOrientation().name()).isEqualTo(before카메라방향);
         Assertions.assertThat(after디바이스.getSensitivity().name()).isEqualTo(after민감도);
-        Assertions.assertThat(after디바이스.getCameraMode().name()).isEqualTo(after카메라모드);
+        Assertions.assertThat(after디바이스.getCameraOrientation().name()).isEqualTo(after카메라방향);
     }
 
     @Test
-    @DisplayName("디바이스 제어하기")
-    void controlDevice() throws Exception {
+    @DisplayName("디바이스 제어하기 ON")
+    void controlDeviceON() throws Exception {
         // given
 //        User 구글테스트계정 = saveGoogleUser();
         Device 내디바이스 = saveDevice(구글테스트계정);
-        List<ControlType> 컨트롤목록 = new ArrayList<>();
-        컨트롤목록.add(ControlType.SOUNDON);
-        컨트롤목록.add(ControlType.SOUNDOFF);
-        컨트롤목록.add(ControlType.STREAMON);
-        컨트롤목록.add(ControlType.STREAMOFF);
+        List<FcmActionType> 컨트롤목록 = new ArrayList<>();
+        컨트롤목록.add(SOUND_SENSING);
+        컨트롤목록.add(STREAM);
 
-        doNothing().when(devicePushService).controlDevice(any(), any());
+        doNothing().when(devicePushService).controlDevice(any(), any(), any());
 
-        for (ControlType type : 컨트롤목록) {
+        for (FcmActionType 컨트롤 : 컨트롤목록) {
             // when
-            deviceService.controlDevice(내디바이스.getDeviceId(), 구글테스트계정, type.name());
+            deviceService.controlDevice(내디바이스.getDeviceId(), 구글테스트계정, 컨트롤.name(), "ON");
 
             // then
-            verify(devicePushService).controlDevice(type.name(), 내디바이스.getFcmToken());
+            verify(devicePushService).controlDevice(컨트롤.name(), "ON", 내디바이스.getFcmToken());
 
             내디바이스 = deviceRepository.findMyDevice(내디바이스.getDeviceId(), 구글테스트계정).get();
 
-            switch (type) {
-                case SOUNDON:
-                    Assertions.assertThat(내디바이스.isSoundMode()).isTrue();
+            switch (컨트롤) {
+                case SOUND_SENSING:
+                    Assertions.assertThat(내디바이스.isSoundSensing()).isTrue();
                     break;
-                case SOUNDOFF:
-                    Assertions.assertThat(내디바이스.isSoundMode()).isFalse();
-                    break;
-                case STREAMON:
+                case STREAM:
                     Assertions.assertThat(내디바이스.isStreamActive()).isTrue();
                     break;
-                case STREAMOFF:
+                default:
+            }
+        }
+    }
+
+    @Test
+    @DisplayName("디바이스 제어하기 OFF")
+    void controlDeviceOFF() throws Exception {
+        // given
+//        User 구글테스트계정 = saveGoogleUser();
+        Device 내디바이스 = saveDevice(구글테스트계정);
+        List<FcmActionType> 컨트롤목록 = new ArrayList<>();
+        컨트롤목록.add(SOUND_SENSING);
+        컨트롤목록.add(STREAM);
+
+        doNothing().when(devicePushService).controlDevice(any(), any(), any());
+
+        for (FcmActionType 컨트롤 : 컨트롤목록) {
+            // when
+            deviceService.controlDevice(내디바이스.getDeviceId(), 구글테스트계정, 컨트롤.name(), "OFF");
+
+            // then
+            verify(devicePushService).controlDevice(컨트롤.name(), "OFF", 내디바이스.getFcmToken());
+
+            내디바이스 = deviceRepository.findMyDevice(내디바이스.getDeviceId(), 구글테스트계정).get();
+
+            switch (컨트롤) {
+                case SOUND_SENSING:
+                    Assertions.assertThat(내디바이스.isSoundSensing()).isFalse();
+                    break;
+                case STREAM:
                     Assertions.assertThat(내디바이스.isStreamActive()).isFalse();
                     break;
                 default:
-                    Assertions.assertThat(true).isFalse();
             }
         }
     }
