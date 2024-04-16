@@ -49,8 +49,8 @@ public class DeviceController {
                         device.getDeviceName(),
                         device.getBattery(),
                         device.getTemperature(),
-                        device.getDeviceConnectStatus(),
-                        device.getSoundStatus()))
+                        device.getConnectStatus(),
+                        device.getSoundSensingStatus()))
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok().body(deviceResponses);
@@ -91,7 +91,7 @@ public class DeviceController {
                             device.getModelName(),
                             device.getSensitivity().name(),
                             device.getCameraOrientation().name(),
-                            device.getSoundStatus()
+                            device.getSoundSensingStatus()
                     )
         );
     }
