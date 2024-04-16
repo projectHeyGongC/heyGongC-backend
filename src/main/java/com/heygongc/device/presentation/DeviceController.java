@@ -89,8 +89,8 @@ public class DeviceController {
                             device.getDeviceId(),
                             device.getDeviceName(),
                             device.getModelName(),
-                            device.getSensitivity().toString(),
-                            device.getCameraMode().toString(),
+                            device.getSensitivity().name(),
+                            device.getCameraOrientation().name(),
                             device.getSoundStatus()
                     )
         );
@@ -139,15 +139,14 @@ public class DeviceController {
             @Parameter(description = "기기 아이디", required = true, in = ParameterIn.PATH) @PathVariable(name = "deviceId") String deviceId,
             @Parameter(name = "DeviceSettingRequest", description = "기기 설정 변경 요청 정보", required = true) @RequestBody DeviceSettingRequest request,
             @Parameter(hidden = true) User user) throws Exception {
-        deviceService.changeDeviceSetting(deviceId, request.sensitivity(), request.cameraMode(), user);
+        deviceService.changeDeviceSetting(deviceId, request.sensitivity(), request.cameraOrientation(), user);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("{deviceId}/control")
     @Operation(
             summary = "기기 제어하기",
-            description = "[모니터링 > 메인 > 스트리밍] 메인 앱에서 카메라 앱 기기를 제어합니다. 어떤 명령을 카메라 앱 기기에 내릴 건지 정합니다." +
-                    "소리 감지를 키거나 끄거나 원격 스트리밍을 요청할 때 해당 api를 사용합니다.",
+            description = "[모니터링 > 메인 > 스트리밍] 메인 앱에서 카메라 앱 기기를 제어합니다.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK", content = @Content)
             }
@@ -156,8 +155,7 @@ public class DeviceController {
             @Parameter(description = "기기 아이디", required = true, in = ParameterIn.PATH) @PathVariable(name = "deviceId") String deviceId,
             @Parameter(name = "DeviceControlRequest", description = "기기 제어 요청 정보", required = true) @RequestBody DeviceControlRequest request,
             @Parameter(hidden = true) User user) throws Exception {
-        deviceService.controlDevice(deviceId, user, request.controlType());
-
+        deviceService.controlDevice(deviceId, user, request.controlType(), request.controlMode());
         return ResponseEntity.ok().build();
     }
 }

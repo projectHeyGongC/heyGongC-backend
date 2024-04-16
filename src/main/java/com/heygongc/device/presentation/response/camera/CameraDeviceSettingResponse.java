@@ -9,6 +9,6 @@ public record CameraDeviceSettingResponse(
                 "MEDIUM: 보통,<br>" +
                 "LOW: 둔감<br>" +
                 "VERYLOW: 매우 둔감)") String sensitivity,
-        @Schema(description = "카메라 모드(FRONT:전면 카메라,BACK:후면 카메라)") String cameraMode
+        @Schema(description = "카메라 방향(FRONT:전면, BACK:후면)") String cameraOrientation
 ) {
 }

@@ -2,10 +2,10 @@ package com.heygongc.device.application.device;
 
 import com.heygongc.device.domain.entity.Device;
 import com.heygongc.device.domain.repository.DeviceRepository;
-import com.heygongc.device.domain.type.CameraModeType;
-import com.heygongc.device.domain.type.ControlType;
+import com.heygongc.device.domain.type.CameraOrientationType;
 import com.heygongc.device.domain.type.SensitivityType;
 import com.heygongc.device.exception.DeviceNotFoundException;
+import com.heygongc.global.type.FcmActionType;
 import com.heygongc.global.utils.EnumUtils;
 import com.heygongc.user.domain.entity.User;
 import jakarta.transaction.Transactional;
@@ -68,36 +68,31 @@ public class DeviceService{
     }
 
     @Transactional
-    public void controlDevice(String deviceId, User user, String controlType) throws Exception {
+    public void controlDevice(String deviceId, User user, String controlType, String controlMode) throws Exception {
         Device device = getDevice(deviceId, user);
-        ControlType type = EnumUtils.getEnumConstant(ControlType.class, controlType);
-
-        switch (type != null ? type : ControlType.NULL) {
-            case SOUNDON:
-                device.soundModeOn();
-                break;
-            case SOUNDOFF:
-                device.soundModeOff();
-                break;
-            case STREAMON:
-                device.startStreaming();
-                break;
-            case STREAMOFF:
-                device.stopStreaming();
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid control type: " + controlType);
+        FcmActionType type = EnumUtils.getEnumConstant(FcmActionType.class, controlType);
+        if (type == null) {
+            throw new IllegalArgumentException("Invalid control type: " + controlType);
         }
 
-        devicePushService.controlDevice(controlType, device.getFcmToken());
+        switch (type) {
+            case SOUND_SENSING:
+                device.setSoundSensing(controlMode);
+                break;
+            case STREAM:
+                device.setStreamingMode(controlMode);
+                break;
+        }
+
+        devicePushService.controlDevice(type, controlMode, device.getFcmToken());
     }
 
     @Transactional
-    public void changeDeviceSetting(String deviceId, String sensitivity, String cameraMode, User user) throws Exception {
+    public void changeDeviceSetting(String deviceId, String sensitivity, String cameraOrientation, User user) throws Exception {
         Device device = getDevice(deviceId, user);
         device.changeDeviceSetting(EnumUtils.getEnumConstant(SensitivityType.class, sensitivity),
-                EnumUtils.getEnumConstant(CameraModeType.class, cameraMode));
+                EnumUtils.getEnumConstant(CameraOrientationType.class, cameraOrientation));
         devicePushService.changeSensitivity(sensitivity, device.getFcmToken());
-        devicePushService.changeCameraMode(cameraMode, device.getFcmToken());
+        devicePushService.changeCameraOrientation(cameraOrientation, device.getFcmToken());
     }
 }

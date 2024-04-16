@@ -80,7 +80,7 @@ public class CameraController {
     @GetMapping("/settings")
     @Operation(
             summary = "카메라 설정 정보 불러오기",
-            description = "소리 민감도 및 카메라 모드 정보를 불러올 때 사용됩니다.",
+            description = "소리 민감도 및 카메라 방향 정보를 불러올 때 사용됩니다.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = "application/json", schema = @Schema(implementation = CameraDeviceSettingResponse.class)))
             }
@@ -89,7 +89,7 @@ public class CameraController {
             @Parameter(hidden = true) Device device) {
         return ResponseEntity.ok()
                 .body(
-                        new CameraDeviceSettingResponse(device.getSensitivity().toString(), device.getCameraMode().toString())
+                        new CameraDeviceSettingResponse(device.getSensitivity().name(), device.getCameraOrientation().name())
                 );
     }
 

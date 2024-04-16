@@ -1,6 +1,6 @@
 package com.heygongc.device.domain.entity;
 
-import com.heygongc.device.domain.type.CameraModeType;
+import com.heygongc.device.domain.type.CameraOrientationType;
 import com.heygongc.device.domain.type.SensitivityType;
 import com.heygongc.global.config.BaseTimeEntity;
 import com.heygongc.global.type.OsType;
@@ -47,9 +47,9 @@ public class Device extends BaseTimeEntity {
     @ColumnDefault("false")
     private boolean isConnected;
 
-    @Column(name = "sound_mode", nullable = false)
+    @Column(name = "sound_sensing", nullable = false)
     @ColumnDefault("false")
-    private boolean soundMode;
+    private boolean soundSensing;
 
     @Column(name = "sensitivity", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -63,7 +63,7 @@ public class Device extends BaseTimeEntity {
     @Column(name = "camera_mode", nullable = false)
     @Enumerated(EnumType.STRING)
     @ColumnDefault("'FRONT'")
-    private CameraModeType cameraMode;
+    private CameraOrientationType cameraOrientation;
 
     @Column(name = "battery")
     private int battery;
@@ -83,10 +83,10 @@ public class Device extends BaseTimeEntity {
         this.modelName = modelName;
         this.deviceOs = deviceOs;
         this.isConnected = false;
-        this.soundMode = false;
+        this.soundSensing = false;
         this.sensitivity = SensitivityType.MEDIUM;
         this.streamActive = false;
-        this.cameraMode = CameraModeType.FRONT;
+        this.cameraOrientation = CameraOrientationType.FRONT;
         this.battery = 0;
         this.temperature = 0;
         this.fcmToken = fcmToken;
@@ -99,33 +99,49 @@ public class Device extends BaseTimeEntity {
     public void disConnectDevice() {
         this.userSeq = null;
         this.isConnected = false;
-        this.soundMode = false;
+        this.soundSensing = false;
         this.sensitivity = SensitivityType.MEDIUM;
         this.streamActive = false;
-        this.cameraMode = CameraModeType.FRONT;
+        this.cameraOrientation = CameraOrientationType.FRONT;
         this.battery = 0;
         this.temperature = 0;
         this.fcmToken = null;
     }
 
-    public void changeDeviceSetting(SensitivityType sensitivity, CameraModeType cameraMode){
+    public void changeDeviceSetting(SensitivityType sensitivity, CameraOrientationType cameraOrientation){
         this.sensitivity = sensitivity;
-        this.cameraMode = cameraMode;
+        this.cameraOrientation = cameraOrientation;
     }
 
-    public void soundModeOn(){
-        this.soundMode = true;
+    public void setSoundSensing(String mode){
+        if ("ON".equals(mode)) {
+            soundSensingOn();
+        } else if ("OFF".equals(mode)) {
+            soundSensingOff();
+        }
     }
 
-    public void soundModeOff(){
-        this.soundMode = false;
+    public void soundSensingOn(){
+        this.soundSensing = true;
     }
 
-    public void startStreaming(){
+    public void soundSensingOff(){
+        this.soundSensing = false;
+    }
+
+    public void setStreamingMode(String mode){
+        if ("ON".equals(mode)) {
+            activeStreaming();
+        } else if ("OFF".equals(mode)) {
+            inactiveStreaming();
+        }
+    }
+
+    public void activeStreaming(){
         this.streamActive = true;
     }
 
-    public void stopStreaming(){
+    public void inactiveStreaming(){
         this.streamActive = false;
     }
 
@@ -145,6 +161,6 @@ public class Device extends BaseTimeEntity {
     }
 
     public String getSoundStatus() {
-        return this.soundMode ? "ON" : "OFF";
+        return this.soundSensing ? "ON" : "OFF";
     }
 }

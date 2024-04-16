@@ -1,6 +1,6 @@
 package com.heygongc.device.domain.type;
 
-public enum CameraModeType {
+public enum CameraOrientationType {
     FRONT,
     BACK
 }
