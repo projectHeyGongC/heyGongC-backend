@@ -76,12 +76,6 @@ public class DeviceService{
         }
 
         switch (type) {
-            case SENSITIVITY:
-                device.setSensitivity(EnumUtils.getEnumConstant(SensitivityType.class, controlMode));
-                break;
-            case CAMERA_ORIENTATION:
-                device.setCameraOrientation(EnumUtils.getEnumConstant(CameraOrientationType.class, controlMode));
-                break;
             case SOUND_SENSING:
                 device.setSoundSensing(controlMode);
                 break;
@@ -91,5 +85,14 @@ public class DeviceService{
         }
 
         devicePushService.controlDevice(type, controlMode, device.getFcmToken());
+    }
+
+    @Transactional
+    public void changeDeviceSetting(String deviceId, String sensitivity, String cameraOrientation, User user) throws Exception {
+        Device device = getDevice(deviceId, user);
+        device.changeDeviceSetting(EnumUtils.getEnumConstant(SensitivityType.class, sensitivity),
+                EnumUtils.getEnumConstant(CameraOrientationType.class, cameraOrientation));
+        devicePushService.changeSensitivity(sensitivity, device.getFcmToken());
+        devicePushService.changeCameraOrientation(cameraOrientation, device.getFcmToken());
     }
 }
