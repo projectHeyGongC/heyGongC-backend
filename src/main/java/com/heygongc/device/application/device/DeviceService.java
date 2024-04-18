@@ -48,7 +48,7 @@ public class DeviceService{
         device.changeDeviceName(deviceName);
         device.connectDevice();
         device.setDeviceOwner(user.getUserSeq());
-        devicePushService.hideQRCode(user.getFcmToken());
+        devicePushService.hideQRCode(device.getFcmToken());
     }
 
     @Transactional
