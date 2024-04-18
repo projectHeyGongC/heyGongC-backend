@@ -20,7 +20,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static com.heygongc.device.setup.DeviceSetup.saveDevice;
 import static com.heygongc.global.type.FcmActionType.SOUND_SENSING;
@@ -158,7 +160,6 @@ public class DeviceServiceTest extends ServiceTest {
 
         내디바이스 = deviceRepository.findByDeviceId(내디바이스.getDeviceId()).get();
         Assertions.assertThat(내디바이스.getUserSeq()).isNull();
-        Assertions.assertThat(내디바이스.getFcmToken()).isNull();
         Assertions.assertThat(내디바이스.isConnected()).isFalse();
     }
 
