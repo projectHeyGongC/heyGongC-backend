@@ -96,7 +96,7 @@ public class DeviceServiceTest extends ServiceTest {
         deviceService.subscribeDevice(request.deviceId(), request.deviceName(), 구글테스트계정);
 
         // then
-        verify(devicePushService).hideQRCode(구글테스트계정.getFcmToken());
+        verify(devicePushService).hideQRCode(내디바이스.getFcmToken());
 
         내디바이스 = deviceRepository.findMyDevice(내디바이스.getDeviceId(), 구글테스트계정).get();
         Assertions.assertThat(내디바이스.getDeviceName()).isEqualTo(새로운디바이스명);
