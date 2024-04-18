@@ -111,11 +111,6 @@ public class Device extends BaseTimeEntity {
         this.temperature = 0;
     }
 
-    public void changeDeviceSetting(SensitivityType sensitivity, CameraOrientationType cameraOrientation){
-        this.sensitivity = sensitivity;
-        this.cameraOrientation = cameraOrientation;
-    }
-
     public void setSoundSensing(String mode){
         if ("ON".equals(mode)) {
             soundSensingOn();

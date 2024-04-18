@@ -20,13 +20,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static com.heygongc.device.setup.DeviceSetup.saveDevice;
-import static com.heygongc.global.type.FcmActionType.SOUND_SENSING;
-import static com.heygongc.global.type.FcmActionType.STREAM;
+import static com.heygongc.global.type.FcmActionType.*;
 import static com.heygongc.user.setup.UserSetup.saveGoogleUser;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
@@ -164,52 +161,38 @@ public class DeviceServiceTest extends ServiceTest {
     }
 
     @Test
-    @DisplayName("디바이스 세팅 변경하기")
-    void changeDeviceSetting() throws Exception {
-        // given
-//        User 구글테스트계정 = saveGoogleUser();
-        Device before디바이스 = saveDevice(구글테스트계정);
-        String before민감도 = SensitivityType.MEDIUM.name();
-        String before카메라방향 = CameraOrientationType.FRONT.name();
-        String after민감도 = SensitivityType.HIGH.name();
-        String after카메라방향 = CameraOrientationType.BACK.name();
-        doNothing().when(devicePushService).changeSensitivity(any(), any());
-        doNothing().when(devicePushService).changeCameraOrientation(any(), any());
-
-        // when
-        deviceService.changeDeviceSetting(before디바이스.getDeviceId(), after민감도, after카메라방향, 구글테스트계정);
-
-        // then
-        Device after디바이스 = deviceRepository.findMyDevice(before디바이스.getDeviceId(), 구글테스트계정).get();
-
-        Assertions.assertThat(before디바이스.getSensitivity().name()).isEqualTo(before민감도);
-        Assertions.assertThat(before디바이스.getCameraOrientation().name()).isEqualTo(before카메라방향);
-        Assertions.assertThat(after디바이스.getSensitivity().name()).isEqualTo(after민감도);
-        Assertions.assertThat(after디바이스.getCameraOrientation().name()).isEqualTo(after카메라방향);
-    }
-
-    @Test
-    @DisplayName("디바이스 제어하기 ON")
-    void controlDeviceON() throws Exception {
+    @DisplayName("디바이스 제어하기 기본")
+    void controlDeviceBasic() throws Exception {
         // given
 //        User 구글테스트계정 = saveGoogleUser();
         Device 내디바이스 = saveDevice(구글테스트계정);
-        List<FcmActionType> 컨트롤목록 = new ArrayList<>();
-        컨트롤목록.add(SOUND_SENSING);
-        컨트롤목록.add(STREAM);
+        LinkedHashMap<FcmActionType, String> 컨트롤목록 = new LinkedHashMap<>();
+        컨트롤목록.put(SENSITIVITY, "MEDIUM");
+        컨트롤목록.put(CAMERA_ORIENTATION, "FRONT");
+        컨트롤목록.put(SOUND_SENSING, "ON");
+        컨트롤목록.put(STREAM, "ON");
 
         doNothing().when(devicePushService).controlDevice(any(), any(), any());
 
-        for (FcmActionType 컨트롤 : 컨트롤목록) {
+        for (Map.Entry<FcmActionType, String> entry : 컨트롤목록.entrySet()) {
+            FcmActionType 컨트롤 = entry.getKey();
+            String 컨트롤내용 = entry.getValue();
+
             // when
-            deviceService.controlDevice(내디바이스.getDeviceId(), 구글테스트계정, 컨트롤.name(), "ON");
+            deviceService.controlDevice(내디바이스.getDeviceId(), 구글테스트계정, 컨트롤.name(), 컨트롤내용);
 
             // then
-            verify(devicePushService).controlDevice(컨트롤, "ON", 내디바이스.getFcmToken());
+            verify(devicePushService).controlDevice(컨트롤, 컨트롤내용, 내디바이스.getFcmToken());
 
             내디바이스 = deviceRepository.findMyDevice(내디바이스.getDeviceId(), 구글테스트계정).get();
 
             switch (컨트롤) {
+                case SENSITIVITY:
+                    Assertions.assertThat(내디바이스.getSensitivity()).isEqualTo(SensitivityType.MEDIUM);
+                    break;
+                case CAMERA_ORIENTATION:
+                    Assertions.assertThat(내디바이스.getCameraOrientation()).isEqualTo(CameraOrientationType.FRONT);
+                    break;
                 case SOUND_SENSING:
                     Assertions.assertThat(내디바이스.isSoundSensing()).isTrue();
                     break;
@@ -222,27 +205,39 @@ public class DeviceServiceTest extends ServiceTest {
     }
 
     @Test
-    @DisplayName("디바이스 제어하기 OFF")
-    void controlDeviceOFF() throws Exception {
+    @DisplayName("디바이스 제어하기")
+    void controlDevice() throws Exception {
         // given
 //        User 구글테스트계정 = saveGoogleUser();
         Device 내디바이스 = saveDevice(구글테스트계정);
-        List<FcmActionType> 컨트롤목록 = new ArrayList<>();
-        컨트롤목록.add(SOUND_SENSING);
-        컨트롤목록.add(STREAM);
+        LinkedHashMap<FcmActionType, String> 컨트롤목록 = new LinkedHashMap<>();
+        컨트롤목록.put(SENSITIVITY, "HIGH");
+        컨트롤목록.put(CAMERA_ORIENTATION, "BACK");
+        컨트롤목록.put(SOUND_SENSING, "OFF");
+        컨트롤목록.put(STREAM, "OFF");
 
         doNothing().when(devicePushService).controlDevice(any(), any(), any());
 
-        for (FcmActionType 컨트롤 : 컨트롤목록) {
+        for (Map.Entry<FcmActionType, String> entry : 컨트롤목록.entrySet()) {
+            FcmActionType 컨트롤 = entry.getKey();
+            String 컨트롤내용 = entry.getValue();
+
             // when
-            deviceService.controlDevice(내디바이스.getDeviceId(), 구글테스트계정, 컨트롤.name(), "OFF");
+            deviceService.controlDevice(내디바이스.getDeviceId(), 구글테스트계정, 컨트롤.name(), 컨트롤내용);
 
             // then
-            verify(devicePushService).controlDevice(컨트롤, "OFF", 내디바이스.getFcmToken());
+            verify(devicePushService).controlDevice(컨트롤, 컨트롤내용, 내디바이스.getFcmToken());
 
             내디바이스 = deviceRepository.findMyDevice(내디바이스.getDeviceId(), 구글테스트계정).get();
 
+
             switch (컨트롤) {
+                case SENSITIVITY:
+                    Assertions.assertThat(내디바이스.getSensitivity()).isEqualTo(SensitivityType.HIGH);
+                    break;
+                case CAMERA_ORIENTATION:
+                    Assertions.assertThat(내디바이스.getCameraOrientation()).isEqualTo(CameraOrientationType.BACK);
+                    break;
                 case SOUND_SENSING:
                     Assertions.assertThat(내디바이스.isSoundSensing()).isFalse();
                     break;
