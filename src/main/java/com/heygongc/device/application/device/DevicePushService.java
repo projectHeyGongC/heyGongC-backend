@@ -43,12 +43,4 @@ public class DevicePushService {
     public void hideQRCode(String fcmToken) throws Exception {
         controlDevice(FcmActionType.QR_CODE, "OFF", fcmToken);
     }
-
-    public void changeSensitivity(String sensitivity, String fcmToken) throws Exception {
-        controlDevice(FcmActionType.SENSITIVITY, sensitivity, fcmToken);
-    }
-
-    public void changeCameraOrientation(String cameraOrientation, String fcmToken) throws Exception {
-        controlDevice(FcmActionType.CAMERA_ORIENTATION, cameraOrientation, fcmToken);
-    }
 }

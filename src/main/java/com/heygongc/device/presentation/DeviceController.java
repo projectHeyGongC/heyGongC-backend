@@ -127,26 +127,10 @@ public class DeviceController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("{deviceId}/settings")
-    @Operation(
-            summary = "기기 설정 변경하기",
-            description = "[모니터링 > 메인 > 기기 설정] 소리 세기 민감도 조절 및 카메라 기기의 카메라 종류(전면 카메라 또는 후면 카메라) 를 바꿀 때 사용합니다.",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "OK", content = @Content)
-            }
-    )
-    public ResponseEntity<Void> changeDeviceSetting(
-            @Parameter(description = "기기 아이디", required = true, in = ParameterIn.PATH) @PathVariable(name = "deviceId") String deviceId,
-            @Parameter(name = "DeviceSettingRequest", description = "기기 설정 변경 요청 정보", required = true) @RequestBody DeviceSettingRequest request,
-            @Parameter(hidden = true) User user) throws Exception {
-        deviceService.changeDeviceSetting(deviceId, request.sensitivity(), request.cameraOrientation(), user);
-        return ResponseEntity.ok().build();
-    }
-
     @PostMapping("{deviceId}/control")
     @Operation(
             summary = "기기 제어하기",
-            description = "[모니터링 > 메인 > 스트리밍] 메인 앱에서 카메라 앱 기기를 제어합니다.",
+            description = "[모니터링 > 메인 > 스트리밍], [모니터링 > 메인 > 기기 설정] 메인 앱에서 카메라 앱 기기를 제어합니다.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK", content = @Content)
             }
