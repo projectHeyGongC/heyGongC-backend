@@ -109,7 +109,6 @@ public class Device extends BaseTimeEntity {
         this.cameraOrientation = CameraOrientationType.FRONT;
         this.battery = 0;
         this.temperature = 0;
-        this.fcmToken = null;
     }
 
     public void changeDeviceSetting(SensitivityType sensitivity, CameraOrientationType cameraOrientation){
