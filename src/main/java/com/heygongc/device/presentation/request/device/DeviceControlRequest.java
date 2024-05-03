@@ -44,10 +44,12 @@ public record DeviceControlRequest(
                 if (EnumUtils.hasNoEnumConstant(SensitivityType.class, this.controlMode)) {
                     throw new IllegalArgumentException("민감도는 VERYHIGH, HIGH, MEDIUM, LOW, VERYLOW 중 하나여야 합니다.");
                 }
+                break;
             case "CAMERA_ORIENTATION":
                 if (EnumUtils.hasNoEnumConstant(CameraOrientationType.class, this.controlMode)) {
                     throw new IllegalArgumentException("카메라 방향은 FRONT, BACK 중 하나여야 합니다.");
                 }
+                break;
         }
     }
 }
