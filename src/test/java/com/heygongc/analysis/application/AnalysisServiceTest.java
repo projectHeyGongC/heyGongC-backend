@@ -44,10 +44,32 @@ public class AnalysisServiceTest extends ServiceTest {
 
     @Test
     @DisplayName("메인 response 생성 - 동일 디바이스")
+    void makeAnalysisMainResponseWithSameDeviceAndNoData() {
+        // given
+//        User 구글테스트계정 = saveGoogleUser();
+        Device 디바이스 = saveDevice(구글테스트계정);
+        List<Device> 리스트디바이스 = List.of(디바이스);
+        List<Notification> notifications = new ArrayList<>();
+        String returnMsg = "아무런 움직임이 없었습니다.";
+
+        // when
+        List<AnalysisMainResponse.Notifications> response = analysisService.makeAnalysisMain(리스트디바이스, notifications);
+
+        // then
+        Assertions.assertThat(response).isNotNull();
+        Assertions.assertThat(response).isNotEmpty();
+        Assertions.assertThat(response.get(0).deviceId()).isEqualTo(디바이스.getDeviceId());
+        Assertions.assertThat(response.get(0).deviceName()).isEqualTo(디바이스.getDeviceName());
+        Assertions.assertThat(response.get(0).contents()).isEqualTo(returnMsg);
+    }
+
+    @Test
+    @DisplayName("메인 response 생성 - 동일 디바이스")
     void makeAnalysisMainResponseWithSameDevice() {
         // given
 //        User 구글테스트계정 = saveGoogleUser();
         Device 디바이스 = saveDevice(구글테스트계정);
+        List<Device> 리스트디바이스 = List.of(디바이스);
         int count = 5;
         List<Notification> notifications = new ArrayList<>();
         for (int i = 0; i < count; i++) {
@@ -56,7 +78,7 @@ public class AnalysisServiceTest extends ServiceTest {
         String returnMsg = "오늘 소리가 " + count + "번 감지되었습니다.";
 
         // when
-        List<AnalysisMainResponse.Notifications> response = analysisService.makeAnalysisMainResponse(notifications);
+        List<AnalysisMainResponse.Notifications> response = analysisService.makeAnalysisMain(리스트디바이스, notifications);
 
         // then
         Assertions.assertThat(response).isNotNull();
@@ -73,6 +95,7 @@ public class AnalysisServiceTest extends ServiceTest {
 //        User 구글테스트계정 = saveGoogleUser();
         Device 디바이스1 = saveDevice(구글테스트계정);
         Device 디바이스2 = saveDevice(구글테스트계정);
+        List<Device> 리스트디바이스 = List.of(디바이스1, 디바이스2);
         int count1 = 3;
         int count2 = 7;
         List<Notification> notifications = new ArrayList<>();
@@ -86,7 +109,7 @@ public class AnalysisServiceTest extends ServiceTest {
         String returnMsg2 = "오늘 소리가 " + count2 + "번 감지되었습니다.";
 
         // when
-        List<AnalysisMainResponse.Notifications> response = analysisService.makeAnalysisMainResponse(notifications);
+        List<AnalysisMainResponse.Notifications> response = analysisService.makeAnalysisMain(리스트디바이스, notifications);
 
         // then
         Assertions.assertThat(response).isNotNull();
@@ -106,6 +129,7 @@ public class AnalysisServiceTest extends ServiceTest {
 //        User 구글테스트계정 = saveGoogleUser();
         Device 디바이스1 = saveDevice(구글테스트계정);
         Device 디바이스2 = saveDevice(구글테스트계정);
+        List<Device> 리스트디바이스 = List.of(디바이스1, 디바이스2);
         int count1 = 3;
         int count2 = 5;
         List<Notification> notifications = new ArrayList<>();
@@ -121,7 +145,7 @@ public class AnalysisServiceTest extends ServiceTest {
         String returnMsg2 = "오늘 소리가 " + count2 + "번 감지되었습니다.";
 
         // when
-        List<AnalysisMainResponse.Notifications> response = analysisService.makeAnalysisMainResponse(notifications);
+        List<AnalysisMainResponse.Notifications> response = analysisService.makeAnalysisMain(리스트디바이스, notifications);
 
         // then
         Assertions.assertThat(response).isNotNull();

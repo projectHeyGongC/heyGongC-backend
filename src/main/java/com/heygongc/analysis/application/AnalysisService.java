@@ -2,41 +2,48 @@ package com.heygongc.analysis.application;
 
 import com.heygongc.analysis.presentation.response.AnalysisDetailResponse;
 import com.heygongc.analysis.presentation.response.AnalysisMainResponse;
+import com.heygongc.device.domain.entity.Device;
 import com.heygongc.notification.domain.entity.Notification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class AnalysisService {
 
-    public List<AnalysisMainResponse.Notifications> makeAnalysisMainResponse(List<Notification> notifications) {
+    public List<AnalysisMainResponse.Notifications> makeAnalysisMain(List<Device> devices, List<Notification> notifications) {
 
-        // 1. Map 만들어서 count 계산
-        LinkedHashMap<List<String>, Long> map = new LinkedHashMap<>();
-        for (Notification n : notifications) {
-            List<String> key = List.of(n.getDevice().getDeviceId(), n.getDevice().getDeviceName());
-            if (!map.containsKey(key)) {
-                map.put(key, 1L);
-            } else {
-                Long count = map.get(key) + 1;
-                map.put(key, count);
-            }
+        // 1. count 계산할 map, device명 관리할 map 생성
+        LinkedHashMap<Long, Long> countMap = new LinkedHashMap<>();
+        Map<Long, String[]> deviceMap = new HashMap<>();
+
+        for (Device d : devices) {
+            deviceMap.put(d.getDeviceSeq(), new String[]{d.getDeviceId(), d.getDeviceName()});
+            countMap.put(d.getDeviceSeq(), 0L);
         }
 
-        // 2. response 생성
-        List<AnalysisMainResponse.Notifications> responseNotifications = new ArrayList<>();
-        String returnMsg = "오늘 소리가 %d번 감지되었습니다.";
-        for (List<String> keys : map.keySet()) {
-            String deviceId = keys.get(0);
-            String deviceName = keys.get(1);
-            Long count = map.get(keys);
-            String contents = String.format(returnMsg, count);
+        // 2. count 계산
+        for (Notification n : notifications) {
+            countMap.put(n.getDevice().getDeviceSeq(), countMap.get(n.getDevice().getDeviceSeq()) + 1);
+        }
 
-            responseNotifications.add(
+        // 3. response 생성
+        List<AnalysisMainResponse.Notifications> response = new ArrayList<>();
+        String returnMsg = "오늘 소리가 %d번 감지되었습니다.";
+        String noContentMsg = "아무런 움직임이 없었습니다.";
+        for (Long deviceSeq : countMap.keySet()) {
+            String deviceId = deviceMap.get(deviceSeq)[0];
+            String deviceName = deviceMap.get(deviceSeq)[1];
+            Long count = countMap.get(deviceSeq);
+            String contents;
+            if (count > 0) {
+                contents = String.format(returnMsg, count);
+            } else {
+                contents = noContentMsg;
+            }
+
+            response.add(
                     new AnalysisMainResponse.Notifications(
                             deviceId,
                             deviceName,
@@ -45,7 +52,7 @@ public class AnalysisService {
             );
         }
 
-        return responseNotifications;
+        return response;
     }
 
     public List<AnalysisDetailResponse.Graph> makeAnalysisGraph(List<Notification> notifications) {
