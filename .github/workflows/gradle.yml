@@ -84,7 +84,7 @@ jobs:
             # 실행된 컨테이너 중지 + 삭제
             sudo docker stop heygongc-backend | xargs sudo docker rm
             # 컨테이너 실행
-            sudo docker run -d -p 8080:8080 -v heygongc-backend:/logs --name 'heygongc-backend' hey0c/heygongc-backend:0.0.1
+            sudo docker run -d -p 8080:8080 -e TZ=Asia/Seoul -v heygongc-backend:/logs --name 'heygongc-backend' hey0c/heygongc-backend:0.0.1
             # 미사용 image 삭제 (태그가 없는 image)
             sudo docker images -f "dangling=true" -q | xargs sudo docker rmi
             
