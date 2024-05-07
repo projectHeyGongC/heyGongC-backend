@@ -60,8 +60,9 @@ public class AnalysisController {
             @Parameter(description = "조회일자", required = true, in = ParameterIn.QUERY) @RequestParam(name = "requestAt") String requestAt
     ) throws ParseException {
 
+        List<Device> devices = deviceService.getDevices(user);
         List<Notification> notifications = notificationService.getNotifications(user, requestAt);;
-        List<AnalysisMainResponse.Notifications> responseNotifications = analysisService.makeAnalysisMainResponse(notifications);
+        List<AnalysisMainResponse.Notifications> responseNotifications = analysisService.makeAnalysisMain(devices, notifications);
         Optional<Video> video = videoService.getVideo(user, requestAt);
         String videoUrl = video.map(Video::getUrl).orElse(null);
 
@@ -87,6 +88,7 @@ public class AnalysisController {
             @Parameter(description = "기기 아이디", required = true, in = ParameterIn.QUERY) @RequestParam(name = "deviceId") String deviceId,
             @Parameter(description = "조회일자", required = true, in = ParameterIn.QUERY) @RequestParam(name = "requestAt") String requestAt
     ) throws ParseException {
+
         List<Notification> notifications = notificationService.getNotifications(user, deviceId, requestAt);
         List<AnalysisDetailResponse.Graph> graph = analysisService.makeAnalysisGraph(notifications);
         Device device = deviceService.getDevice(deviceId, user);
