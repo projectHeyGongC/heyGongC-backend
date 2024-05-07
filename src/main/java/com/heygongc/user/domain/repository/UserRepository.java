@@ -10,6 +10,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByUserSeq(Long seq);
 
-
     boolean existsBySnsId(String snsId);
 }
