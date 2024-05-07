@@ -52,6 +52,18 @@ public class UserService {
         return authToken;
     }
 
+    public AuthToken testLogin(Long userSeq, String snsId, String email) {
+        User user = userRepository.findById(userSeq)
+                .orElseThrow(() -> new UserNotFoundException("미가입 사용자입니다."));
+
+        if (!snsId.equals(user.getSnsId())
+                || !email.equals(user.getEmail())) {
+            throw new UserNotFoundException("미가입 사용자입니다.");
+        }
+
+        return generateAuthToken(user.getUserSeq(), user.getDeviceId());
+    }
+
     @Transactional
     public AuthToken register(OauthUser oauthUser, RegisterRequest request) {
         if (existsUserBySnsId(oauthUser.id())) {
