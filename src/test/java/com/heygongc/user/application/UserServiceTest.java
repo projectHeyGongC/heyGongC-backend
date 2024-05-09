@@ -101,7 +101,7 @@ class UserServiceTest extends ServiceTest {
 
         // then
         구글테스트계정 = userRepository.findById(구글테스트계정.getUserSeq()).get();
-        Assertions.assertThat(구글테스트계정.getAlarm()).isTrue();
+        Assertions.assertThat(구글테스트계정.isReceiveAlarm()).isTrue();
     }
 
     @Test
@@ -114,7 +114,7 @@ class UserServiceTest extends ServiceTest {
 
         // then
         구글테스트계정 = userRepository.findById(구글테스트계정.getUserSeq()).get();
-        Assertions.assertThat(구글테스트계정.getAlarm()).isFalse();
+        Assertions.assertThat(구글테스트계정.isReceiveAlarm()).isFalse();
     }
 
     private UserLoginRequest userLoginRequest() {

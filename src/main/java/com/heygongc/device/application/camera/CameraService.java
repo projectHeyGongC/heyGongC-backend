@@ -81,7 +81,7 @@ public class CameraService {
                 .build());
 
         // 이벤트 알람 수신 허용이면 fcm 발송
-        if (user.getAlarm()) {
+        if (user.isReceiveAlarm()) {
             String fcmToken = user.getFcmToken();
             cameraPushService.alertSoundAlarm(fcmToken);
         }

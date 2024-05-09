@@ -146,7 +146,7 @@ public class UserService {
 
     @Transactional
     public void changeAlarm(User user, Boolean alarm) {
-        user.setAlarm(alarm);
+        user.setReceiveAlarm(alarm);
         userRepository.save(user);
     }
 }

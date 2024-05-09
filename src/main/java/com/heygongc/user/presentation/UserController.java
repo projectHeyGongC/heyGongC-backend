@@ -123,7 +123,7 @@ public class UserController {
         UserResponse userResponse = new UserResponse(
                 user.getSnsType().name(),
                 user.getEmail(),
-                user.getAlarm()
+                user.isReceiveAlarm()
         );
         return ResponseEntity.ok().body(userResponse);
     }
