@@ -91,6 +91,32 @@ class UserServiceTest extends ServiceTest {
         Assertions.assertThat(삭제된계정.getDeletedAt()).isNotNull();
     }
 
+    @Test
+    public void 알람수신변경_true() {
+        // given
+//        User 구글테스트계정 = saveGoogleUser();
+
+        // when
+        userService.changeAlarm(구글테스트계정, true);
+
+        // then
+        구글테스트계정 = userRepository.findById(구글테스트계정.getUserSeq()).get();
+        Assertions.assertThat(구글테스트계정.getAlarm()).isTrue();
+    }
+
+    @Test
+    public void 알람수신변경_false() {
+        // given
+//        User 구글테스트계정 = saveGoogleUser();
+
+        // when
+        userService.changeAlarm(구글테스트계정, false);
+
+        // then
+        구글테스트계정 = userRepository.findById(구글테스트계정.getUserSeq()).get();
+        Assertions.assertThat(구글테스트계정.getAlarm()).isFalse();
+    }
+
     private UserLoginRequest userLoginRequest() {
         return new UserLoginRequest("1111","AOS", "google", "token", "fcmToken");
     }
