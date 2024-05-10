@@ -43,8 +43,7 @@ public class AnalysisServiceTest extends ServiceTest {
     }
 
     @Test
-    @DisplayName("메인 response 생성 - 동일 디바이스")
-    void makeAnalysisMainResponseWithSameDeviceAndNoData() {
+    void main_데이터없음() {
         // given
 //        User 구글테스트계정 = saveGoogleUser();
         Device 디바이스 = saveDevice(구글테스트계정);
@@ -64,8 +63,7 @@ public class AnalysisServiceTest extends ServiceTest {
     }
 
     @Test
-    @DisplayName("메인 response 생성 - 동일 디바이스")
-    void makeAnalysisMainResponseWithSameDevice() {
+    void main_동일디바이스() {
         // given
 //        User 구글테스트계정 = saveGoogleUser();
         Device 디바이스 = saveDevice(구글테스트계정);
@@ -89,8 +87,7 @@ public class AnalysisServiceTest extends ServiceTest {
     }
 
     @Test
-    @DisplayName("메인 response 생성 - 다른 디바이스")
-    void makeAnalysisMainResponseWithDifferentDevice() {
+    void main_다른디바이스() {
         // given
 //        User 구글테스트계정 = saveGoogleUser();
         Device 디바이스1 = saveDevice(구글테스트계정);
@@ -123,8 +120,7 @@ public class AnalysisServiceTest extends ServiceTest {
     }
 
     @Test
-    @DisplayName("메인 response 생성 - 순서가 섞인 다른 디바이스")
-    void makeAnalysisMainResponseWithShuffledDifferentDevice() {
+    void main_순서가섞인_다른디바이스() {
         // given
 //        User 구글테스트계정 = saveGoogleUser();
         Device 디바이스1 = saveDevice(구글테스트계정);
@@ -159,8 +155,7 @@ public class AnalysisServiceTest extends ServiceTest {
     }
 
     @Test
-    @DisplayName("graph 생성")
-    void makeAnalysisGraph() {
+    void graph() {
         // given
 //        User 구글테스트계정 = saveGoogleUser();
         Device 디바이스 = saveDevice(구글테스트계정);
@@ -192,8 +187,7 @@ public class AnalysisServiceTest extends ServiceTest {
     }
 
     @Test
-    @DisplayName("graph 생성 - 자정과 정오")
-    void makeAnalysisGraphWithMidnightAndNoon() {
+    void graph_자정과정오() {
         // given
 //        User 구글테스트계정 = saveGoogleUser();
         Device 디바이스 = saveDevice(구글테스트계정);
@@ -232,8 +226,7 @@ public class AnalysisServiceTest extends ServiceTest {
     }
 
     @Test
-    @DisplayName("graph 생성 - 다양한 데이터")
-    void makeAnalysisGraphWithVariousData() {
+    void graph_다양한데이터() {
         // given
 //        User 구글테스트계정 = saveGoogleUser();
         Device 디바이스 = saveDevice(구글테스트계정);
