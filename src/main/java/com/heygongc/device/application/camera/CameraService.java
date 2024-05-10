@@ -80,7 +80,10 @@ public class CameraService {
                 .user(user)
                 .build());
 
-        String fcmToken = user.getFcmToken();
-        cameraPushService.alertSoundAlarm(fcmToken);
+        // 이벤트 알람 수신 허용이면 fcm 발송
+        if (user.isReceiveAlarm()) {
+            String fcmToken = user.getFcmToken();
+            cameraPushService.alertSoundAlarm(fcmToken);
+        }
     }
 }

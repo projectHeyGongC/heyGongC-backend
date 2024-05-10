@@ -23,8 +23,7 @@ import java.util.List;
 import static com.heygongc.device.setup.DeviceSetup.saveDevice;
 import static com.heygongc.user.setup.UserSetup.saveGoogleUser;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @SuppressWarnings("NonAsciiCharacters")
 public class CameraServiceTest extends ServiceTest {
@@ -156,8 +155,8 @@ public class CameraServiceTest extends ServiceTest {
     }
 
     @Test
-    @DisplayName("카메라 소리감지 발생 시 알림에 등록한다")
-    void alertSoundAlarm() throws Exception {
+    @DisplayName("카메라 소리감지 발생 시 알림에 등록하고, 알림 발송 상태면 fcm을 발송한다")
+    void 소리감지발생_알림저장_알림발송() throws Exception {
         // given
 //        User 구글테스트계정 = saveGoogleUser();
         Device 디바이스 = saveDevice(구글테스트계정);
@@ -169,6 +168,28 @@ public class CameraServiceTest extends ServiceTest {
 
         // then
         verify(cameraPushService).alertSoundAlarm(구글테스트계정.getFcmToken());
+
+        List<Notification> after알림 = notificationRepository.findAllNotificationByUser(구글테스트계정);
+        Assertions.assertThat(before알림).isEmpty();
+        Assertions.assertThat(after알림).isNotEmpty();
+        Assertions.assertThat(after알림.get(0).getDevice().getDeviceSeq()).isEqualTo(디바이스.getDeviceSeq());
+    }
+
+    @Test
+    @DisplayName("카메라 소리감지 발생 시 알림에 등록하고, 알림 미발송 상태면 발송하지 않는다")
+    void 소리감지발생_알림저장_알림미발송() throws Exception {
+        // given
+//        User 구글테스트계정 = saveGoogleUser();
+        구글테스트계정.setAlarm(false);
+        userRepository.save(구글테스트계정);
+        Device 디바이스 = saveDevice(구글테스트계정);
+        List<Notification> before알림 = notificationRepository.findAllNotificationByUser(구글테스트계정);
+
+        // when
+        cameraService.alertSoundAlarm(디바이스);
+
+        // then
+        verify(cameraPushService, never()).alertSoundAlarm(구글테스트계정.getFcmToken());
 
         List<Notification> after알림 = notificationRepository.findAllNotificationByUser(구글테스트계정);
         Assertions.assertThat(before알림).isEmpty();

@@ -143,4 +143,10 @@ public class UserService {
 
         return new AuthToken(accessToken, refreshToken);
     }
+
+    @Transactional
+    public void changeAlarm(User user, Boolean alarm) {
+        user.setReceiveAlarm(alarm);
+        userRepository.save(user);
+    }
 }

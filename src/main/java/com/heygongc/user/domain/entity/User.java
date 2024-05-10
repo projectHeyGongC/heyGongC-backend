@@ -97,4 +97,12 @@ public class User extends BaseTimeEntity {
     public void provideFcmToken(String fcmToken) {
         this.fcmToken = fcmToken;
     }
+
+    public void setReceiveAlarm(Boolean alarm) {
+        this.alarm = alarm;
+    }
+
+    public boolean isReceiveAlarm() {
+        return this.alarm;
+    }
 }
