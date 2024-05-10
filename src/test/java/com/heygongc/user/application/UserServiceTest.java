@@ -4,7 +4,7 @@ import com.heygongc.auth.domain.AuthToken;
 import com.heygongc.common.ServiceTest;
 import com.heygongc.user.application.oauth.OauthUser;
 import com.heygongc.user.domain.entity.User;
-import com.heygongc.user.domain.repository.UserRepository;
+import com.heygongc.user.domain.repository.user.UserRepository;
 import com.heygongc.user.exception.UserNotFoundException;
 import com.heygongc.user.presentation.request.RegisterRequest;
 import com.heygongc.user.presentation.request.UserLoginRequest;
@@ -80,7 +80,7 @@ class UserServiceTest extends ServiceTest {
 
         // when
         userService.unRegister(구글테스트계정);
-        User 삭제된계정 = userRepository.findById(구글테스트계정.getUserSeq()).get();
+        User 삭제된계정 = userRepository.findByUserSeq(구글테스트계정.getUserSeq()).get();
 
         // then
         Assertions.assertThat(삭제된계정.getUserId()).isEqualTo("*****");
@@ -100,7 +100,7 @@ class UserServiceTest extends ServiceTest {
         userService.changeAlarm(구글테스트계정, true);
 
         // then
-        구글테스트계정 = userRepository.findById(구글테스트계정.getUserSeq()).get();
+        구글테스트계정 = userRepository.findByUserSeq(구글테스트계정.getUserSeq()).get();
         Assertions.assertThat(구글테스트계정.isReceiveAlarm()).isTrue();
     }
 
@@ -113,7 +113,7 @@ class UserServiceTest extends ServiceTest {
         userService.changeAlarm(구글테스트계정, false);
 
         // then
-        구글테스트계정 = userRepository.findById(구글테스트계정.getUserSeq()).get();
+        구글테스트계정 = userRepository.findByUserSeq(구글테스트계정.getUserSeq()).get();
         Assertions.assertThat(구글테스트계정.isReceiveAlarm()).isFalse();
     }
 

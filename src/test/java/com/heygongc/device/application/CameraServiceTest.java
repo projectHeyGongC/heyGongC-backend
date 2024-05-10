@@ -9,7 +9,7 @@ import com.heygongc.device.presentation.request.camera.CameraSubscribeRequest;
 import com.heygongc.notification.domain.entity.Notification;
 import com.heygongc.notification.domain.repository.NotificationRepository;
 import com.heygongc.user.domain.entity.User;
-import com.heygongc.user.domain.repository.UserRepository;
+import com.heygongc.user.domain.repository.user.UserRepository;
 import com.heygongc.user.exception.UserNotFoundException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

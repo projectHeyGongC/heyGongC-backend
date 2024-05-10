@@ -6,10 +6,9 @@ import com.heygongc.common.ServiceTest;
 import com.heygongc.device.domain.entity.Device;
 import com.heygongc.notification.domain.entity.Notification;
 import com.heygongc.user.domain.entity.User;
-import com.heygongc.user.domain.repository.UserRepository;
+import com.heygongc.user.domain.repository.user.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

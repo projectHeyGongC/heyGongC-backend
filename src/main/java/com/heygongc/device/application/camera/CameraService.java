@@ -9,7 +9,7 @@ import com.heygongc.notification.domain.entity.Notification;
 import com.heygongc.notification.domain.repository.NotificationRepository;
 import com.heygongc.notification.domain.type.NotificationType;
 import com.heygongc.user.domain.entity.User;
-import com.heygongc.user.domain.repository.UserRepository;
+import com.heygongc.user.domain.repository.user.UserRepository;
 import com.heygongc.user.exception.UserNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -48,16 +48,14 @@ public class CameraService {
                     }
                     return existingDevice;
                 })
-                .orElseGet(() -> {
-                    return deviceRepository.save(
-                            Device.createDevice()
-                                    .deviceId(request.deviceId())
-                                    .modelName(request.modelName())
-                                    .deviceOs(OsType.valueOf(request.deviceOs()))
-                                    .fcmToken(request.fcmToken())
-                                    .build()
-                    );
-                });
+                .orElseGet(() -> deviceRepository.save(
+                        Device.createDevice()
+                                .deviceId(request.deviceId())
+                                .modelName(request.modelName())
+                                .deviceOs(OsType.valueOf(request.deviceOs()))
+                                .fcmToken(request.fcmToken())
+                                .build()
+                ));
 
         return jwtUtil.generateCameraAccessToken(device.getDeviceId());
     }

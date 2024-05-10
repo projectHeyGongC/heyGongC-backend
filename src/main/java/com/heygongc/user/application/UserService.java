@@ -7,8 +7,8 @@ import com.heygongc.global.type.OsType;
 import com.heygongc.user.application.oauth.OauthUser;
 import com.heygongc.user.domain.entity.User;
 import com.heygongc.user.domain.entity.UserToken;
-import com.heygongc.user.domain.repository.UserRepository;
-import com.heygongc.user.domain.repository.UserTokenRepository;
+import com.heygongc.user.domain.repository.user.UserRepository;
+import com.heygongc.user.domain.repository.usertoken.UserTokenRepository;
 import com.heygongc.user.exception.AlreadySignInException;
 import com.heygongc.user.exception.UserNotFoundException;
 import com.heygongc.user.presentation.request.RegisterRequest;
@@ -53,7 +53,7 @@ public class UserService {
     }
 
     public AuthToken testLogin(Long userSeq, String snsId, String email) {
-        User user = userRepository.findById(userSeq)
+        User user = userRepository.findByUserSeq(userSeq)
                 .orElseThrow(() -> new UserNotFoundException("미가입 사용자입니다."));
 
         if (!snsId.equals(user.getSnsId())
@@ -109,7 +109,7 @@ public class UserService {
                 .orElseThrow(() -> new InvalidTokenException("유효하지 않은 토큰입니다."));
 
         // user 정보 조회
-        User user = userRepository.findById(userToken.getUserSeq())
+        User user = userRepository.findByUserSeq(userToken.getUserSeq())
                 .orElseThrow(() -> new UserNotFoundException("미가입 사용자입니다."));
 
         // jwt 토큰 발급

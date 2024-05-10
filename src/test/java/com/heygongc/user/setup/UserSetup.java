@@ -1,9 +1,7 @@
 package com.heygongc.user.setup;
 
-import com.heygongc.common.ApplicationContextProvider;
 import com.heygongc.global.type.OsType;
 import com.heygongc.user.domain.entity.User;
-import com.heygongc.user.domain.repository.UserRepository;
 import com.heygongc.user.domain.type.SnsType;
 
 public class UserSetup {
