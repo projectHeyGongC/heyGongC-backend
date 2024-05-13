@@ -2,9 +2,9 @@ package com.heygongc.notification.application;
 
 import com.heygongc.common.ServiceTest;
 import com.heygongc.device.domain.entity.Device;
-import com.heygongc.device.domain.repository.DeviceRepository;
+import com.heygongc.device.domain.repository.device.DeviceRepository;
 import com.heygongc.notification.domain.entity.Notification;
-import com.heygongc.notification.domain.repository.NotificationRepository;
+import com.heygongc.notification.domain.repository.notification.NotificationRepository;
 import com.heygongc.user.domain.entity.User;
 import com.heygongc.user.domain.repository.user.UserRepository;
 import org.assertj.core.api.Assertions;

@@ -8,5 +8,5 @@ public interface UserTokenRepository {
     UserToken save(UserToken userToken);
     Optional<UserToken> findByUserSeq(Long userSeq);
     Optional<UserToken> findByRefreshToken(String refreshToken);
-    long deleteToken(Long userSeq);
+    void deleteToken(Long userSeq);
 }

@@ -2,11 +2,11 @@ package com.heygongc.device.application.camera;
 
 import com.heygongc.auth.application.JwtUtil;
 import com.heygongc.device.domain.entity.Device;
-import com.heygongc.device.domain.repository.DeviceRepository;
+import com.heygongc.device.domain.repository.device.DeviceRepository;
 import com.heygongc.device.presentation.request.camera.CameraSubscribeRequest;
 import com.heygongc.global.type.OsType;
 import com.heygongc.notification.domain.entity.Notification;
-import com.heygongc.notification.domain.repository.NotificationRepository;
+import com.heygongc.notification.domain.repository.notification.NotificationRepository;
 import com.heygongc.notification.domain.type.NotificationType;
 import com.heygongc.user.domain.entity.User;
 import com.heygongc.user.domain.repository.user.UserRepository;

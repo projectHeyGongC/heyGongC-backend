@@ -1,9 +1,11 @@
 package com.heygongc.user.domain.repository.user;
 
 import com.heygongc.user.domain.entity.User;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+@Repository
 public class UserRepositoryImpl implements UserRepository {
 
     private final UserJpaRepository jpaRepository;

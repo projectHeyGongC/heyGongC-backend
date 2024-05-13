@@ -2,7 +2,7 @@ package com.heygongc.device.setup;
 
 import com.heygongc.common.ApplicationContextProvider;
 import com.heygongc.device.domain.entity.Device;
-import com.heygongc.device.domain.repository.DeviceRepository;
+import com.heygongc.device.domain.repository.device.DeviceRepository;
 import com.heygongc.global.type.OsType;
 import com.heygongc.user.domain.entity.User;
 

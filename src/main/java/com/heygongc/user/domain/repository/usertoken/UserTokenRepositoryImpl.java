@@ -3,13 +3,13 @@ package com.heygongc.user.domain.repository.usertoken;
 import com.heygongc.user.domain.entity.UserToken;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 import static com.heygongc.user.domain.entity.QUserToken.userToken;
 
-
+@Repository
 public class UserTokenRepositoryImpl implements UserTokenRepository {
 
     private final UserTokenJpaRepository jpaRepository;
@@ -36,13 +36,10 @@ public class UserTokenRepositoryImpl implements UserTokenRepository {
     }
 
     @Override
-    @Transactional
-    public long deleteToken(Long userSeq) {
+    public void deleteToken(Long userSeq) {
 
-        long count = queryFactory.delete(userToken)
+        queryFactory.delete(userToken)
                 .where(userToken.userSeq.eq(userSeq))
                 .execute();
-
-        return count;
     }
 }

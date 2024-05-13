@@ -4,10 +4,10 @@ import com.heygongc.common.ServiceTest;
 import com.heygongc.device.application.camera.CameraPushService;
 import com.heygongc.device.application.camera.CameraService;
 import com.heygongc.device.domain.entity.Device;
-import com.heygongc.device.domain.repository.DeviceRepository;
+import com.heygongc.device.domain.repository.device.DeviceRepository;
 import com.heygongc.device.presentation.request.camera.CameraSubscribeRequest;
 import com.heygongc.notification.domain.entity.Notification;
-import com.heygongc.notification.domain.repository.NotificationRepository;
+import com.heygongc.notification.domain.repository.notification.NotificationRepository;
 import com.heygongc.user.domain.entity.User;
 import com.heygongc.user.domain.repository.user.UserRepository;
 import com.heygongc.user.exception.UserNotFoundException;
@@ -160,7 +160,7 @@ public class CameraServiceTest extends ServiceTest {
         // given
 //        User 구글테스트계정 = saveGoogleUser();
         Device 디바이스 = saveDevice(구글테스트계정);
-        List<Notification> before알림 = notificationRepository.findAllNotificationByUser(구글테스트계정);
+        List<Notification> before알림 = notificationRepository.getNotifications(구글테스트계정.getUserSeq());
         doNothing().when(cameraPushService).alertSoundAlarm(any());
 
         // when
@@ -169,7 +169,7 @@ public class CameraServiceTest extends ServiceTest {
         // then
         verify(cameraPushService).alertSoundAlarm(구글테스트계정.getFcmToken());
 
-        List<Notification> after알림 = notificationRepository.findAllNotificationByUser(구글테스트계정);
+        List<Notification> after알림 = notificationRepository.getNotifications(구글테스트계정.getUserSeq());
         Assertions.assertThat(before알림).isEmpty();
         Assertions.assertThat(after알림).isNotEmpty();
         Assertions.assertThat(after알림.get(0).getDevice().getDeviceSeq()).isEqualTo(디바이스.getDeviceSeq());
@@ -183,7 +183,7 @@ public class CameraServiceTest extends ServiceTest {
         구글테스트계정.setAlarm(false);
         userRepository.save(구글테스트계정);
         Device 디바이스 = saveDevice(구글테스트계정);
-        List<Notification> before알림 = notificationRepository.findAllNotificationByUser(구글테스트계정);
+        List<Notification> before알림 = notificationRepository.getNotifications(구글테스트계정.getUserSeq());
 
         // when
         cameraService.alertSoundAlarm(디바이스);
@@ -191,7 +191,7 @@ public class CameraServiceTest extends ServiceTest {
         // then
         verify(cameraPushService, never()).alertSoundAlarm(구글테스트계정.getFcmToken());
 
-        List<Notification> after알림 = notificationRepository.findAllNotificationByUser(구글테스트계정);
+        List<Notification> after알림 = notificationRepository.getNotifications(구글테스트계정.getUserSeq());
         Assertions.assertThat(before알림).isEmpty();
         Assertions.assertThat(after알림).isNotEmpty();
         Assertions.assertThat(after알림.get(0).getDevice().getDeviceSeq()).isEqualTo(디바이스.getDeviceSeq());

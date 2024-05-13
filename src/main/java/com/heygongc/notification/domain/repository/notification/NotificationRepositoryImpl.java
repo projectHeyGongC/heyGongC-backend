@@ -1,10 +1,12 @@
-package com.heygongc.notification.domain.repository;
+package com.heygongc.notification.domain.repository.notification;
 
 import com.heygongc.notification.domain.entity.Notification;
 import com.heygongc.notification.domain.entity.QNotification;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.springframework.stereotype.Repository;
 
 import java.text.ParseException;
 import java.time.LocalDateTime;
@@ -12,18 +14,24 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
+@Repository
+public class NotificationRepositoryImpl implements NotificationRepository {
 
-public class CustomNotificationRepositoryImpl implements CustomNotificationRepository {
-
+    private final NotificationJpaRepository jpaRepository;
     private final JPAQueryFactory queryFactory;
 
-
-    public CustomNotificationRepositoryImpl(EntityManager entityManager) {
+    public NotificationRepositoryImpl(NotificationJpaRepository jpaRepository, EntityManager entityManager) {
+        this.jpaRepository = jpaRepository;
         this.queryFactory = new JPAQueryFactory(entityManager);
     }
 
     @Override
-    public List<Notification> findAllByUserSeq(Long userSeq) {
+    public Notification save(Notification notification) {
+        return jpaRepository.save(notification);
+    }
+
+    @Override
+    public List<Notification> getNotifications(Long userSeq) {
         QNotification qNotification = QNotification.notification;
 
         return queryFactory.selectFrom(qNotification)
@@ -33,10 +41,11 @@ public class CustomNotificationRepositoryImpl implements CustomNotificationRepos
     }
 
     @Override
-    public List<Notification> findAllByUserSeqAndCreatedAt(Long userSeq, String requestAt) throws ParseException {
+    public List<Notification> getNotifications(Long userSeq, String requestAt) throws ParseException {
         QNotification qNotification = QNotification.notification;
 
-        Date date = DateUtils.parseDate(requestAt, "yyyy-MM-dd");
+        String r = StringUtils.getDigits(requestAt);
+        Date date = DateUtils.parseDate(r, "yyyyMMdd");
         LocalDateTime startOfDay = date.toInstant()
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate()
@@ -46,16 +55,18 @@ public class CustomNotificationRepositoryImpl implements CustomNotificationRepos
         List<Notification> notifications = queryFactory.selectFrom(qNotification)
                 .where(qNotification.user.userSeq.eq(userSeq)
                         .and(qNotification.createdAt.between(startOfDay, endOfDay)))
+                .orderBy(qNotification.createdAt.asc())
                 .fetch();
 
         return notifications;
     }
 
     @Override
-    public List<Notification> findAllByUserSeqAndDeviceIdAndCreatedAt(Long userSeq, String deviceId, String requestAt) throws ParseException {
+    public List<Notification> getNotifications(Long userSeq, String deviceId, String requestAt) throws ParseException {
         QNotification qNotification = QNotification.notification;
 
-        Date date = DateUtils.parseDate(requestAt, "yyyy-MM-dd");
+        String r = StringUtils.getDigits(requestAt);
+        Date date = DateUtils.parseDate(r, "yyyyMMdd");
         LocalDateTime startOfDay = date.toInstant()
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate()

@@ -1,7 +1,7 @@
 package com.heygongc.device.application.device;
 
 import com.heygongc.device.domain.entity.Device;
-import com.heygongc.device.domain.repository.DeviceRepository;
+import com.heygongc.device.domain.repository.device.DeviceRepository;
 import com.heygongc.device.domain.type.CameraOrientationType;
 import com.heygongc.device.domain.type.SensitivityType;
 import com.heygongc.device.exception.DeviceNotFoundException;
@@ -30,16 +30,16 @@ public class DeviceService{
     }
 
     public Device getDevice(String deviceId, User user) {
-        return deviceRepository.findMyDevice(deviceId, user)
+        return deviceRepository.findMyDevice(deviceId, user.getUserSeq())
                 .orElseThrow(DeviceNotFoundException::new);
     }
 
     public List<Device> getDevices(List<String> deviceIds, User user) {
-        return deviceRepository.findAllDevices(deviceIds, user);
+        return deviceRepository.getDevices(deviceIds, user.getUserSeq());
     }
 
     public List<Device> getDevices(User user) {
-        return deviceRepository.findAllByUserSeq(user.getUserSeq());
+        return deviceRepository.getDevices(user.getUserSeq());
     }
 
     @Transactional

@@ -4,7 +4,7 @@ import com.heygongc.common.ServiceTest;
 import com.heygongc.device.application.device.DevicePushService;
 import com.heygongc.device.application.device.DeviceService;
 import com.heygongc.device.domain.entity.Device;
-import com.heygongc.device.domain.repository.DeviceRepository;
+import com.heygongc.device.domain.repository.device.DeviceRepository;
 import com.heygongc.device.domain.type.CameraOrientationType;
 import com.heygongc.device.domain.type.SensitivityType;
 import com.heygongc.device.presentation.request.device.DeviceSubscribeRequest;
@@ -97,7 +97,7 @@ public class DeviceServiceTest extends ServiceTest {
         // then
         verify(devicePushService).hideQRCode(내디바이스.getFcmToken());
 
-        내디바이스 = deviceRepository.findMyDevice(내디바이스.getDeviceId(), 구글테스트계정).get();
+        내디바이스 = deviceRepository.findMyDevice(내디바이스.getDeviceId(), 구글테스트계정.getUserSeq()).get();
         Assertions.assertThat(내디바이스.getDeviceName()).isEqualTo(새로운디바이스명);
         Assertions.assertThat(내디바이스.getUserSeq()).isEqualTo(구글테스트계정.getUserSeq());
         Assertions.assertThat(내디바이스.isConnected()).isTrue();
@@ -115,7 +115,7 @@ public class DeviceServiceTest extends ServiceTest {
         deviceService.changeDeviceName(내디바이스.getDeviceId(), 새로운디바이스명, 구글테스트계정);
 
         // then
-        내디바이스 = deviceRepository.findMyDevice(내디바이스.getDeviceId(), 구글테스트계정).get();
+        내디바이스 = deviceRepository.findMyDevice(내디바이스.getDeviceId(), 구글테스트계정.getUserSeq()).get();
 
         Assertions.assertThat(내디바이스.getDeviceName()).isEqualTo(새로운디바이스명);
     }
@@ -184,7 +184,7 @@ public class DeviceServiceTest extends ServiceTest {
             // then
             verify(devicePushService).controlDevice(컨트롤, 컨트롤내용, 내디바이스.getFcmToken());
 
-            내디바이스 = deviceRepository.findMyDevice(내디바이스.getDeviceId(), 구글테스트계정).get();
+            내디바이스 = deviceRepository.findMyDevice(내디바이스.getDeviceId(), 구글테스트계정.getUserSeq()).get();
 
             switch (컨트롤) {
                 case SENSITIVITY:
@@ -228,7 +228,7 @@ public class DeviceServiceTest extends ServiceTest {
             // then
             verify(devicePushService).controlDevice(컨트롤, 컨트롤내용, 내디바이스.getFcmToken());
 
-            내디바이스 = deviceRepository.findMyDevice(내디바이스.getDeviceId(), 구글테스트계정).get();
+            내디바이스 = deviceRepository.findMyDevice(내디바이스.getDeviceId(), 구글테스트계정.getUserSeq()).get();
 
 
             switch (컨트롤) {

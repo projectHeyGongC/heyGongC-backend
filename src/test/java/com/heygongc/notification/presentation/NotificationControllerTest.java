@@ -1,25 +1,18 @@
 package com.heygongc.notification.presentation;
 
 import com.heygongc.common.ControllerTest;
-import com.heygongc.global.config.WebMvcConfig;
 import com.heygongc.notification.application.NotificationService;
-import com.heygongc.notification.domain.entity.Notification;
-import com.heygongc.notification.presentation.response.NotificationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.http.HttpHeaders;
 
 import java.util.Collections;
-import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(NotificationController.class)

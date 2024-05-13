@@ -124,6 +124,7 @@ public class UserService {
         return userRepository.existsBySnsId(snsId);
     }
 
+    @Transactional
     private void saveRefreshToken(Long userSeq, String refreshToken) {
         // 이미 등록된 jwt 토큰이 있으면 삭제
         // TODO: 해야하는 의미가 있을까..?

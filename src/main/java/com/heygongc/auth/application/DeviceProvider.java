@@ -2,9 +2,8 @@ package com.heygongc.auth.application;
 
 
 import com.heygongc.device.domain.entity.Device;
-import com.heygongc.device.domain.repository.DeviceRepository;
+import com.heygongc.device.domain.repository.device.DeviceRepository;
 import com.heygongc.global.error.exception.ForbiddenException;
-import com.heygongc.global.error.exception.InvalidTokenException;
 import com.heygongc.global.error.exception.UnauthenticatedException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
