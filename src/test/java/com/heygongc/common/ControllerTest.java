@@ -2,9 +2,8 @@ package com.heygongc.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.heygongc.auth.application.DeviceProvider;
-import com.heygongc.auth.application.TokenProvider;
 import com.heygongc.auth.application.UserProvider;
-import com.heygongc.device.domain.repository.DeviceRepository;
+import com.heygongc.device.domain.repository.device.DeviceRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;

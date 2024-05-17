@@ -3,7 +3,7 @@ package com.heygongc.notification.setup;
 import com.heygongc.common.ApplicationContextProvider;
 import com.heygongc.device.domain.entity.Device;
 import com.heygongc.notification.domain.entity.Notification;
-import com.heygongc.notification.domain.repository.NotificationRepository;
+import com.heygongc.notification.domain.repository.notification.NotificationRepository;
 import com.heygongc.notification.domain.type.NotificationType;
 import com.heygongc.user.domain.entity.User;
 

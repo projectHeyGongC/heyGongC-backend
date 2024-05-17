@@ -3,7 +3,7 @@ package com.heygongc.video.setup;
 import com.heygongc.common.ApplicationContextProvider;
 import com.heygongc.user.domain.entity.User;
 import com.heygongc.video.domain.entity.Video;
-import com.heygongc.video.domain.repository.VideoRepository;
+import com.heygongc.video.domain.repository.video.VideoRepository;
 
 public class VideoSetup {
 

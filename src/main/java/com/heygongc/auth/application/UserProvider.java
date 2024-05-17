@@ -3,7 +3,7 @@ package com.heygongc.auth.application;
 import com.heygongc.global.error.exception.ForbiddenException;
 import com.heygongc.global.error.exception.UnauthenticatedException;
 import com.heygongc.user.domain.entity.User;
-import com.heygongc.user.domain.repository.UserRepository;
+import com.heygongc.user.domain.repository.user.UserRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +25,7 @@ public class UserProvider implements TokenProvider {
         Long userSeq = Long.parseLong(jwtUtil.extractSubject(accessToken));
         String deviceId = jwtUtil.extractAudience(accessToken);
 
-        User user = userRepository.findById(userSeq)
+        User user = userRepository.findByUserSeq(userSeq)
                 .orElseThrow(UnauthenticatedException::new);
 
         if (!Objects.equals(user.getDeviceId(), deviceId)) {

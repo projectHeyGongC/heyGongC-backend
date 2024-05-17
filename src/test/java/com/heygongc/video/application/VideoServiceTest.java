@@ -2,7 +2,7 @@ package com.heygongc.video.application;
 
 import com.heygongc.common.ServiceTest;
 import com.heygongc.user.domain.entity.User;
-import com.heygongc.user.domain.repository.UserRepository;
+import com.heygongc.user.domain.repository.user.UserRepository;
 import com.heygongc.video.domain.entity.Video;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
