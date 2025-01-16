@@ -12,7 +12,7 @@
   - AWS EC2, Docker, GitHub Actions, Nginx
 
 ## Server Architecture
-![HeyGongC-Architecture drawio](https://github.com/user-attachments/assets/6092597d-b12a-4ca9-af8d-080a2d783c0a)
+![HeyGongC-Architecture drawio](https://github.com/user-attachments/assets/27669278-ac2f-4921-9f8a-65b65a1d1acd)
 
 ## Design
 <img src="https://github.com/user-attachments/assets/79f00a9f-92f4-4075-bbf1-5027e4e49e97" width="400">
